@@ -1,4 +1,4 @@
-# Trader Joe SDK
+# Trader Joe SDK V2 (WIP)
 This repo contains tools for developing with [TraderJoe XYZ](https://www.traderjoexyz.com).
 
 ## Running
@@ -16,7 +16,7 @@ yarn build
 ```
 
 ## Installation
-This project is available as an npm package. Add to your project with `npm install @traderjoe-xyz/sdk`
+This project is available as an npm package. Add to your project with `npm install @traderjoe-xyz/sdk-v2`
 
 ## Attribution
 This code was adapted from this Uniswap repo: [uniswap-sdk](https://github.com/Uniswap/sdk).
