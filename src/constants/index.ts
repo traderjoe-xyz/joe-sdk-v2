@@ -20,6 +20,25 @@ export enum Rounding {
 }
 
 /**
+ * DEX v2 SDK
+ */
+ export const MULTICALL_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.FUJI]: '0xb465Fd2d9C71d5D6e6c069aaC9b4E21c69aAA78f',
+  [ChainId.AVALANCHE]: ''
+}
+
+export const QUOTER_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.FUJI]: '0x5f86bd06859b8a07359B6E74DC67a7D0f8a53398',
+  [ChainId.AVALANCHE]: ''
+}
+
+export const LB_ROUTER_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.FUJI]: '0xE9e38190D2440d6cD28cF0Ce453FB86CB8725f8A',
+  [ChainId.AVALANCHE]: ''
+}
+
+
+/**
  * DEX SDK
  */
 export const FACTORY_ADDRESS: { [chainId in ChainId]: string } = {
