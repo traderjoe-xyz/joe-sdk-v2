@@ -1,9 +1,21 @@
-/**
- * Playground to simulate how SDK v2's entities will be used in the frontend
- */
-
-const { Token, ChainId, WAVAX: _WAVAX, PairV2, RouteV2, Quote } = require('./dist')
+const { 
+  Token, 
+  ChainId, 
+  WAVAX: _WAVAX, 
+  PairV2, 
+  RouteV2, 
+  TokenAmount,
+  TradeV2
+} = require('./dist')
 const { ethers } = require('./node_modules/ethers')
+const { parseUnits } = require('./node_modules/@ethersproject/units') 
+const JSBI = require('./node_modules/JSBI')
+
+
+/**
+ * Playground to simulate how SDK v2 will be used in the frontend
+ * - Requirements: USDC, USDT, WAVAX balance in fuji + approve "0xd7f655E3376cE2D7A2b08fF01Eb3B1023191A901" and "0xE9e38190D2440d6cD28cF0Ce453FB86CB8725f8A" 
+ */
 
 const main = async () => {
   // Init constants
@@ -16,24 +28,27 @@ const main = async () => {
   // Init: input Token and desired output Token
   const inputToken = USDC
   const outputToken = USDT
-  const amountIn = 10_000
+  const typedValueIn = "0.01" // user string input 
+  const typedValueInParsed = parseUnits(typedValueIn, inputToken.decimals).toString() // returns 10000
+  const amountIn = new TokenAmount(inputToken, JSBI.BigInt(typedValueInParsed)) // wrap into TokenAmount
+  
+  // get all [Token, Token] combinations
+  const allTokenPairs = PairV2.createAllTokenPairs(inputToken, outputToken, BASES) 
 
-  // Init: Pairs to consider in finding all routes
-  const allPairs = PairV2.createAllPairs(inputToken, outputToken, BASES)
-  console.debug('allPairs', allPairs)
+  // get pairs
+  const allPairs = PairV2.fetchAndInitPairs(allTokenPairs); // console.debug('allPairs', allPairs)
 
-  // Init: Routes to consider in finding the best trade
-  const allRoutes = RouteV2.createAllRoutes(allPairs, inputToken, outputToken)
-  console.debug('allRoutes', allRoutes)
-  const allRoutesStr = allRoutes.map((route) => route.pathToStrArr())
-  console.debug('allRoutesStr', allRoutesStr)
+  // routes to consider in finding the best trade
+  const allRoutes = RouteV2.createAllRoutes(allPairs, inputToken, outputToken); // console.debug('allRoutes', allRoutes)
 
-  // Get Quotes
+  // get tradess
   const chainId = ChainId.FUJI
-  console.debug(typeof chainId)
   const provider = new ethers.providers.JsonRpcProvider(FUJI_URL)
-  const quotes = await Quote.getQuotes(allRoutesStr, amountIn, provider, chainId)
-  console.debug('quotes', quotes)
+  const trades = await TradeV2.getTradesExactIn(allRoutes, amountIn, outputToken, provider, chainId); // console.debug('trades', trades.map(el=>el.toLog()))
+
+  // get best trade
+  const bestTrade = trades[0]
+  console.debug('bestTrade', bestTrade.toLog())
 }
 
 main()

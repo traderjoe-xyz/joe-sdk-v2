@@ -22,26 +22,36 @@ export class PairV2  {
     return false
   }
 
-  public static createAllPairs(inputToken: Token, outputToken: Token, bases: Token[]): PairV2[] {
+  // creates all [Token, Token] combinations given inputToken, outputToken, and bases
+  public static createAllTokenPairs(inputToken: Token, outputToken: Token, bases: Token[]): [Token, Token][] {
 
     const basePairs = flatMap(bases, (base: Token) => bases.map((otherBase) => [base, otherBase])).filter(
       ([t0, t1]) => t0.address !== t1.address
     )
 
-    const allTokenPairs = [
+    const allTokenPairs : [Token, Token][]= [
       // the direct pair
       [inputToken, outputToken],
       // token A against all bases
-      ...bases.map((base) => [inputToken, base]),
+      ...bases.map((base: Token) => [inputToken, base]),
       // token B against all bases
-      ...bases.map((base) => [outputToken, base]),
+      ...bases.map((base: Token) => [outputToken, base]),
       // each base against all bases
       ...basePairs
     ]
-      .filter((tokens) => Boolean(tokens[0] && tokens[1]))
+      .filter((tokens): tokens is [Token, Token]  => Boolean(tokens[0] && tokens[1]))
       .filter(([t0, t1]) => t0.address !== t1.address)
+    
+    return allTokenPairs
+  }
 
-    const allPairs = allTokenPairs.map((tokenPair: Token[]) => new PairV2(tokenPair[0], tokenPair[1]))
+  // fetch pairs and initialize PairV2 
+  // TODO: fetch pair through contract to get reserves
+  public static fetchAndInitPairs(tokenPairs: [Token, Token][]) : PairV2[]{
+    
+    const allPairs = tokenPairs.map((tokenPair: Token[]) => {
+      return new PairV2(tokenPair[0], tokenPair[1])
+    })
 
     // TODO: improve this by using Pair address
     const uniquePairs : PairV2[] = []

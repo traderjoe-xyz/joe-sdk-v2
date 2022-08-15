@@ -1,3 +1,3 @@
 export * from './pair'
 export * from './route'
-export * from './quote'
+export * from './trade'
