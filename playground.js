@@ -14,7 +14,10 @@ const JSBI = require('./node_modules/JSBI')
 
 /**
  * Playground to simulate how SDK v2 will be used in the frontend
- * - Requirements: USDC, USDT, WAVAX balance in fuji + approve "0xd7f655E3376cE2D7A2b08fF01Eb3B1023191A901" and "0xE9e38190D2440d6cD28cF0Ce453FB86CB8725f8A" 
+ * - To run:
+ *    * yarn install
+ *    * yarn build
+ *    * node playground.js
  */
 
 const main = async () => {

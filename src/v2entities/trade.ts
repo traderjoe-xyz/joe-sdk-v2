@@ -17,12 +17,12 @@ interface Quote {
 }
 
 export class TradeV2 {
+  public readonly quote: Quote // quote returned by the Quoter contract
   public readonly route: RouteV2 // The route of the trade, i.e. which pairs the trade goes through.
   public readonly tradeType: TradeType // The type of the trade, either exact in or exact out.
-  public readonly quote: Quote
-  public readonly inputAmount: TokenAmount
-  public readonly outputAmount: TokenAmount
-  public readonly executionPrice: Price
+  public readonly inputAmount: TokenAmount // The input amount for the trade assuming no slippage.
+  public readonly outputAmount: TokenAmount // The output amount for the trade assuming no slippage.
+  public readonly executionPrice: Price // The price expressed in terms of output amount/input amount.
   // public readonly priceImpact: Percent
 
   public constructor(route: RouteV2, tokenIn: Token, tokenOut: Token, quote: Quote, isExactIn: boolean) {
@@ -55,7 +55,7 @@ export class TradeV2 {
           const routeStrArr = route.pathToStrArr()
           const quote: Quote = await quoter.findBestPathAmountIn(routeStrArr, amountIn)
           const trade: TradeV2 = new TradeV2(route, tokenAmountIn.token, tokenOut, quote, true)
-          return trade //resolve(trade)
+          return trade 
         } catch (e) {
           return null
         }
@@ -65,7 +65,7 @@ export class TradeV2 {
     return trades
   }
 
-  // to generate meaningful log
+  // generates object for meaningful console.log
   public toLog() {
     return {
       route: {

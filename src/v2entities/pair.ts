@@ -46,7 +46,7 @@ export class PairV2  {
   }
 
   // fetch pairs and initialize PairV2 
-  // TODO: fetch pair through contract to get reserves
+  // TODO: add pair id and fetch pair through contract to get reserves
   public static fetchAndInitPairs(tokenPairs: [Token, Token][]) : PairV2[]{
     
     const allPairs = tokenPairs.map((tokenPair: Token[]) => {
