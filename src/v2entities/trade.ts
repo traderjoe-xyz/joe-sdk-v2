@@ -39,6 +39,7 @@ export class TradeV2 {
     )
   }
 
+  // generates trades from input token amount
   public static async getTradesExactIn(
     routes: RouteV2[],
     tokenAmountIn: TokenAmount,
@@ -46,6 +47,7 @@ export class TradeV2 {
     provider: Provider,
     chainId: ChainId
   ): Promise<Array<TradeV2 | null>> {
+    const isExactIn = true
     const amountIn = JSBI.toNumber(tokenAmountIn.raw)
     const quoter = new Contract(QUOTER_ADDRESS[chainId], QuoterABI, provider)
 
@@ -54,7 +56,7 @@ export class TradeV2 {
         try {
           const routeStrArr = route.pathToStrArr()
           const quote: Quote = await quoter.findBestPathAmountIn(routeStrArr, amountIn)
-          const trade: TradeV2 = new TradeV2(route, tokenAmountIn.token, tokenOut, quote, true)
+          const trade: TradeV2 = new TradeV2(route, tokenAmountIn.token, tokenOut, quote, isExactIn)
           return trade 
         } catch (e) {
           return null
@@ -62,7 +64,35 @@ export class TradeV2 {
       })
     )
 
-    return trades
+    return trades.filter(trade=>!!trade)
+  }
+
+  // generates trades from output token amount
+  public static async getTradesExactOut(
+    routes: RouteV2[],
+    tokenAmountOut: TokenAmount,
+    tokenIn: Token,
+    provider: Provider,
+    chainId: ChainId
+  ): Promise<Array<TradeV2 | null>> {
+    const isExactIn = false
+    const amountOut = JSBI.toNumber(tokenAmountOut.raw)
+    const quoter = new Contract(QUOTER_ADDRESS[chainId], QuoterABI, provider)
+
+    const trades: Array<TradeV2 | null> = await Promise.all(
+      routes.map(async (route) => {
+        try {
+          const routeStrArr = route.pathToStrArr()
+          const quote: Quote = await quoter.findBestPathAmountOut(routeStrArr, amountOut)
+          const trade: TradeV2 = new TradeV2(route, tokenAmountOut.token, tokenIn, quote, isExactIn)
+          return trade 
+        } catch (e) {
+          return null
+        }
+      })
+    )
+
+    return trades.filter(trade=>!!trade)
   }
 
   // generates object for meaningful console.log
