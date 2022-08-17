@@ -44,43 +44,62 @@ export class TradeV2 {
 
   /**
    * Returns an estimate of the gas cost for the trade
-   * 
-   * @param {Signer} signer - The signer such as the wallet 
+   *
+   * @param {Signer} signer - The signer such as the wallet
    * @param {ChainId} chainId - The network chain id
    * @param {Percent} slippageTolerance - The slippage tolerance
    * @returns {Promise<number>}
    */
-  public async estimateGas(signer: Signer, chainId: ChainId, slippageTolerance: Percent) : Promise<number> {
+  public async estimateGas(signer: Signer, chainId: ChainId, slippageTolerance: Percent): Promise<number> {
     const routerInterface = new utils.Interface(LBRouterABI.abi)
     const router = new Contract(LB_ROUTER_ADDRESS[chainId], routerInterface, signer)
 
-    const amountIn = JSBI.toNumber(this.inputAmount.raw)
-    const slippageAdjustedAmountOut = new Fraction(ONE)
-      .add(slippageTolerance)
-      .invert()
-      .multiply(this.outputAmount.raw).quotient
-    const minAmountOut= JSBI.toNumber(slippageAdjustedAmountOut)
-
     const currentBlockTimestamp = (await (signer as Wallet).provider.getBlock('latest')).timestamp
     const userAddr = await signer.getAddress()
-    const response = await router.estimateGas.swapExactTokensForTokens(
-      amountIn,
-      minAmountOut,
-      this.quote.binSteps,
-      this.quote.route,
-      userAddr,
-      currentBlockTimestamp + 120
-    )
+
+    let response
+    if (this.tradeType === TradeType.EXACT_INPUT) {
+      const amountIn = JSBI.toNumber(this.inputAmount.raw)
+      const slippageAdjustedAmountOut = new Fraction(ONE)
+        .add(slippageTolerance)
+        .invert()
+        .multiply(this.outputAmount.raw).quotient
+      const minAmountOut = JSBI.toNumber(slippageAdjustedAmountOut)
+      response = await router.estimateGas.swapExactTokensForTokens(
+        amountIn,
+        minAmountOut,
+        this.quote.binSteps,
+        this.quote.route,
+        userAddr,
+        currentBlockTimestamp + 120
+      )
+    } else {
+      const amountOut = JSBI.toNumber(this.outputAmount.raw)
+      const slippageAdjustedAmountIn = new Fraction(ONE)
+        .subtract(slippageTolerance)
+        .invert()
+        .multiply(this.inputAmount.raw).quotient
+      const maxAmountIn = JSBI.toNumber(slippageAdjustedAmountIn)
+
+      response = await router.estimateGas.swapTokensForExactTokens(
+        amountOut,
+        maxAmountIn,
+        this.quote.binSteps,
+        this.quote.route,
+        userAddr,
+        currentBlockTimestamp + 120
+      )
+    }
 
     return response.toNumber()
   }
 
   /**
    * Returns an object representing this trade for a readable cosole.log
-   * 
+   *
    * @returns {Object}
    */
-   public toLog() {
+  public toLog() {
     return {
       route: {
         path: this.route.path.map((token) => token.address).join(', ')
@@ -104,12 +123,12 @@ export class TradeV2 {
   /**
    * @static
    * Returns the list of trades, given a list of routes and a fixed amount of the input token
-   * 
-   * @param {RouteV2[]} routes 
-   * @param {TokenAmount} tokenAmountIn 
-   * @param {Token} tokenOut 
-   * @param {Provider} provider 
-   * @param {ChainId} chainId 
+   *
+   * @param {RouteV2[]} routes
+   * @param {TokenAmount} tokenAmountIn
+   * @param {Token} tokenOut
+   * @param {Provider} provider
+   * @param {ChainId} chainId
    * @returns {TradeV2[]}
    */
   public static async getTradesExactIn(
@@ -143,12 +162,12 @@ export class TradeV2 {
   /**
    * @static
    * Returns the list of trades, given a list of routes and a fixed amount of the output token
-   * 
-   * @param {RouteV2[]} routes 
-   * @param {TokenAmount} tokenAmountOut 
-   * @param {Token} tokenIn 
-   * @param {Provider} provider 
-   * @param {ChainId} chainId 
+   *
+   * @param {RouteV2[]} routes
+   * @param {TokenAmount} tokenAmountOut
+   * @param {Token} tokenIn
+   * @param {Provider} provider
+   * @param {ChainId} chainId
    * @returns {TradeV2[]}
    */
   public static async getTradesExactOut(
