@@ -2,6 +2,7 @@ import invariant from 'tiny-invariant'
 import warning from 'tiny-warning'
 import JSBI from 'jsbi'
 import { getAddress } from '@ethersproject/address'
+import { CurrencyAmount } from 'entities'
 
 import { BigintIsh, ZERO, ONE, TWO, THREE, SolidityType, SOLIDITY_TYPE_MAXIMA } from './constants'
 
@@ -79,4 +80,24 @@ export function sortedInsert<T>(items: T[], add: T, maxSize: number, comparator:
     items.splice(lo, 0, add)
     return isFull ? items.pop()! : null
   }
+}
+
+/**
+ * Converts currency amount into hex encoding
+ * 
+ * @param {CurrencyAmount} currencyAmount 
+ * @returns {string} 
+ */
+ export function toHex(currencyAmount: CurrencyAmount) {
+  return `0x${currencyAmount.raw.toString(16)}`
+}
+
+/**
+ * Returns true if the string value is zero in hex
+ * 
+ * @param {string} hexNumberString
+ * @returns {boolean}
+ */
+ export function isZero(hexNumberString: string) {
+  return /^0x0*$/.test(hexNumberString)
 }

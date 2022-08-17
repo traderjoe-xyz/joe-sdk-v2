@@ -20,6 +20,24 @@ export enum Rounding {
 }
 
 /**
+ * DEX v2 SDK
+ */
+export const MULTICALL_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.FUJI]: '0xb465Fd2d9C71d5D6e6c069aaC9b4E21c69aAA78f',
+  [ChainId.AVALANCHE]: ''
+}
+
+export const QUOTER_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.FUJI]: '0x30d3cfc7cb183e3526970ad82831e391637cE954',
+  [ChainId.AVALANCHE]: ''
+}
+
+export const LB_ROUTER_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.FUJI]: '0xE9e38190D2440d6cD28cF0Ce453FB86CB8725f8A',
+  [ChainId.AVALANCHE]: ''
+}
+
+/**
  * DEX SDK
  */
 export const FACTORY_ADDRESS: { [chainId in ChainId]: string } = {
@@ -179,6 +197,8 @@ export const SOLIDITY_TYPE_MAXIMA = {
   [SolidityType.uint8]: JSBI.BigInt('0xff'),
   [SolidityType.uint256]: JSBI.BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff')
 }
+
+export const ZERO_HEX = '0x0'
 
 /**
  * Lending SDK

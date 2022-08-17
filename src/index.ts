@@ -56,5 +56,4 @@ export {
 } from './constants'
 
 export * from './v2entities'
-
 export * from './subgraphs'
