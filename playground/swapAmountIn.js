@@ -50,7 +50,7 @@ const swapAmountIn = async () => {
   const bestTrade = trades[0]
   console.log('bestTrade', bestTrade.toLog())
 
-  // get gas estimage
+  // get gas estimate 
   const swapGasCostEstimate = await bestTrade.estimateGas(signer, chainId, userSlippageTolerance)
   console.log('swapGasCostEstimate', swapGasCostEstimate)
 }
