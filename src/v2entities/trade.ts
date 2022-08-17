@@ -1,12 +1,13 @@
 import { Token } from 'entities'
-import { TokenAmount, Price } from '../entities/fractions'
-import { QUOTER_ADDRESS, ChainId, TradeType } from '../constants'
+import { TokenAmount, Price, Percent, Fraction } from '../entities/fractions'
+import { QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ChainId, TradeType, ONE } from '../constants'
 import { RouteV2 } from 'v2entities'
-import { BigNumber, Contract } from 'ethers'
+import { BigNumber, Contract, utils, Signer, Wallet } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
 import JSBI from 'jsbi'
 
-import QuoterABI from '../abis/Quoter'
+import QuoterABI from '../abis/Quoter.json'
+import LBRouterABI from '../abis/LBRouter.json'
 
 interface Quote {
   route: string[]
@@ -39,6 +40,32 @@ export class TradeV2 {
     )
   }
 
+  // estimates the gasCost for the trade
+  public async estimateGas(signer: Signer, chainId: ChainId, slippageTolerance: Percent) : Promise<number> {
+    const routerInterface = new utils.Interface(LBRouterABI.abi)
+    const router = new Contract(LB_ROUTER_ADDRESS[chainId], routerInterface, signer)
+
+    const amountIn = JSBI.toNumber(this.inputAmount.raw)
+    const slippageAdjustedAmountOut = new Fraction(ONE)
+      .add(slippageTolerance)
+      .invert()
+      .multiply(this.outputAmount.raw).quotient
+    const minAmountOut= JSBI.toNumber(slippageAdjustedAmountOut)
+
+    const currentBlockTimestamp = (await (signer as Wallet).provider.getBlock('latest')).timestamp
+    const userAddr = await signer.getAddress()
+    const response = await router.estimateGas.swapExactTokensForTokens(
+      amountIn,
+      minAmountOut,
+      this.quote.binSteps,
+      this.quote.route,
+      userAddr,
+      currentBlockTimestamp + 120
+    )
+
+    return response.toNumber()
+  }
+
   // generates trades from input token amount
   public static async getTradesExactIn(
     routes: RouteV2[],
@@ -49,7 +76,8 @@ export class TradeV2 {
   ): Promise<Array<TradeV2 | null>> {
     const isExactIn = true
     const amountIn = JSBI.toNumber(tokenAmountIn.raw)
-    const quoter = new Contract(QUOTER_ADDRESS[chainId], QuoterABI, provider)
+    const quoterInterface = new utils.Interface(QuoterABI.abi)
+    const quoter = new Contract(QUOTER_ADDRESS[chainId], quoterInterface, provider)
 
     const trades: Array<TradeV2 | null> = await Promise.all(
       routes.map(async (route) => {
@@ -57,14 +85,14 @@ export class TradeV2 {
           const routeStrArr = route.pathToStrArr()
           const quote: Quote = await quoter.findBestPathAmountIn(routeStrArr, amountIn)
           const trade: TradeV2 = new TradeV2(route, tokenAmountIn.token, tokenOut, quote, isExactIn)
-          return trade 
+          return trade
         } catch (e) {
           return null
         }
       })
     )
 
-    return trades.filter(trade=>!!trade)
+    return trades.filter((trade) => !!trade)
   }
 
   // generates trades from output token amount
@@ -77,22 +105,23 @@ export class TradeV2 {
   ): Promise<Array<TradeV2 | null>> {
     const isExactIn = false
     const amountOut = JSBI.toNumber(tokenAmountOut.raw)
-    const quoter = new Contract(QUOTER_ADDRESS[chainId], QuoterABI, provider)
+    const quoterInterface = new utils.Interface(QuoterABI.abi)
+    const quoter = new Contract(QUOTER_ADDRESS[chainId], quoterInterface, provider)
 
     const trades: Array<TradeV2 | null> = await Promise.all(
       routes.map(async (route) => {
         try {
           const routeStrArr = route.pathToStrArr()
           const quote: Quote = await quoter.findBestPathAmountOut(routeStrArr, amountOut)
-          const trade: TradeV2 = new TradeV2(route, tokenAmountOut.token, tokenIn, quote, isExactIn)
-          return trade 
+          const trade: TradeV2 = new TradeV2(route, tokenIn, tokenAmountOut.token, quote, isExactIn)
+          return trade
         } catch (e) {
           return null
         }
       })
     )
 
-    return trades.filter(trade=>!!trade)
+    return trades.filter((trade) => !!trade)
   }
 
   // generates object for meaningful console.log
@@ -101,10 +130,12 @@ export class TradeV2 {
       route: {
         path: this.route.path.map((token) => token.address).join(', ')
       },
-      tradeType: this.tradeType === TradeType.EXACT_INPUT? "EXACT_INPUT" : "EXACT_OUTPUT",
+      tradeType: this.tradeType === TradeType.EXACT_INPUT ? 'EXACT_INPUT' : 'EXACT_OUTPUT',
       inputAmount: JSBI.toNumber(this.inputAmount.raw),
       outputAmount: JSBI.toNumber(this.outputAmount.raw),
-      executionPrice: `${this.executionPrice.toSignificant(6)} ${this.outputAmount.currency.symbol} / ${this.inputAmount.currency.symbol}`,
+      executionPrice: `${this.executionPrice.toSignificant(6)} ${this.outputAmount.currency.symbol} / ${
+        this.inputAmount.currency.symbol
+      }`,
       quote: {
         route: this.quote.route.join(', '),
         pairs: this.quote.pairs.join(', '),
