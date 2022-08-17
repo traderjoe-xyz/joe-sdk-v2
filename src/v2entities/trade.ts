@@ -1,22 +1,16 @@
-import { Token } from 'entities'
-import { TokenAmount, Price, Percent, Fraction } from '../entities/fractions'
-import { QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ChainId, TradeType, ONE } from '../constants'
+import { CAVAX, Token } from 'entities'
+import { TokenAmount, Price, Percent, Fraction, CurrencyAmount } from '../entities/fractions'
+import { QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ChainId, TradeType, ONE, ZERO, ZERO_HEX } from '../constants'
 import { RouteV2 } from 'v2entities'
-import { BigNumber, Contract, utils, Signer, Wallet } from 'ethers'
+import { Contract, utils, Signer, Wallet } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
+import { toHex, validateAndParseAddress, isZero } from '../utils'
+import { TradeOptions, TradeOptionsDeadline, SwapParameters, Quote } from 'types'
 import JSBI from 'jsbi'
+import invariant from 'tiny-invariant'
 
 import QuoterABI from '../abis/Quoter.json'
 import LBRouterABI from '../abis/LBRouter.json'
-
-/** Interface representing a quote */
-interface Quote {
-  route: string[]
-  pairs: string[]
-  binSteps: BigNumber[]
-  amounts: BigNumber[]
-  tradeValueAVAX: BigNumber
-}
 
 /** Class representing a trade */
 export class TradeV2 {
@@ -43,6 +37,125 @@ export class TradeV2 {
   }
 
   /**
+   * Get the minimum amount that must be received from this trade for the given slippage tolerance
+   *
+   * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
+   * @returns {CurrencyAmount}
+   */
+  public minimumAmountOut(slippageTolerance: Percent): CurrencyAmount {
+    invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE')
+    if (this.tradeType === TradeType.EXACT_OUTPUT) {
+      return this.outputAmount
+    } else {
+      const slippageAdjustedAmountOut = new Fraction(ONE)
+        .add(slippageTolerance)
+        .invert()
+        .multiply(this.outputAmount.raw).quotient
+      return this.outputAmount instanceof TokenAmount
+        ? new TokenAmount(this.outputAmount.token, slippageAdjustedAmountOut)
+        : CurrencyAmount.ether(slippageAdjustedAmountOut)
+    }
+  }
+
+  /**
+   * Get the maximum amount in that can be spent via this trade for the given slippage tolerance
+   *
+   * @param slippageTolerance tolerance of unfavorable slippage from the execution price of this trade
+   * @returns {CurrencyAmount}
+   */
+  public maximumAmountIn(slippageTolerance: Percent): CurrencyAmount {
+    invariant(!slippageTolerance.lessThan(ZERO), 'SLIPPAGE_TOLERANCE')
+    if (this.tradeType === TradeType.EXACT_INPUT) {
+      return this.inputAmount
+    } else {
+      const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.raw).quotient
+      return this.inputAmount instanceof TokenAmount
+        ? new TokenAmount(this.inputAmount.token, slippageAdjustedAmountIn)
+        : CurrencyAmount.ether(slippageAdjustedAmountIn)
+    }
+  }
+
+  /**
+   * Returns the on-chain method name and args for this trade
+   * 
+   * @param {TradeOptions | TradeOptionsDeadline} options 
+   * @returns {SwapParameters}
+   */
+  public swapCallParameters(options: TradeOptions | TradeOptionsDeadline): SwapParameters {
+    const avaxIn = this.inputAmount.currency === CAVAX
+    const avaxOut = this.outputAmount.currency === CAVAX
+    // the router does not support both avax in and out
+    invariant(!(avaxIn && avaxOut), 'AVAX_IN_OUT')
+    invariant(!('ttl' in options) || options.ttl > 0, 'TTL')
+
+    const to: string = validateAndParseAddress(options.recipient)
+    const amountIn: string = toHex(this.maximumAmountIn(options.allowedSlippage))
+    const amountOut: string = toHex(this.minimumAmountOut(options.allowedSlippage))
+    const binSteps: string[] = this.quote.binSteps.map((bin) => bin.toHexString())
+    const path: string[] = this.quote.route
+    const deadline =
+      'ttl' in options
+        ? `0x${(Math.floor(new Date().getTime() / 1000) + options.ttl).toString(16)}`
+        : `0x${options.deadline.toString(16)}`
+
+    const useFeeOnTransfer = Boolean(options.feeOnTransfer)
+
+    let methodName: string
+    let args: (string | string[])[]
+    let value: string
+    switch (this.tradeType) {
+      case TradeType.EXACT_INPUT:
+        if (avaxIn) {
+          methodName = useFeeOnTransfer
+            ? 'swapExactAVAXForTokensSupportingFeeOnTransferTokens'
+            : 'swapExactAVAXForTokens'
+          // (uint amountOutMin, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
+          args = [amountOut, binSteps, path, to, deadline]
+          value = amountIn
+        } else if (avaxOut) {
+          methodName = useFeeOnTransfer
+            ? 'swapExactTokensForAVAXSupportingFeeOnTransferTokens'
+            : 'swapExactTokensForAVAX'
+          // (uint amountIn, uint amountOutMinAVAX, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
+          args = [amountIn, amountOut, binSteps, path, to, deadline]
+          value = ZERO_HEX
+        } else {
+          methodName = useFeeOnTransfer
+            ? 'swapExactTokensForTokensSupportingFeeOnTransferTokens'
+            : 'swapExactTokensForTokens'
+          // (uint amountIn, uint amountOutMin, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
+          args = [amountIn, amountOut, binSteps, path, to, deadline]
+          value = ZERO_HEX
+        }
+        break
+      case TradeType.EXACT_OUTPUT:
+        invariant(!useFeeOnTransfer, 'EXACT_OUT_FOT')
+        if (avaxIn) {
+          methodName = 'swapAVAXForExactTokens'
+          // (uint amountOut, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
+          args = [amountOut, binSteps, path, to, deadline]
+          value = amountIn
+        } else if (avaxOut) {
+          methodName = 'swapTokensForExactAVAX'
+          // (uint amountOut, uint amountInMax, uint[] pairVersions, address[] calldata path, address to, uint deadline)
+          args = [amountOut, amountIn, binSteps, path, to, deadline]
+          value = ZERO_HEX
+        } else {
+          methodName = 'swapTokensForExactTokens'
+          // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
+          args = [amountOut, amountIn, binSteps, path, to, deadline]
+          value = ZERO_HEX
+        }
+        break
+    }
+    return {
+      methodName,
+      args,
+      value
+    }
+  }
+
+  /**
    * Returns an estimate of the gas cost for the trade
    *
    * @param {Signer} signer - The signer such as the wallet
@@ -57,39 +170,17 @@ export class TradeV2 {
     const currentBlockTimestamp = (await (signer as Wallet).provider.getBlock('latest')).timestamp
     const userAddr = await signer.getAddress()
 
-    let response
-    if (this.tradeType === TradeType.EXACT_INPUT) {
-      const amountIn = JSBI.toNumber(this.inputAmount.raw)
-      const slippageAdjustedAmountOut = new Fraction(ONE)
-        .add(slippageTolerance)
-        .invert()
-        .multiply(this.outputAmount.raw).quotient
-      const minAmountOut = JSBI.toNumber(slippageAdjustedAmountOut)
-      response = await router.estimateGas.swapExactTokensForTokens(
-        amountIn,
-        minAmountOut,
-        this.quote.binSteps,
-        this.quote.route,
-        userAddr,
-        currentBlockTimestamp + 120
-      )
-    } else {
-      const amountOut = JSBI.toNumber(this.outputAmount.raw)
-      const slippageAdjustedAmountIn = new Fraction(ONE)
-        .subtract(slippageTolerance)
-        .invert()
-        .multiply(this.inputAmount.raw).quotient
-      const maxAmountIn = JSBI.toNumber(slippageAdjustedAmountIn)
-
-      response = await router.estimateGas.swapTokensForExactTokens(
-        amountOut,
-        maxAmountIn,
-        this.quote.binSteps,
-        this.quote.route,
-        userAddr,
-        currentBlockTimestamp + 120
-      )
+    const options: TradeOptionsDeadline = {
+      allowedSlippage: slippageTolerance,
+      recipient: userAddr,
+      deadline: currentBlockTimestamp + 120
     }
+
+    const { methodName, args, value }: SwapParameters = this.swapCallParameters(options)
+    const msgOptions = !value || isZero(value) ? {} : { value }
+
+    console.debug('testing args', ...args, msgOptions)
+    const response = await router.estimateGas[methodName](...args, msgOptions)
 
     return response.toNumber()
   }
