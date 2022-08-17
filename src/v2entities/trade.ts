@@ -289,4 +289,21 @@ export class TradeV2 {
 
     return trades.filter((trade) => !!trade)
   }
+
+  /**
+   * Selects the best trade given trades and gas
+   * 
+   * @param {TradeV2[]} trades 
+   * @param {number[]} estimatedGas 
+   * @returns {bestTrade: TradeV2, estimatedGas: number}
+   */
+  public static chooseBestTrade(trades: TradeV2[], estimatedGas: number[]):{
+    bestTrade: TradeV2,
+    estimatedGas: number
+  }{
+
+    // TODO: create an algorithm to choose the best trade
+    // For now, we return the first trade
+    return { bestTrade: trades[0], estimatedGas: estimatedGas[0] }
+  }
 }

@@ -45,14 +45,14 @@ const swapAmountIn = async () => {
   const provider = new ethers.providers.JsonRpcProvider(FUJI_URL)
   const trades = await TradeV2.getTradesExactIn(allRoutes, amountIn, outputToken, provider, chainId); // console.log('trades', trades.map(el=>el.toLog()))
 
-  // get best trade
-  const bestTrade = trades[0]
-  console.log('bestTrade', bestTrade.toLog())
-
-  // get gas estimate 
+  // get gas estimates for each trade
   const signer = new ethers.Wallet(WALLET_PK, provider)
-  const swapGasCostEstimate = await bestTrade.estimateGas(signer, chainId, userSlippageTolerance)
-  console.log('swapGasCostEstimate', swapGasCostEstimate)
+  const estimatedGasCosts = await Promise.all(trades.map(trade=> trade.estimateGas(signer, chainId, userSlippageTolerance)))
+
+  // get best trade
+  const {bestTrade, estimatedGas} = TradeV2.chooseBestTrade(trades, estimatedGasCosts)
+  console.log('bestTrade', bestTrade.toLog())
+  console.log('swapGasCostEstimate', estimatedGas)
 }
 
 module.exports = swapAmountIn
