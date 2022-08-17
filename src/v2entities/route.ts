@@ -1,5 +1,5 @@
-import { PairV2 } from 'v2entities'
-import { Token } from 'entities'
+import { PairV2 } from './pair'
+import { Token } from './token'
 
 /** Class representing a trade route. */
 export class RouteV2 {

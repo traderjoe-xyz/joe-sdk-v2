@@ -1,4 +1,4 @@
-import { Token } from 'entities'
+import { Token } from './token'
 import flatMap from 'lodash.flatmap'
 
 /** Class representing a pair. */

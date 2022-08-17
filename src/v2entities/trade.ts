@@ -1,13 +1,15 @@
-import { CAVAX, Token } from 'entities'
-import { TokenAmount, Price, Percent, Fraction, CurrencyAmount } from '../entities/fractions'
-import { QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ChainId, TradeType, ONE, ZERO, ZERO_HEX } from '../constants'
-import { RouteV2 } from 'v2entities'
 import { Contract, utils, Signer, Wallet } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
-import { toHex, validateAndParseAddress, isZero } from '../utils'
-import { TradeOptions, TradeOptionsDeadline, SwapParameters, Quote } from 'types'
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
+
+import { Token } from './token'
+import { CAVAX } from './currency'
+import { RouteV2 } from './route'
+import { TokenAmount, Price, Percent, Fraction, CurrencyAmount } from './fractions'
+import { QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ChainId, TradeType, ONE, ZERO, ZERO_HEX } from '../constants'
+import { toHex, validateAndParseAddress, isZero } from '../utils'
+import { TradeOptions, TradeOptionsDeadline, SwapParameters, Quote } from '../types'
 
 import QuoterABI from '../abis/Quoter.json'
 import LBRouterABI from '../abis/LBRouter.json'
@@ -179,7 +181,6 @@ export class TradeV2 {
     const { methodName, args, value }: SwapParameters = this.swapCallParameters(options)
     const msgOptions = !value || isZero(value) ? {} : { value }
 
-    console.debug('testing args', ...args, msgOptions)
     const response = await router.estimateGas[methodName](...args, msgOptions)
 
     return response.toNumber()
