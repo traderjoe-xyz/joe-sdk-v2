@@ -1,6 +1,7 @@
 import { PairV2 } from 'v2entities'
 import { Token } from 'entities'
 
+/** Class representing a trade route. */
 export class RouteV2 {
   public readonly pairs: PairV2[]
   public readonly path: Token[]
@@ -22,6 +23,27 @@ export class RouteV2 {
     this.output = output ?? path[path.length - 1]
   }
 
+  /**
+   * Returns the list of token addresses for this route
+   * 
+   * @returns {string[]} 
+   */
+   public pathToStrArr():string[]{
+    return this.path.map((token:Token)=>token.address)
+  }
+
+  /**
+   * @static
+   * Returns all possible trade routes
+   * 
+   * @param {PairV2[]} pairs - The pairs to consider
+   * @param {Token} inputToken - The input token
+   * @param {Token} outputToken - The output token
+   * @param {PairV2[]} currentPairs - The current list of pairs forming a route (used in recursion)
+   * @param {Token} originalInputToken - The original value of the inputToken param (used in recursion)
+   * @param {RouteV2[]} outcome - The current list of routes (used in recursion)
+   * @returns {RouteV2[]} An array of constructured routes
+   */
   public static createAllRoutes(
     pairs: PairV2[],
     inputToken: Token,
@@ -57,9 +79,5 @@ export class RouteV2 {
       }
     }
     return outcome
-  }
-
-  public pathToStrArr(){
-    return this.path.map((token:Token)=>token.address)
   }
 }

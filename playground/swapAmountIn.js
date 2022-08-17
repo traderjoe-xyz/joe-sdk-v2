@@ -43,7 +43,6 @@ const swapAmountIn = async () => {
   // get tradess
   const chainId = ChainId.FUJI
   const provider = new ethers.providers.JsonRpcProvider(FUJI_URL)
-  const signer = new ethers.Wallet(WALLET_PK, provider)
   const trades = await TradeV2.getTradesExactIn(allRoutes, amountIn, outputToken, provider, chainId); // console.log('trades', trades.map(el=>el.toLog()))
 
   // get best trade
@@ -51,6 +50,7 @@ const swapAmountIn = async () => {
   console.log('bestTrade', bestTrade.toLog())
 
   // get gas estimate 
+  const signer = new ethers.Wallet(WALLET_PK, provider)
   const swapGasCostEstimate = await bestTrade.estimateGas(signer, chainId, userSlippageTolerance)
   console.log('swapGasCostEstimate', swapGasCostEstimate)
 }

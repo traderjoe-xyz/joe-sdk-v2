@@ -1,6 +1,7 @@
 import { Token } from 'entities'
 import flatMap from 'lodash.flatmap'
 
+/** Class representing a pair. */
 export class PairV2  {
   public readonly token0: Token
   public readonly token1: Token
@@ -15,6 +16,12 @@ export class PairV2  {
     }
   }
 
+  /**
+   * Checks whether the pairs are equal
+   * 
+   * @param {PairV2} pair 
+   * @returns {boolean} true if equal, otherwise false
+   */
   public equals(pair: PairV2){
     if (this.token0.address=== pair.token0.address && this.token1.address=== pair.token1.address){
       return true
@@ -22,7 +29,15 @@ export class PairV2  {
     return false
   }
 
-  // creates all [Token, Token] combinations given inputToken, outputToken, and bases
+  /**
+   * @static
+   * Returns all possible combination of token pairs
+   * 
+   * @param {Token} inputToken 
+   * @param {Token} outputToken 
+   * @param {Token[]} bases 
+   * @returns {[Token, Token][]}
+   */
   public static createAllTokenPairs(inputToken: Token, outputToken: Token, bases: Token[]): [Token, Token][] {
 
     const basePairs = flatMap(bases, (base: Token) => bases.map((otherBase) => [base, otherBase])).filter(
@@ -45,10 +60,17 @@ export class PairV2  {
     return allTokenPairs
   }
 
-  // fetch pairs and initialize PairV2 
-  // TODO: add pair id and fetch pair through contract to get reserves
+  /**
+   * @static
+   * Returns the initialized pairs given a list of token pairs
+   * 
+   * @param {[Token, Token][]} tokenPairs 
+   * @returns {PairV2[]}
+   */
   public static fetchAndInitPairs(tokenPairs: [Token, Token][]) : PairV2[]{
     
+    // TODO: compute pair address and fetch pair data from contract
+
     const allPairs = tokenPairs.map((tokenPair: Token[]) => {
       return new PairV2(tokenPair[0], tokenPair[1])
     })

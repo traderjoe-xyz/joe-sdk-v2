@@ -9,6 +9,7 @@ import JSBI from 'jsbi'
 import QuoterABI from '../abis/Quoter.json'
 import LBRouterABI from '../abis/LBRouter.json'
 
+/** Interface representing a quote */
 interface Quote {
   route: string[]
   pairs: string[]
@@ -17,6 +18,7 @@ interface Quote {
   tradeValueAVAX: BigNumber
 }
 
+/** Class representing a trade */
 export class TradeV2 {
   public readonly quote: Quote // quote returned by the Quoter contract
   public readonly route: RouteV2 // The route of the trade, i.e. which pairs the trade goes through.
@@ -40,7 +42,14 @@ export class TradeV2 {
     )
   }
 
-  // estimates the gasCost for the trade
+  /**
+   * Returns an estimate of the gas cost for the trade
+   * 
+   * @param {Signer} signer - The signer such as the wallet 
+   * @param {ChainId} chainId - The network chain id
+   * @param {Percent} slippageTolerance - The slippage tolerance
+   * @returns {Promise<number>}
+   */
   public async estimateGas(signer: Signer, chainId: ChainId, slippageTolerance: Percent) : Promise<number> {
     const routerInterface = new utils.Interface(LBRouterABI.abi)
     const router = new Contract(LB_ROUTER_ADDRESS[chainId], routerInterface, signer)
@@ -66,7 +75,43 @@ export class TradeV2 {
     return response.toNumber()
   }
 
-  // generates trades from input token amount
+  /**
+   * Returns an object representing this trade for a readable cosole.log
+   * 
+   * @returns {Object}
+   */
+   public toLog() {
+    return {
+      route: {
+        path: this.route.path.map((token) => token.address).join(', ')
+      },
+      tradeType: this.tradeType === TradeType.EXACT_INPUT ? 'EXACT_INPUT' : 'EXACT_OUTPUT',
+      inputAmount: JSBI.toNumber(this.inputAmount.raw),
+      outputAmount: JSBI.toNumber(this.outputAmount.raw),
+      executionPrice: `${this.executionPrice.toSignificant(6)} ${this.outputAmount.currency.symbol} / ${
+        this.inputAmount.currency.symbol
+      }`,
+      quote: {
+        route: this.quote.route.join(', '),
+        pairs: this.quote.pairs.join(', '),
+        binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
+        amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
+        tradeValueAVAX: this.quote.tradeValueAVAX.toString()
+      }
+    }
+  }
+
+  /**
+   * @static
+   * Returns the list of trades, given a list of routes and a fixed amount of the input token
+   * 
+   * @param {RouteV2[]} routes 
+   * @param {TokenAmount} tokenAmountIn 
+   * @param {Token} tokenOut 
+   * @param {Provider} provider 
+   * @param {ChainId} chainId 
+   * @returns {TradeV2[]}
+   */
   public static async getTradesExactIn(
     routes: RouteV2[],
     tokenAmountIn: TokenAmount,
@@ -95,7 +140,17 @@ export class TradeV2 {
     return trades.filter((trade) => !!trade)
   }
 
-  // generates trades from output token amount
+  /**
+   * @static
+   * Returns the list of trades, given a list of routes and a fixed amount of the output token
+   * 
+   * @param {RouteV2[]} routes 
+   * @param {TokenAmount} tokenAmountOut 
+   * @param {Token} tokenIn 
+   * @param {Provider} provider 
+   * @param {ChainId} chainId 
+   * @returns {TradeV2[]}
+   */
   public static async getTradesExactOut(
     routes: RouteV2[],
     tokenAmountOut: TokenAmount,
@@ -122,27 +177,5 @@ export class TradeV2 {
     )
 
     return trades.filter((trade) => !!trade)
-  }
-
-  // generates object for meaningful console.log
-  public toLog() {
-    return {
-      route: {
-        path: this.route.path.map((token) => token.address).join(', ')
-      },
-      tradeType: this.tradeType === TradeType.EXACT_INPUT ? 'EXACT_INPUT' : 'EXACT_OUTPUT',
-      inputAmount: JSBI.toNumber(this.inputAmount.raw),
-      outputAmount: JSBI.toNumber(this.outputAmount.raw),
-      executionPrice: `${this.executionPrice.toSignificant(6)} ${this.outputAmount.currency.symbol} / ${
-        this.inputAmount.currency.symbol
-      }`,
-      quote: {
-        route: this.quote.route.join(', '),
-        pairs: this.quote.pairs.join(', '),
-        binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
-        amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
-        tradeValueAVAX: this.quote.tradeValueAVAX.toString()
-      }
-    }
   }
 }
