@@ -12,7 +12,7 @@ const { ethers } = require('ethers')
 const { parseUnits } = require('@ethersproject/units')
 const JSBI = require('JSBI')
 
-const swapAmountIn = async () => {
+const swapAmountOut = async () => {
   console.debug('\n------- swapAmountOut() called -------\n')
 
   // Init constants
@@ -29,7 +29,7 @@ const swapAmountIn = async () => {
   const typedValueOut = '0.01' // user string input
   const typedValueOutParsed = parseUnits(typedValueOut, inputToken.decimals).toString() // returns 10000
   const amountOut = new TokenAmount(outputToken, JSBI.BigInt(typedValueOutParsed)) // wrap into TokenAmount
-  const userSlippageTolerance = new Percent(JSBI.BigInt(10), JSBI.BigInt(10000)) // 10%
+  const userSlippageTolerance = new Percent(JSBI.BigInt(10), JSBI.BigInt(10000)) // 0.1%
 
   // get all [Token, Token] combinations
   const allTokenPairs = PairV2.createAllTokenPairs(inputToken, outputToken, BASES)
@@ -55,4 +55,4 @@ const swapAmountIn = async () => {
   console.log('swapGasCostEstimate', swapGasCostEstimate)
 }
 
-module.exports = swapAmountIn
+module.exports = swapAmountOut
