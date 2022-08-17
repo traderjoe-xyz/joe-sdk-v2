@@ -28,7 +28,7 @@ export enum Rounding {
 }
 
 export const QUOTER_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.FUJI]: '0x5f86bd06859b8a07359B6E74DC67a7D0f8a53398',
+  [ChainId.FUJI]: '0xf313393D25C2113DE262d8B647F87c93f3979cAB',
   [ChainId.AVALANCHE]: ''
 }
 
