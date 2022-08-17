@@ -22,13 +22,13 @@ export enum Rounding {
 /**
  * DEX v2 SDK
  */
- export const MULTICALL_ADDRESS: { [chainId in ChainId]: string } = {
+export const MULTICALL_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.FUJI]: '0xb465Fd2d9C71d5D6e6c069aaC9b4E21c69aAA78f',
   [ChainId.AVALANCHE]: ''
 }
 
 export const QUOTER_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.FUJI]: '0xf313393D25C2113DE262d8B647F87c93f3979cAB',
+  [ChainId.FUJI]: '0x30d3cfc7cb183e3526970ad82831e391637cE954',
   [ChainId.AVALANCHE]: ''
 }
 
@@ -36,7 +36,6 @@ export const LB_ROUTER_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.FUJI]: '0xE9e38190D2440d6cD28cF0Ce453FB86CB8725f8A',
   [ChainId.AVALANCHE]: ''
 }
-
 
 /**
  * DEX SDK
