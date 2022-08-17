@@ -55,9 +55,6 @@ export {
   LAUNCHPEG_LENS_ADDRESS
 } from './constants'
 
-export * from './errors'
-export * from './entities'
-export * from './router'
-export * from './fetcher'
+export * from './v2entities'
 
 export * from './subgraphs'
