@@ -1,6 +1,9 @@
-const { PairV2 } = require('../dist')
+const { PairV2, Percent } = require('../dist')
+const JSBI = require('JSBI')
 
 const pricesAndBinsRelations = async () => {
+  console.log('\n------- pricesAndBinsRelations() called -------\n')
+
   // This returns 1 because we're in the center bin
   console.log('getPriceFromId', PairV2.getPriceFromId(8388608, 100))
 

@@ -2,6 +2,7 @@ const { PairV2, ChainId, Token } = require('../dist')
 const { ethers } = require('ethers')
 
 const getLBPairsAndActiveIds = async () => {
+  console.log('\n------- getLBPairsAndActiveIds() called -------\n')
 
   // init consts
   const FUJI_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
@@ -22,7 +23,7 @@ const getLBPairsAndActiveIds = async () => {
     console.debug('reserveX: ', data.reserveX.toString())
     console.debug('reserveY: ', data.reserveY.toString())
     console.debug('activeId: ', data.activeId.toString())
-    console.debug('price: ', PairV2.getPriceFromId(data.activeId, lbPair.binStep))
+    console.debug('price: ', PairV2.getPriceFromId(data.activeId, lbPair.binStep),'\n')
   })
 
 }

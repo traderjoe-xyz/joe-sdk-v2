@@ -29,3 +29,14 @@ export interface LiquidityParametersStruct {
   to: string
   deadline: BigNumberish
 }
+
+// TODO: define new distribution shapes
+export enum LiquidityDistribution {
+  FLAT, // same liquidity in all bins
+}
+
+// TODO: define new remove liquidity options
+export enum RemoveLiquidityOptions{
+  ALL, // removes all positions in every bin
+  HALF_EQUAL, // removing half of the position in every bin,
+}
