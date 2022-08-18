@@ -79,8 +79,8 @@ export class TradeV2 {
 
   /**
    * Returns the on-chain method name and args for this trade
-   * 
-   * @param {TradeOptions | TradeOptionsDeadline} options 
+   *
+   * @param {TradeOptions | TradeOptionsDeadline} options
    * @returns {SwapParameters}
    */
   public swapCallParameters(options: TradeOptions | TradeOptionsDeadline): SwapParameters {
@@ -207,6 +207,7 @@ export class TradeV2 {
         pairs: this.quote.pairs.join(', '),
         binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
         amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
+        midPrices: this.quote.midPrice.map((el) => el.toString()).join(', '),
         tradeValueAVAX: this.quote.tradeValueAVAX.toString()
       }
     }
@@ -292,16 +293,18 @@ export class TradeV2 {
 
   /**
    * Selects the best trade given trades and gas
-   * 
-   * @param {TradeV2[]} trades 
-   * @param {number[]} estimatedGas 
+   *
+   * @param {TradeV2[]} trades
+   * @param {number[]} estimatedGas
    * @returns {bestTrade: TradeV2, estimatedGas: number}
    */
-  public static chooseBestTrade(trades: TradeV2[], estimatedGas: number[]):{
-    bestTrade: TradeV2,
+  public static chooseBestTrade(
+    trades: TradeV2[],
+    estimatedGas: number[]
+  ): {
+    bestTrade: TradeV2
     estimatedGas: number
-  }{
-
+  } {
     // TODO: create an algorithm to choose the best trade
     // For now, we return the first trade
     return { bestTrade: trades[0], estimatedGas: estimatedGas[0] }
