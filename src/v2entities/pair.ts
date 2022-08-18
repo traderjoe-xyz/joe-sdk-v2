@@ -261,7 +261,7 @@ export class PairV2 {
     let amountsToRemove: number[] = []
     if (removeOptions === RemoveLiquidityOptions.ALL) {
       amountsToRemove = [...userPositions]
-    } else if (removeOptions === RemoveLiquidityOptions.ALL) {
+    } else if (removeOptions === RemoveLiquidityOptions.HALF_EQUAL) {
       amountsToRemove = userPositions.map((l) => Math.floor(l / 2))
     }
 
