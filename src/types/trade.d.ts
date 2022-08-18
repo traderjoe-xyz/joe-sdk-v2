@@ -1,4 +1,4 @@
-import { Percent } from 'entities'
+import { Percent } from '../v2entities'
 import { BigNumber } from 'ethers'
 
 /** Interface representing a quote */

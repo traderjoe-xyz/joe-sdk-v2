@@ -37,6 +37,11 @@ export const LB_ROUTER_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.AVALANCHE]: ''
 }
 
+export const LB_FACTORY_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.FUJI]: '0x7e4bEe572255673044035d62802c6D2d8Ef1fF9f',
+  [ChainId.AVALANCHE]: ''
+}
+
 /**
  * DEX SDK
  */

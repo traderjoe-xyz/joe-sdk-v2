@@ -1,5 +1,13 @@
-import { Token } from './token'
+import { Contract, utils } from 'ethers'
+import { Provider } from '@ethersproject/abstract-provider'
 import flatMap from 'lodash.flatmap'
+
+import { Token } from './token'
+import { ChainId, LB_FACTORY_ADDRESS } from '../constants'
+import { LBPair, LBPairReservesAndId } from '../types'
+
+import LBFactoryABI from '../abis/LBFactory.json'
+import LBPairABI from '../abis/LBPair.json'
 
 /** Class representing a pair. */
 export class PairV2 {
@@ -17,7 +25,21 @@ export class PairV2 {
   }
 
   /**
-   * Checks whether the pairs are equal
+   * Returns all available LBPairs for this pair
+   * 
+   * @param {Provider} provider 
+   * @param {ChainId} chainId 
+   * @returns {Promise<LBPair[]>}
+   */
+  public async fetchAvailableLBPairs(provider: Provider, chainId: ChainId ): Promise<LBPair[]>{
+    const factoryInterface = new utils.Interface(LBFactoryABI.abi)
+    const factory = new Contract(LB_FACTORY_ADDRESS[chainId], factoryInterface, provider)
+    const LBPairs: LBPair[] = await factory.getAvailableLBPairsBinStep(this.token0.address, this.token1.address)
+    return LBPairs
+  }
+
+  /**
+   * Checks whether this pair equals to that provided in the param
    *
    * @param {PairV2} pair
    * @returns {boolean} true if equal, otherwise false
@@ -86,6 +108,23 @@ export class PairV2 {
   }
 
   /**
+   * Fetches the reserves active bin id for the LBPair
+   * 
+   * @param {string} LBPairAddr 
+   * @param {Provider} provider 
+   * @returns {Promise<LBPairReservesAndId>}
+   */
+  public static async getLBPairReservesAndId(LBPairAddr: string, provider: Provider ): Promise<LBPairReservesAndId>{
+    const LBPairInterface = new utils.Interface(LBPairABI.abi)
+    const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
+
+    const pairData: LBPairReservesAndId = await pairContract.getReservesAndId()
+
+    return pairData
+  }
+
+  /**
+   * @static
    * Returns the price of bin given its id and the bin step
    * 
    * @param {number} id - The bin id
@@ -97,6 +136,7 @@ export class PairV2 {
   }
 
   /**
+   * @static
    * Returns the bin id given its price and the bin step
    * 
    * @param {number} price - The price of the bin
@@ -108,6 +148,7 @@ export class PairV2 {
   }
 
   /**
+   * @static
    * Returns idSlippage given slippage tolerance and the bin step
    * 
    * @param {number} priceSlippage 
