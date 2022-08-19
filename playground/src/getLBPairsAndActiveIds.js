@@ -1,4 +1,4 @@
-const { PairV2, ChainId, Token } = require('../dist')
+const { PairV2, ChainId, Token } = require('../../dist')
 const { ethers } = require('ethers')
 
 const getLBPairsAndActiveIds = async () => {
@@ -16,16 +16,15 @@ const getLBPairsAndActiveIds = async () => {
   const LBPairs = await pair.fetchAvailableLBPairs(provider, chainId)
 
   // fetch reserves and activeIds for each LBPair
-  LBPairs.forEach(async lbPair => {
+  LBPairs.forEach(async (lbPair) => {
     const data = await PairV2.getLBPairReservesAndId(lbPair.LBPair, provider)
     console.debug('\nLBPair ', lbPair.LBPair)
     console.debug('BinStep ', lbPair.binStep.toString())
     console.debug('reserveX: ', data.reserveX.toString())
     console.debug('reserveY: ', data.reserveY.toString())
     console.debug('activeId: ', data.activeId.toString())
-    console.debug('price: ', PairV2.getPriceFromId(data.activeId, lbPair.binStep),'\n')
+    console.debug('price: ', PairV2.getPriceFromId(data.activeId, lbPair.binStep), '\n')
   })
-
 }
 
 module.exports = getLBPairsAndActiveIds

@@ -1,13 +1,4 @@
-const { 
-  Token, 
-  ChainId, 
-  WAVAX: _WAVAX, 
-  PairV2, 
-  RouteV2, 
-  TokenAmount, 
-  TradeV2, 
-  Percent 
-} = require('../dist')
+const { Token, ChainId, WAVAX: _WAVAX, PairV2, RouteV2, TokenAmount, TradeV2, Percent } = require('../../dist')
 const { ethers } = require('ethers')
 const { parseUnits } = require('@ethersproject/units')
 const JSBI = require('JSBI')
@@ -47,10 +38,12 @@ const swapAmountOut = async () => {
 
   // get gas estimates for each trade
   const signer = new ethers.Wallet(WALLET_PK, provider)
-  const estimatedGasCosts = await Promise.all(trades.map(trade=> trade.estimateGas(signer, chainId, userSlippageTolerance)))
+  const estimatedGasCosts = await Promise.all(
+    trades.map((trade) => trade.estimateGas(signer, chainId, userSlippageTolerance))
+  )
 
   // get best trade
-  const {bestTrade, estimatedGas} = TradeV2.chooseBestTrade(trades, estimatedGasCosts)
+  const { bestTrade, estimatedGas } = TradeV2.chooseBestTrade(trades, estimatedGasCosts)
   console.log('bestTrade', bestTrade.toLog())
   console.log('swapGasCostEstimate', estimatedGas)
 }
