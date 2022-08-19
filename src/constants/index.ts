@@ -28,7 +28,7 @@ export const MULTICALL_ADDRESS: { [chainId in ChainId]: string } = {
 }
 
 export const QUOTER_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.FUJI]: '0x36A975d5cE0a22c214e8A309d0d47974eff2F7dd',
+  [ChainId.FUJI]: '0x0EE0e8e2E35F9008835312AD012B0Ae0983338EC',
   [ChainId.AVALANCHE]: ''
 }
 

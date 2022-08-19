@@ -1,4 +1,4 @@
-import { Contract, utils, Signer, Wallet } from 'ethers'
+import { Contract, utils, Signer, Wallet, BigNumber } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
@@ -163,9 +163,9 @@ export class TradeV2 {
    * @param {Signer} signer - The signer such as the wallet
    * @param {ChainId} chainId - The network chain id
    * @param {Percent} slippageTolerance - The slippage tolerance
-   * @returns {Promise<number>}
+   * @returns {Promise<BigNumber>}
    */
-  public async estimateGas(signer: Signer, chainId: ChainId, slippageTolerance: Percent): Promise<number> {
+  public async estimateGas(signer: Signer, chainId: ChainId, slippageTolerance: Percent): Promise<BigNumber> {
     const routerInterface = new utils.Interface(LBRouterABI.abi)
     const router = new Contract(LB_ROUTER_ADDRESS[chainId], routerInterface, signer)
 
@@ -181,9 +181,11 @@ export class TradeV2 {
     const { methodName, args, value }: SwapParameters = this.swapCallParameters(options)
     const msgOptions = !value || isZero(value) ? {} : { value }
 
+    const gasPrice = await signer.getGasPrice()
+
     const response = await router.estimateGas[methodName](...args, msgOptions)
 
-    return response.toNumber()
+    return response.mul(gasPrice)
   }
 
   /**
@@ -295,18 +297,47 @@ export class TradeV2 {
    * Selects the best trade given trades and gas
    *
    * @param {TradeV2[]} trades
-   * @param {number[]} estimatedGas
-   * @returns {bestTrade: TradeV2, estimatedGas: number}
+   * @param {BigNumber[]} estimatedGas
+   * @returns {bestTrade: TradeV2, estimatedGas: BigNumber}
    */
   public static chooseBestTrade(
     trades: TradeV2[],
-    estimatedGas: number[]
+    estimatedGas: BigNumber[]
   ): {
     bestTrade: TradeV2
-    estimatedGas: number
+    estimatedGas: BigNumber
   } {
-    // TODO: create an algorithm to choose the best trade
-    // For now, we return the first trade
-    return { bestTrade: trades[0], estimatedGas: estimatedGas[0] }
+    const tradeType = trades[0].tradeType
+
+    const tradesWithGas = trades.map((trade, index) => {
+      return {
+        trade: trade,
+        estimatedGas: estimatedGas[index],
+        swapOutcome:
+          trade.tradeType === TradeType.EXACT_INPUT
+            ? new Fraction(trade.outputAmount.numerator, trade.outputAmount.denominator).subtract(
+                // Cross product to get the gas price against the output token
+                trade.outputAmount
+                  .multiply(estimatedGas[index].toString())
+                  .divide(trade.quote.tradeValueAVAX.toBigInt())
+              )
+            : new Fraction(trade.inputAmount.numerator, trade.inputAmount.denominator).add(
+                trade.inputAmount.multiply(estimatedGas[index].toString()).divide(trade.quote.tradeValueAVAX.toBigInt())
+              )
+      }
+    })
+
+    const bestTrade = tradesWithGas.reduce((previousTrade, currentTrade) =>
+      tradeType === TradeType.EXACT_INPUT
+        ? currentTrade.swapOutcome.greaterThan(previousTrade.swapOutcome)
+          ? currentTrade
+          : previousTrade
+        : currentTrade.trade.inputAmount.greaterThan('0') &&
+          currentTrade.swapOutcome.lessThan(previousTrade.swapOutcome)
+        ? currentTrade
+        : previousTrade
+    )
+
+    return { bestTrade: bestTrade.trade, estimatedGas: bestTrade.estimatedGas }
   }
 }
