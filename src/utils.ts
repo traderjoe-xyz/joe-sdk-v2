@@ -2,9 +2,23 @@ import invariant from 'tiny-invariant'
 import warning from 'tiny-warning'
 import JSBI from 'jsbi'
 import { getAddress } from '@ethersproject/address'
-import { CurrencyAmount } from './v2entities/fractions'
+import { BigNumber } from 'ethers'
 
-import { BigintIsh, ZERO, ONE, TWO, THREE, SolidityType, SOLIDITY_TYPE_MAXIMA } from './constants'
+import { CurrencyAmount } from './v2entities/fractions'
+import { 
+  BigintIsh, 
+  ZERO, 
+  ONE, 
+  TWO, 
+  THREE, 
+  SolidityType, 
+  SOLIDITY_TYPE_MAXIMA,
+  spotUniform,
+  maxUniform,
+  bidAsk,
+  normal, 
+} from './constants'
+import { LiquidityDistribution } from './types/pair'
 
 export function validateSolidityTypeInstance(value: JSBI, solidityType: SolidityType): void {
   invariant(JSBI.greaterThanOrEqual(value, ZERO), `${value} is not a ${solidityType}.`)
@@ -100,4 +114,29 @@ export function sortedInsert<T>(items: T[], add: T, maxSize: number, comparator:
  */
  export function isZero(hexNumberString: string) {
   return /^0x0*$/.test(hexNumberString)
+}
+
+/**
+ * Returns distribution params for on-chain addLiquidity() call
+ * 
+ * @param {LiquidityDistribution} distribution 
+ * @returns {deltaIds: number[], distributionX: number[], distributionY: number[]}
+}
+ */
+export const getLiquidityConfig = (
+  distribution: LiquidityDistribution
+): {
+  deltaIds: number[]
+  distributionX: BigNumber[]
+  distributionY: BigNumber[]
+} => {
+  if (distribution === LiquidityDistribution.SPOT) {
+    return spotUniform
+  } else if (distribution === LiquidityDistribution.MAX) {
+    return maxUniform
+  } else if (distribution === LiquidityDistribution.BID_ASK) {
+    return bidAsk
+  } else {
+    return normal
+  }
 }

@@ -30,9 +30,11 @@ export interface LiquidityParametersStruct {
   deadline: BigNumberish
 }
 
-// TODO: define new distribution shapes
 export enum LiquidityDistribution {
-  FLAT, // same liquidity in all bins
+  SPOT,
+  MAX,
+  BID_ASK,
+  NORMAL
 }
 
 // TODO: define new remove liquidity options

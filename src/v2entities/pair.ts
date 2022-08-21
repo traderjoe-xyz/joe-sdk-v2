@@ -1,13 +1,13 @@
 import { BigNumberish, Contract, utils } from 'ethers'
-import { parseEther } from 'ethers/lib/utils'
 import { Provider } from '@ethersproject/abstract-provider'
 import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
 
 import { Token } from './token'
 import { Percent, TokenAmount, Fraction } from './fractions'
-import { ChainId, LB_FACTORY_ADDRESS, ONE } from '../constants'
 import { LBPair, LBPairReservesAndId, LiquidityDistribution, RemoveLiquidityOptions } from '../types'
+import { ChainId, LB_FACTORY_ADDRESS, ONE } from '../constants'
+import { getLiquidityConfig } from '../utils'
 
 import LBFactoryABI from '../abis/LBFactory.json'
 import LBPairABI from '../abis/LBPair.json'
@@ -163,23 +163,19 @@ export class PairV2 {
    * Returns the amount and distribution args for on-chain addLiquidity() method
    *
    * @param binStep
-   * @param activeId
    * @param token0Amount
    * @param token1Amount
    * @param amountSlippage
    * @param priceSlippage
-   * @param priceRange
    * @param liquidityDistribution
    * @returns
    */
   public addLiquidityParameters(
     binStep: number,
-    activeId: number,
     token0Amount: TokenAmount,
     token1Amount: TokenAmount,
     amountSlippage: Percent,
     priceSlippage: Percent,
-    priceRange: [number, number], // 1e18 basis
     liquidityDistribution: LiquidityDistribution
   ) {
     const token0isX = token0Amount.token.sortsBefore(token1Amount.token)
@@ -205,20 +201,7 @@ export class PairV2 {
     const _priceSlippage: number = Number(priceSlippage.toSignificant()) / 100
     const idSlippage = PairV2.getIdSlippageFromPriceSlippage(_priceSlippage, binStep)
 
-    let deltaIds = [-2, 0, 2]
-    let distributionX = [0, parseEther('0.5'), parseEther('0.5')]
-    let distributionY = [parseEther('0.5'), parseEther('0.5'), 0]
-
-    // TODO: set deltaIds distributionX and distributionY
-    if (liquidityDistribution === LiquidityDistribution.FLAT) {
-      // use activeId to get active price
-      console.debug('activeId', PairV2.getPriceFromId(activeId, binStep))
-
-      // use priceRange and active price to generate deltaIds
-      console.debug('priceRange', priceRange)
-
-      // then set distributionX and distributionY using detaIds and liquidityDistribution shape
-    }
+    const { deltaIds, distributionX, distributionY } = getLiquidityConfig(liquidityDistribution)
 
     return {
       tokenX,
