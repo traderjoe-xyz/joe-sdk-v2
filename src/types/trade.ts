@@ -28,7 +28,7 @@ export interface TradeOptionsDeadline extends Omit<TradeOptions, 'ttl'> {
   deadline: number
 }
 
-/** The parameters to use in the call to the Uniswap V2 Router to execute a trade. */
+/** The parameters to use in the call to the DEX V2 Router to execute a trade. */
 export interface SwapParameters {
   // The method to call on LBRouter
   methodName: string
