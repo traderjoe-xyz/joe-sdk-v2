@@ -42,14 +42,18 @@ export class TradeV2 {
     )
 
     // compute and set trade route midPrice
-    const prices: Fraction[] = quote.midPrice.map((price:BigNumber) => new Fraction(price.toString(), 1e18.toString()))
-    const midPrice: Fraction = prices.slice(1).reduce((accumulator, currentValue) => accumulator.multiply(currentValue), prices[0])
+    const prices: Fraction[] = quote.midPrice.map(
+      (price: BigNumber) => new Fraction(price.toString(), (1e18).toString())
+    )
+    const midPrice: Fraction = prices
+      .slice(1)
+      .reduce((accumulator, currentValue) => accumulator.multiply(currentValue), prices[0])
     this.midPrice = midPrice.toSignificant(6)
 
     // compute and set priceImpact
     const exactQuote = midPrice.multiply(inputAmount.raw)
     const slippage = exactQuote.subtract(outputAmount.raw).divide(exactQuote)
-    this.priceImpact = new Percent(slippage.numerator, slippage.denominator) 
+    this.priceImpact = new Percent(slippage.numerator, slippage.denominator)
   }
 
   /**
@@ -324,6 +328,13 @@ export class TradeV2 {
     estimatedGas: BigNumber
   } {
     const tradeType = trades[0].tradeType
+    // The biggest tradeValueAVAX will be the most accurate
+    // If we haven't found any equivalent of the trade in AVAX, we won't take gas cost into account
+    const tradeValueAVAX = trades.reduce((previousBestTradeValueAVAX, trade) =>
+      trade.quote.tradeValueAVAX.gt(previousBestTradeValueAVAX.quote.tradeValueAVAX)
+        ? trade
+        : previousBestTradeValueAVAX
+    ).quote.tradeValueAVAX
 
     const tradesWithGas = trades.map((trade, index) => {
       return {
@@ -332,13 +343,15 @@ export class TradeV2 {
         swapOutcome:
           trade.tradeType === TradeType.EXACT_INPUT
             ? new Fraction(trade.outputAmount.numerator, trade.outputAmount.denominator).subtract(
-                // Cross product to get the gas price against the output token
-                trade.outputAmount
-                  .multiply(estimatedGas[index].toString())
-                  .divide(trade.quote.tradeValueAVAX.toBigInt())
+                tradeValueAVAX.eq(0)
+                  ? BigInt(0)
+                  : // Cross product to get the gas price against the output token
+                    trade.outputAmount.multiply(estimatedGas[index].toString()).divide(tradeValueAVAX.toBigInt())
               )
             : new Fraction(trade.inputAmount.numerator, trade.inputAmount.denominator).add(
-                trade.inputAmount.multiply(estimatedGas[index].toString()).divide(trade.quote.tradeValueAVAX.toBigInt())
+                tradeValueAVAX.eq(0)
+                  ? BigInt(0)
+                  : trade.inputAmount.multiply(estimatedGas[index].toString()).divide(tradeValueAVAX.toBigInt())
               )
       }
     })
