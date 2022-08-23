@@ -22,20 +22,34 @@ export class TradeV2 {
   public readonly inputAmount: TokenAmount // The input amount for the trade assuming no slippage.
   public readonly outputAmount: TokenAmount // The output amount for the trade assuming no slippage.
   public readonly executionPrice: Price // The price expressed in terms of output amount/input amount.
-  // public readonly priceImpact: Percent
+  public readonly midPrice: string // The ratio of reserves along the route (market-clearing price )
+  public readonly priceImpact: Percent // The percent difference between the executionPrice and the midPrice due to trade size
 
   public constructor(route: RouteV2, tokenIn: Token, tokenOut: Token, quote: Quote, isExactIn: boolean) {
+    const inputAmount = new TokenAmount(tokenIn, JSBI.BigInt(quote.amounts[0].toString()))
+    const outputAmount = new TokenAmount(tokenOut, JSBI.BigInt(quote.amounts[quote.amounts.length - 1]))
+
     this.route = route
     this.tradeType = isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT
     this.quote = quote
-    this.inputAmount = new TokenAmount(tokenIn, JSBI.BigInt(quote.amounts[0].toString()))
-    this.outputAmount = new TokenAmount(tokenOut, JSBI.BigInt(quote.amounts[quote.amounts.length - 1]))
+    this.inputAmount = inputAmount
+    this.outputAmount = outputAmount
     this.executionPrice = new Price(
       this.inputAmount.currency,
       this.outputAmount.currency,
       this.inputAmount.raw,
       this.outputAmount.raw
     )
+
+    // compute and set trade route midPrice
+    const prices: Fraction[] = quote.midPrice.map((price:BigNumber) => new Fraction(price.toString(), 1e18.toString()))
+    const midPrice: Fraction = prices.slice(1).reduce((accumulator, currentValue) => accumulator.multiply(currentValue), prices[0])
+    this.midPrice = midPrice.toSignificant(6)
+
+    // compute and set priceImpact
+    const exactQuote = midPrice.multiply(inputAmount.raw)
+    const slippage = exactQuote.subtract(outputAmount.raw).divide(exactQuote)
+    this.priceImpact = new Percent(slippage.numerator, slippage.denominator) 
   }
 
   /**
@@ -204,6 +218,8 @@ export class TradeV2 {
       executionPrice: `${this.executionPrice.toSignificant(6)} ${this.outputAmount.currency.symbol} / ${
         this.inputAmount.currency.symbol
       }`,
+      midPrice: this.midPrice,
+      priceImpact: `${this.priceImpact.toSignificant(6)}%`,
       quote: {
         route: this.quote.route.join(', '),
         pairs: this.quote.pairs.join(', '),
