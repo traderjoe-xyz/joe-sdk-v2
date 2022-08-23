@@ -26,7 +26,7 @@ const swapAmountOut = async () => {
   const allTokenPairs = PairV2.createAllTokenPairs(inputToken, outputToken, BASES)
 
   // get pairs
-  const allPairs = PairV2.fetchAndInitPairs(allTokenPairs) // console.debug('allPairs', allPairs)
+  const allPairs = PairV2.initPairs(allTokenPairs) // console.debug('allPairs', allPairs)
 
   // routes to consider in finding the best trade
   const allRoutes = RouteV2.createAllRoutes(allPairs, inputToken, outputToken) // console.debug('allRoutes', allRoutes)

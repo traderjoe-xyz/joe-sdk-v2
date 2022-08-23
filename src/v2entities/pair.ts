@@ -1,18 +1,18 @@
-import { BigNumberish, Contract, utils } from 'ethers'
+import { BigNumber, Contract, utils } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
 import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
 
 import { Token } from './token'
 import { Percent, TokenAmount, Fraction } from './fractions'
-import { LBPair, LBPairReservesAndId, LiquidityDistribution, RemoveLiquidityOptions } from '../types'
+import { LBPair, LBPairReservesAndId, LiquidityDistribution, Bin } from '../types'
 import { ChainId, LB_FACTORY_ADDRESS, ONE } from '../constants'
 import { getLiquidityConfig } from '../utils'
 
 import LBFactoryABI from '../abis/LBFactory.json'
 import LBPairABI from '../abis/LBPair.json'
 
-/** Class representing a pair. */
+/** Class representing a pair of tokens. */
 export class PairV2 {
   public readonly token0: Token
   public readonly token1: Token
@@ -91,7 +91,7 @@ export class PairV2 {
    * @param {[Token, Token][]} tokenPairs
    * @returns {PairV2[]}
    */
-  public static fetchAndInitPairs(tokenPairs: [Token, Token][]): PairV2[] {
+  public static initPairs(tokenPairs: [Token, Token][]): PairV2[] {
     const allPairs = tokenPairs.map((tokenPair: Token[]) => {
       return new PairV2(tokenPair[0], tokenPair[1])
     })
@@ -219,41 +219,72 @@ export class PairV2 {
 
   /**
    * @static
-   * Returns _amountXMin, _amountXYMin and amountsToRemove (optionally), which are args for on-chain removeLiquidity() method
-   *
-   * @param userPositionIds
-   * @param userPositions
-   * @param {RemoveLiquidityOptions} [removeOptions]
+   * Calculates amountX, amountY, amountXMin, and amountYMin needed for on-chain removeLiquidity() method
+   * 
+   * @param {number[]} userPositionIds - List of binIds that user has position
+   * @param {number} activeBin - The active bin id for the LBPair
+   * @param {Bin[]} bins - List of bins whose indices match those of userPositionIds
+   * @param {BigNumber[]} totalSupplies - List of bin's total supplies whose indices match those of userPositionIds
+   * @param {number[]} amountsToRemove - List of amounts specified by the user to remove in each of their position
+   * @param {Percent} amountSlippage - The amounts slippage used to calculate amountXMin and amountYMin
+   * @returns 
    */
-  public removeLiquidityParameters(
+  public calculateAmountsToRemove(
     userPositionIds: number[],
-    userPositions: number[],
-    removeOptions?: RemoveLiquidityOptions
+    activeBin: number,
+    bins: Bin[],
+    totalSupplies: BigNumber[],
+    amountsToRemove: number[],
+    amountSlippage: Percent,
   ): {
-    amountXMin: BigNumberish
-    amountYMin: BigNumberish
-    amountsToRemove?: number[]
+    amountX: number,
+    amountY: number,
+    amountXMin: number
+    amountYMin: number
   } {
-    console.debug('userPositionIds', userPositionIds)
 
-    // TODO: calculate expected total to remove for X and Y
-    let amountXMin = 0
-    let amountYMin = 0
+    // calculate expected total to remove for X and Y
+    let totalAmountX = JSBI.BigInt(0)
+    let totalAmountY = JSBI.BigInt(0)
 
-    // TODO: if removeOptions is passed in, calculate amountsToRemove for each userPositions
-    let amountsToRemove: number[] = []
-    if (removeOptions === RemoveLiquidityOptions.ALL) {
-      amountsToRemove = [...userPositions]
-    } else if (removeOptions === RemoveLiquidityOptions.HALF_EQUAL) {
-      amountsToRemove = userPositions.map((l) => Math.floor(l / 2))
-    }
+    userPositionIds.forEach((binId, i) => {
 
+      // get totalSupply, reserveX, and reserveY for the bin
+      const {reserveX: _reserveX, reserveY: _reserveY} = bins[i]
+      const reserveX = JSBI.BigInt(_reserveX.toString())
+      const reserveY = JSBI.BigInt(_reserveY.toString())
+      const totalSupply = JSBI.BigInt(totalSupplies[i].toString())
+      const amountToRemove = JSBI.BigInt(amountsToRemove[i])
+      
+      // increment totalAmountX and/or totalAmountY
+      if (binId <= activeBin){
+        const amountY = JSBI.divide(JSBI.multiply(amountToRemove, reserveY), totalSupply)
+        totalAmountY = JSBI.add(amountY, totalAmountY)
+      } 
+      
+      if (binId >= activeBin){
+        const amountX = JSBI.divide(JSBI.multiply(amountToRemove, reserveX), totalSupply)
+        totalAmountX = JSBI.add(amountX, totalAmountX)
+      }
+    })
+
+    // compute min amounts taking into consideration slippage
+    const amountXMin = new Fraction(ONE)
+      .add(amountSlippage)
+      .invert()
+      .multiply(totalAmountX).quotient
+
+    const amountYMin = new Fraction(ONE)
+      .add(amountSlippage)
+      .invert()
+      .multiply(totalAmountY).quotient
+    
+    // return
     return {
-      amountXMin,
-      amountYMin,
-      ...(amountsToRemove.length > 0 && {
-        amountsToRemove
-      })
+      amountX: JSBI.toNumber(totalAmountX),
+      amountY: JSBI.toNumber(totalAmountY),
+      amountXMin: JSBI.toNumber(amountXMin),
+      amountYMin: JSBI.toNumber(amountYMin),
     }
   }
 }

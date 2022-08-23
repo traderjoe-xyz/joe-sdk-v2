@@ -1,4 +1,4 @@
-import { BigNumberish } from 'ethers'
+import { BigNumber, BigNumberish } from 'ethers'
 
 export interface LBPair {
   binStep: BigNumberish
@@ -30,15 +30,14 @@ export interface LiquidityParametersStruct {
   deadline: BigNumberish
 }
 
+export interface Bin {
+  reserveX: BigNumber,
+  reserveY: BigNumber
+}
+
 export enum LiquidityDistribution {
   SPOT,
   MAX,
   BID_ASK,
   NORMAL
-}
-
-// TODO: define new remove liquidity options
-export enum RemoveLiquidityOptions{
-  ALL, // removes all positions in every bin
-  HALF_EQUAL, // removing half of the position in every bin,
 }
