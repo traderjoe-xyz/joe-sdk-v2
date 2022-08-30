@@ -272,7 +272,7 @@ export class TradeV2 {
       })
     )
 
-    return trades.filter((trade) => !!trade)
+    return trades.filter((trade) => !!trade && JSBI.greaterThan(trade.outputAmount.raw, JSBI.BigInt(0)))
   }
 
   /**
@@ -311,7 +311,7 @@ export class TradeV2 {
       })
     )
 
-    return trades.filter((trade) => !!trade)
+    return trades.filter((trade) => !!trade && JSBI.greaterThan(trade.inputAmount.raw, JSBI.BigInt(0)))
   }
 
   /**
