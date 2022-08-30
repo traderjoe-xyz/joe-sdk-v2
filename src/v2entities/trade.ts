@@ -243,7 +243,7 @@ export class TradeV2 {
    * @param {RouteV2[]} routes
    * @param {TokenAmount} tokenAmountIn
    * @param {Token} tokenOut
-   * @param {Provider | Web3Provider} provider
+   * @param {Provider | Web3Provider | any} provider
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
    */
@@ -251,7 +251,7 @@ export class TradeV2 {
     routes: RouteV2[],
     tokenAmountIn: TokenAmount,
     tokenOut: Token,
-    provider: Provider | Web3Provider,
+    provider: Provider | Web3Provider | any,
     chainId: ChainId
   ): Promise<Array<TradeV2 | null>> {
     const isExactIn = true
@@ -282,7 +282,7 @@ export class TradeV2 {
    * @param {RouteV2[]} routes
    * @param {TokenAmount} tokenAmountOut
    * @param {Token} tokenIn
-   * @param {Provider | Web3Provider} provider
+   * @param {Provider | Web3Provider | any} provider
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
    */
@@ -290,7 +290,7 @@ export class TradeV2 {
     routes: RouteV2[],
     tokenAmountOut: TokenAmount,
     tokenIn: Token,
-    provider: Provider,
+    provider: Provider | Web3Provider | any,
     chainId: ChainId
   ): Promise<Array<TradeV2 | null>> {
     const isExactIn = false
