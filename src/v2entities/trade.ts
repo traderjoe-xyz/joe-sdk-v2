@@ -1,5 +1,6 @@
 import { Contract, utils, Signer, Wallet, BigNumber } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
+import { Web3Provider } from '@ethersproject/providers'
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
 
@@ -238,7 +239,7 @@ export class TradeV2 {
    * @param {RouteV2[]} routes
    * @param {TokenAmount} tokenAmountIn
    * @param {Token} tokenOut
-   * @param {Provider} provider
+   * @param {Provider | Web3Provider} provider
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
    */
@@ -246,7 +247,7 @@ export class TradeV2 {
     routes: RouteV2[],
     tokenAmountIn: TokenAmount,
     tokenOut: Token,
-    provider: Provider,
+    provider: Provider | Web3Provider,
     chainId: ChainId
   ): Promise<Array<TradeV2 | null>> {
     const isExactIn = true
@@ -277,7 +278,7 @@ export class TradeV2 {
    * @param {RouteV2[]} routes
    * @param {TokenAmount} tokenAmountOut
    * @param {Token} tokenIn
-   * @param {Provider} provider
+   * @param {Provider | Web3Provider} provider
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
    */
