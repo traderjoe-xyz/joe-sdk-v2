@@ -18,7 +18,7 @@ const swapAmountIn = async () => {
   // Init: user inputs
   const inputToken = USDC
   const outputToken = USDT
-  const typedValueIn = '0.01' // user string input
+  const typedValueIn = '100' // user string input
   const typedValueInParsed = parseUnits(typedValueIn, inputToken.decimals).toString() // returns 10000
   const amountIn = new TokenAmount(inputToken, JSBI.BigInt(typedValueInParsed)) // wrap into TokenAmount
   const userSlippageTolerance = new Percent(JSBI.BigInt(10), JSBI.BigInt(10000)) // 0.1%
@@ -36,17 +36,22 @@ const swapAmountIn = async () => {
   const chainId = ChainId.FUJI
   const provider = new JsonRpcProvider(FUJI_URL)
   const trades = await TradeV2.getTradesExactIn(allRoutes, amountIn, outputToken, provider, chainId) // console.log('trades', trades.map(el=>el.toLog()))
+  console.debug('trades', trades)
 
+  trades.forEach(trade =>{
+    console.log(trade.toLog())
+  })
+  
   // get gas estimates for each trade
-  const signer = new ethers.Wallet(WALLET_PK, provider)
-  const estimatedGasCosts = await Promise.all(
-    trades.map((trade) => trade.estimateGas(signer, chainId, userSlippageTolerance))
-  )
+  // const signer = new ethers.Wallet(WALLET_PK, provider)
+  // const estimatedGasCosts = await Promise.all(
+  //   trades.map((trade) => trade.estimateGas(signer, chainId, userSlippageTolerance))
+  // )
 
-  // get best trade
-  const { bestTrade, estimatedGas } = TradeV2.chooseBestTrade(trades, estimatedGasCosts)
-  console.log('bestTrade', bestTrade.toLog())
-  console.log('swapGasCostEstimate', estimatedGas.toString())
+  // // get best trade
+  // const { bestTrade, estimatedGas } = TradeV2.chooseBestTrade(trades, estimatedGasCosts)
+  // console.log('bestTrade', bestTrade.toLog())
+  // console.log('swapGasCostEstimate', estimatedGas.toString())
 }
 
 module.exports = swapAmountIn
