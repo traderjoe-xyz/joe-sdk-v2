@@ -254,6 +254,7 @@ export class TradeV2 {
   ): Promise<Array<TradeV2 | null>> {
     const isExactIn = true
     const amountIn = JSBI.toNumber(tokenAmountIn.raw)
+    console.debug('amountIn', amountIn)
     const quoterInterface = new utils.Interface(QuoterABI.abi)
     const quoter = new Contract(QUOTER_ADDRESS[chainId], quoterInterface, provider)
 
@@ -261,10 +262,11 @@ export class TradeV2 {
       routes.map(async (route) => {
         try {
           const routeStrArr = route.pathToStrArr()
-          const quote: Quote = await quoter.findBestPathAmountIn(routeStrArr, amountIn)
+          const quote: Quote = await quoter.findBestPathAmountIn(routeStrArr, amountIn.toString())
           const trade: TradeV2 = new TradeV2(route, tokenAmountIn.token, tokenOut, quote, isExactIn)
           return trade
         } catch (e) {
+          console.debug('Error fetching quote:', e)
           return null
         }
       })
@@ -304,6 +306,7 @@ export class TradeV2 {
           const trade: TradeV2 = new TradeV2(route, tokenIn, tokenAmountOut.token, quote, isExactIn)
           return trade
         } catch (e) {
+          console.debug('Error fetching quote:', e)
           return null
         }
       })
