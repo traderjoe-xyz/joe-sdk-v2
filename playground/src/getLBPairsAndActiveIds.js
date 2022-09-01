@@ -1,4 +1,5 @@
-const { PairV2, ChainId, Token } = require('../../dist')
+const { PairV2 } = require('../../dist')
+const { ChainId, Token } = require('@traderjoe-xyz/sdk')
 const { ethers } = require('ethers')
 
 const getLBPairsAndActiveIds = async () => {

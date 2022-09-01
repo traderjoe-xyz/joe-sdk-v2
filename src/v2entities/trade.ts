@@ -1,14 +1,12 @@
 import { Contract, utils, Signer, Wallet, BigNumber } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
 import { Web3Provider } from '@ethersproject/providers'
+import { Token, CAVAX,TokenAmount, Price, Percent, Fraction, CurrencyAmount, TradeType, ChainId } from '@traderjoe-xyz/sdk'
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
 
-import { Token } from './token'
-import { CAVAX } from './currency'
 import { RouteV2 } from './route'
-import { TokenAmount, Price, Percent, Fraction, CurrencyAmount } from './fractions'
-import { QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ChainId, TradeType, ONE, ZERO, ZERO_HEX } from '../constants'
+import { QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ONE, ZERO, ZERO_HEX} from '../constants'
 import { toHex, validateAndParseAddress, isZero } from '../utils'
 import { TradeOptions, TradeOptionsDeadline, SwapParameters, Quote } from '../types'
 

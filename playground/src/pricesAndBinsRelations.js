@@ -1,4 +1,4 @@
-const { PairV2, Percent } = require('../../dist')
+const { PairV2 } = require('../../dist')
 const JSBI = require('JSBI')
 
 const pricesAndBinsRelations = async () => {

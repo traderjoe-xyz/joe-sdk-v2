@@ -4,7 +4,8 @@ import JSBI from 'jsbi'
 import { getAddress } from '@ethersproject/address'
 import { BigNumber } from 'ethers'
 
-import { CurrencyAmount } from './v2entities/fractions'
+import { CurrencyAmount } from '@traderjoe-xyz/sdk'
+
 import { 
   BigintIsh, 
   ZERO, 

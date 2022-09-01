@@ -2,7 +2,6 @@
   "name": "@traderjoe-xyz/sdk-v2",
   "license": "MIT",
   "version": "0.0.1",
-  "description": "Testing npm",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -22,6 +21,7 @@
     "prepublishOnly": "tsdx build"
   },
   "dependencies": {
+    "@traderjoe-xyz/sdk": "^2.0.1",
     "@uniswap/v2-core": "^1.0.1",
     "big.js": "^5.2.2",
     "decimal.js-light": "^2.5.0",

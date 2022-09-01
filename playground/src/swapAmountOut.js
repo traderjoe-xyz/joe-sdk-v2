@@ -1,6 +1,7 @@
-const { Token, ChainId, WAVAX: _WAVAX, PairV2, RouteV2, TokenAmount, TradeV2, Percent } = require('../../dist')
-const { ethers } = require('ethers')
+const { PairV2, RouteV2, TradeV2 } = require('../../dist')
+const { Token, ChainId, WAVAX: _WAVAX, TokenAmount, Percent } = require('@traderjoe-xyz/sdk')
 const { parseUnits } = require('@ethersproject/units')
+const { JsonRpcProvider } = require('@ethersproject/providers')
 const JSBI = require('JSBI')
 
 const swapAmountOut = async () => {
@@ -33,7 +34,7 @@ const swapAmountOut = async () => {
 
   // get tradess
   const chainId = ChainId.FUJI
-  const provider = new ethers.providers.JsonRpcProvider(FUJI_URL)
+  const provider = new JsonRpcProvider(FUJI_URL)
   const trades = await TradeV2.getTradesExactOut(allRoutes, amountOut, inputToken, provider, chainId) // console.debug('trades', trades.map(el=>el.toLog()))
 
   // get gas estimates for each trade

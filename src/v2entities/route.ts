@@ -1,5 +1,6 @@
 import { PairV2 } from './pair'
-import { Token } from './token'
+import { Token } from '@traderjoe-xyz/sdk'
+
 
 /** Class representing a trade route. */
 export class RouteV2 {
