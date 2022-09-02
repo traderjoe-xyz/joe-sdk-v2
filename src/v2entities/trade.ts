@@ -251,14 +251,14 @@ export class TradeV2 {
     tokenOut: Token,
     provider: Provider | Web3Provider | any,
     chainId: ChainId
-  ): Promise<Array<TradeV2 | null>> {
+  ): Promise<Array<TradeV2 | undefined>> {
     const isExactIn = true
     const amountIn = JSBI.toNumber(tokenAmountIn.raw)
     console.debug('amountIn', amountIn)
     const quoterInterface = new utils.Interface(QuoterABI.abi)
     const quoter = new Contract(QUOTER_ADDRESS[chainId], quoterInterface, provider)
 
-    const trades: Array<TradeV2 | null> = await Promise.all(
+    const trades: Array<TradeV2 | undefined> = await Promise.all(
       routes.map(async (route) => {
         try {
           const routeStrArr = route.pathToStrArr()
@@ -267,7 +267,7 @@ export class TradeV2 {
           return trade
         } catch (e) {
           console.debug('Error fetching quote:', e)
-          return null
+          return undefined
         }
       })
     )
@@ -292,13 +292,13 @@ export class TradeV2 {
     tokenIn: Token,
     provider: Provider | Web3Provider | any,
     chainId: ChainId
-  ): Promise<Array<TradeV2 | null>> {
+  ): Promise<Array<TradeV2 | undefined>> {
     const isExactIn = false
     const amountOut = JSBI.toNumber(tokenAmountOut.raw)
     const quoterInterface = new utils.Interface(QuoterABI.abi)
     const quoter = new Contract(QUOTER_ADDRESS[chainId], quoterInterface, provider)
 
-    const trades: Array<TradeV2 | null> = await Promise.all(
+    const trades: Array<TradeV2 | undefined> = await Promise.all(
       routes.map(async (route) => {
         try {
           const routeStrArr = route.pathToStrArr()
@@ -307,7 +307,7 @@ export class TradeV2 {
           return trade
         } catch (e) {
           console.debug('Error fetching quote:', e)
-          return null
+          return undefined
         }
       })
     )
