@@ -41,6 +41,21 @@ export class PairV2 {
   }
 
   /**
+   * Fetches LBPair for token0, token1, and given binStep
+   * 
+   * @param {number} binStep 
+   * @param {Provider} provider 
+   * @param {ChainId} chainId 
+   * @returns {Promise<LBPair>}
+   */
+  public async fetchLBPair(binStep: number, provider: Provider, chainId: ChainId): Promise<LBPair> {
+    const factoryInterface = new utils.Interface(LBFactoryABI.abi)
+    const factory = new Contract(LB_FACTORY_ADDRESS[chainId], factoryInterface, provider)
+    const LBPair: LBPair = await factory.getLBPairInfo(this.token0.address, this.token1.address, binStep)
+    return LBPair
+  }
+
+  /**
    * Checks whether this pair equals to that provided in the param
    *
    * @param {PairV2} pair

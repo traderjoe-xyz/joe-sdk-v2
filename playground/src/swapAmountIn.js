@@ -18,10 +18,10 @@ const swapAmountIn = async () => {
   // Init: user inputs
   const inputToken = USDC
   const outputToken = USDT
-  const typedValueIn = '100' // user string input
+  const typedValueIn = '0.1' // user string input
   const typedValueInParsed = parseUnits(typedValueIn, inputToken.decimals).toString() // returns 10000
   const amountIn = new TokenAmount(inputToken, JSBI.BigInt(typedValueInParsed)) // wrap into TokenAmount
-  const userSlippageTolerance = new Percent(JSBI.BigInt(10), JSBI.BigInt(10000)) // 0.1%
+  const userSlippageTolerance = new Percent(JSBI.BigInt(50), JSBI.BigInt(10000)) // 0.5%
 
   // get all [Token, Token] combinations
   const allTokenPairs = PairV2.createAllTokenPairs(inputToken, outputToken, BASES)

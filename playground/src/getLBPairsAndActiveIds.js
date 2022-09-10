@@ -14,18 +14,29 @@ const getLBPairsAndActiveIds = async () => {
 
   // fetch LBPairs
   const pair = new PairV2(USDC, USDT)
-  const LBPairs = await pair.fetchAvailableLBPairs(provider, chainId)
+  // const LBPairs = await pair.fetchAvailableLBPairs(provider, chainId)
 
-  // fetch reserves and activeIds for each LBPair
-  LBPairs.forEach(async (lbPair) => {
-    const data = await PairV2.getLBPairReservesAndId(lbPair.LBPair, provider)
-    console.debug('\nLBPair ', lbPair.LBPair)
-    console.debug('BinStep ', lbPair.binStep.toString())
-    console.debug('reserveX: ', data.reserveX.toString())
-    console.debug('reserveY: ', data.reserveY.toString())
-    console.debug('activeId: ', data.activeId.toString())
-    console.debug('price: ', PairV2.getPriceFromId(data.activeId, lbPair.binStep), '\n')
-  })
+  // // fetch reserves and activeIds for each LBPair
+  // LBPairs.forEach(async (lbPair) => {
+  //   const data = await PairV2.getLBPairReservesAndId(lbPair.LBPair, provider)
+  //   console.debug('\nLBPair ', lbPair.LBPair)
+  //   console.debug('BinStep ', lbPair.binStep.toString())
+  //   console.debug('reserveX: ', data.reserveX.toString())
+  //   console.debug('reserveY: ', data.reserveY.toString())
+  //   console.debug('activeId: ', data.activeId.toString())
+  //   console.debug('price: ', PairV2.getPriceFromId(data.activeId, lbPair.binStep), '\n')
+  // })
+
+  // fetch LBPair
+  const binStep = 1
+  const lbPair = await pair.fetchLBPair(binStep, provider, chainId)
+  console.log('lbPair', lbPair)
+  const data = await PairV2.getLBPairReservesAndId(lbPair.LBPair, provider)
+  console.debug('\nLBPair ', lbPair.LBPair)
+  console.debug('reserveX: ', data.reserveX.toString())
+  console.debug('reserveY: ', data.reserveY.toString())
+  console.debug('activeId: ', data.activeId.toString())
+  console.debug('price: ', PairV2.getPriceFromId(data.activeId, binStep), '\n')
 }
 
 module.exports = getLBPairsAndActiveIds
