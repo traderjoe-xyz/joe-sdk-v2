@@ -58,3 +58,4 @@ export {
 
 export * from './v2entities'
 export * from './subgraphs'
+export * from './types'
