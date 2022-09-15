@@ -6,16 +6,16 @@ import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
 
 import { RouteV2 } from './route'
-import { QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ONE, ZERO, ZERO_HEX} from '../constants'
+import { LB_QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ONE, ZERO, ZERO_HEX } from '../constants'
 import { toHex, validateAndParseAddress, isZero } from '../utils'
 import { TradeOptions, TradeOptionsDeadline, SwapParameters, Quote } from '../types'
 
-import QuoterABI from '../abis/Quoter.json'
+import LBQuoterABI from '../abis/LBQuoter.json'
 import LBRouterABI from '../abis/LBRouter.json'
 
 /** Class representing a trade */
 export class TradeV2 {
-  public readonly quote: Quote // quote returned by the Quoter contract
+  public readonly quote: Quote // quote returned by the LBQuoter contract
   public readonly route: RouteV2 // The route of the trade, i.e. which pairs the trade goes through.
   public readonly tradeType: TradeType // The type of the trade, either exact in or exact out.
   public readonly inputAmount: TokenAmount // The input amount for the trade assuming no slippage.
@@ -41,7 +41,7 @@ export class TradeV2 {
     )
 
     // compute and set trade route midPrice
-    const prices: Fraction[] = quote.midPrice.map(
+    const prices: Fraction[] = quote.virtualAmountsWithoutSlippage.map(
       (price: BigNumber) => new Fraction(price.toString(), (1e18).toString())
     )
     const midPrice: Fraction = prices
@@ -228,8 +228,7 @@ export class TradeV2 {
         pairs: this.quote.pairs.join(', '),
         binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
         amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
-        midPrices: this.quote.midPrice.map((el) => el.toString()).join(', '),
-        tradeValueAVAX: this.quote.tradeValueAVAX.toString()
+        virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage.map((el) => el.toString()).join(', ')
       }
     }
   }
@@ -255,8 +254,8 @@ export class TradeV2 {
     const isExactIn = true
     const amountIn = JSBI.toNumber(tokenAmountIn.raw)
     console.debug('amountIn', amountIn)
-    const quoterInterface = new utils.Interface(QuoterABI.abi)
-    const quoter = new Contract(QUOTER_ADDRESS[chainId], quoterInterface, provider)
+    const quoterInterface = new utils.Interface(LBQuoterABI.abi)
+    const quoter = new Contract(LB_QUOTER_ADDRESS[chainId], quoterInterface, provider)
 
     const trades: Array<TradeV2 | undefined> = await Promise.all(
       routes.map(async (route) => {
@@ -295,8 +294,8 @@ export class TradeV2 {
   ): Promise<Array<TradeV2 | undefined>> {
     const isExactIn = false
     const amountOut = JSBI.toNumber(tokenAmountOut.raw)
-    const quoterInterface = new utils.Interface(QuoterABI.abi)
-    const quoter = new Contract(QUOTER_ADDRESS[chainId], quoterInterface, provider)
+    const quoterInterface = new utils.Interface(LBQuoterABI.abi)
+    const quoter = new Contract(LB_QUOTER_ADDRESS[chainId], quoterInterface, provider)
 
     const trades: Array<TradeV2 | undefined> = await Promise.all(
       routes.map(async (route) => {
@@ -332,11 +331,7 @@ export class TradeV2 {
     const tradeType = trades[0].tradeType
     // The biggest tradeValueAVAX will be the most accurate
     // If we haven't found any equivalent of the trade in AVAX, we won't take gas cost into account
-    const tradeValueAVAX = trades.reduce((previousBestTradeValueAVAX, trade) =>
-      trade.quote.tradeValueAVAX.gt(previousBestTradeValueAVAX.quote.tradeValueAVAX)
-        ? trade
-        : previousBestTradeValueAVAX
-    ).quote.tradeValueAVAX
+    const tradeValueAVAX = BigNumber.from(0)
 
     const tradesWithGas = trades.map((trade, index) => {
       return {

@@ -7,8 +7,7 @@ export interface Quote {
   pairs: string[]
   binSteps: BigNumber[]
   amounts: BigNumber[]
-  midPrice: BigNumber[]
-  tradeValueAVAX: BigNumber
+  virtualAmountsWithoutSlippage: BigNumber[]
 }
 
 /** Options for producing the arguments to send call to the router. */

@@ -11,8 +11,8 @@ const swapAmountIn = async () => {
   const WALLET_PK = process.env.PRIVATE_KEY
   const FUJI_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
   const WAVAX = _WAVAX[ChainId.FUJI]
-  const USDC = new Token(ChainId.FUJI, '0xe03bF9AD3e347bb311A9620Ee424c50E0b947385', 6, 'USDC', 'USD Coin')
-  const USDT = new Token(ChainId.FUJI, '0x8FFf749D5356E5F564fe3e37884df413A4a8cDE1', 6, 'USDT.e', 'Tether USD')
+  const USDC = new Token(ChainId.FUJI, '0x8c0f5Ade9cBdb19a49B06aDFB67b6702B459162B', 6, 'USDC', 'USD Coin')
+  const USDT = new Token(ChainId.FUJI, '0x791B0c848AD79549F950f69E6E4CF9e3C112a230', 6, 'USDT.e', 'Tether USD')
   const BASES = [WAVAX, USDC, USDT]
 
   // Init: user inputs
@@ -38,10 +38,10 @@ const swapAmountIn = async () => {
   const trades = await TradeV2.getTradesExactIn(allRoutes, amountIn, outputToken, provider, chainId) // console.log('trades', trades.map(el=>el.toLog()))
   console.debug('trades', trades)
 
-  trades.forEach(trade =>{
+  trades.forEach((trade) => {
     console.log(trade.toLog())
   })
-  
+
   // get gas estimates for each trade
   // const signer = new ethers.Wallet(WALLET_PK, provider)
   // const estimatedGasCosts = await Promise.all(
