@@ -251,10 +251,10 @@ export class PairV2 {
     amountsToRemove: number[],
     amountSlippage: Percent,
   ): {
-    amountX: number,
-    amountY: number,
-    amountXMin: number
-    amountYMin: number
+    amountX: JSBI,
+    amountY: JSBI,
+    amountXMin: JSBI
+    amountYMin: JSBI
   } {
 
     // calculate expected total to remove for X and Y
@@ -295,10 +295,10 @@ export class PairV2 {
     
     // return
     return {
-      amountX: JSBI.toNumber(totalAmountX),
-      amountY: JSBI.toNumber(totalAmountY),
-      amountXMin: JSBI.toNumber(amountXMin),
-      amountYMin: JSBI.toNumber(amountYMin),
+      amountX: totalAmountX,
+      amountY: totalAmountY,
+      amountXMin: amountXMin,
+      amountYMin: amountYMin,
     }
   }
 }
