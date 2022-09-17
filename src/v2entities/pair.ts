@@ -145,7 +145,7 @@ export class PairV2 {
    * @returns {number}
    */
   public static getPriceFromId(id: number, binStep: number): number {
-    return (1 + binStep / 20_000) ** (id - 8388608)
+    return (1 + binStep / 10_000) ** (id - 8388608)
   }
 
   /**
@@ -157,7 +157,7 @@ export class PairV2 {
    * @returns {number}
    */
   public static getIdFromPrice(price: number, binStep: number): number {
-    return Math.floor(Math.log(price) / Math.log(1 + binStep / 20_000)) + 8388608
+    return Math.floor(Math.log(price) / Math.log(1 + binStep / 10_000)) + 8388608
   }
 
   /**
@@ -169,7 +169,7 @@ export class PairV2 {
    * @returns {number}
    */
   public static getIdSlippageFromPriceSlippage(priceSlippage: number, binStep: number): number {
-    return Math.floor(Math.log(1 + priceSlippage) / Math.log(1 + binStep / 20_000))
+    return Math.floor(Math.log(1 + priceSlippage) / Math.log(1 + binStep / 10_000))
   }
 
   /**
