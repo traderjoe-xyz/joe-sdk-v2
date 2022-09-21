@@ -54,10 +54,10 @@ export {
   LAUNCHPEG_FACTORY_ADDRESS,
   LAUNCHPEG_LENS_ADDRESS,
   LB_ROUTER_ADDRESS,
-  LB_FACTORY_ADDRESS
+  LB_FACTORY_ADDRESS,
+  DEX_V2_SUBGRAPH
 } from './constants'
 
 export * from './v2entities'
-export * from './subgraphs'
 export * from './types'
 export * from './utils'
