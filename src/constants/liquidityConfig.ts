@@ -21,8 +21,8 @@ export const maxUniform = {
 // 3) Bid-Ask
 export const bidAsk = {
   deltaIds: [-10,-9,-8,-7,-6,6,7,8,9,10],
-  distributionX: [-10,-9,-8,-7,-6,6,7,8,9,10].map(el=>parseEther(el.toString())),
-  distributionY: [-10,-9,-8,-7,-6,6,7,8,9,10].map(el=>parseEther(el.toString()))
+  distributionX: [0,0,0,0,0,0.04,0.12,0.2,0.28,0.36].map(el=>parseEther(el.toString())),
+  distributionY: [0.36,0.28,0.2,0.12,0.04,0,0,0,0,0].map(el=>parseEther(el.toString()))
 }
 
 // 4) Normal
