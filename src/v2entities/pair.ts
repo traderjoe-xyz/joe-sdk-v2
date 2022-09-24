@@ -4,7 +4,7 @@ import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
 import { Token, Percent, TokenAmount, Fraction } from '@traderjoe-xyz/sdk'
 
-import { LBPair, LBPairReservesAndId, LiquidityDistribution, Bin } from '../types'
+import { LBPair, LBPairReservesAndId, LBPairFeeParameters, LiquidityDistribution, Bin } from '../types'
 import { ChainId, LB_FACTORY_ADDRESS, ONE } from '../constants'
 import { getLiquidityConfig } from '../utils'
 
@@ -42,10 +42,10 @@ export class PairV2 {
 
   /**
    * Fetches LBPair for token0, token1, and given binStep
-   * 
-   * @param {number} binStep 
-   * @param {Provider} provider 
-   * @param {ChainId} chainId 
+   *
+   * @param {number} binStep
+   * @param {Provider} provider
+   * @param {ChainId} chainId
    * @returns {Promise<LBPair>}
    */
   public async fetchLBPair(binStep: number, provider: Provider, chainId: ChainId): Promise<LBPair> {
@@ -134,6 +134,22 @@ export class PairV2 {
     const pairData: LBPairReservesAndId = await pairContract.getReservesAndId()
 
     return pairData
+  }
+
+  /**
+   * Fetches the fee parameters for the LBPair
+   *
+   * @param {string} LBPairAddr
+   * @param {Provider} provider
+   * @returns {Promise<LBPairFeeParameters>}
+   */
+  public static async getFeeParameters(LBPairAddr: string, provider: Provider): Promise<LBPairFeeParameters> {
+    const LBPairInterface = new utils.Interface(LBPairABI.abi)
+    const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
+
+    const feeParametersData: LBPairFeeParameters = await pairContract.feeParameters()
+
+    return feeParametersData
   }
 
   /**

@@ -13,6 +13,21 @@ export interface LBPairReservesAndId {
   activeId: BigNumberish
 }
 
+export interface LBPairFeeParameters {
+  binStep: BigNumberish
+  baseFactor: BigNumberish
+  filterPeriod: BigNumberish
+  decayPeriod: BigNumberish
+  reductionFactor: BigNumberish
+  variableFeeControl: BigNumberish
+  protocolShare: BigNumberish
+  maxVolatilityAccumulated: BigNumberish
+  volatilityAccumulated: BigNumberish
+  volatilityReference: BigNumberish
+  indexRef: BigNumberish
+  time: BigNumberish
+}
+
 export interface LiquidityParametersStruct {
   tokenX: string
   tokenY: string
@@ -31,7 +46,7 @@ export interface LiquidityParametersStruct {
 }
 
 export interface Bin {
-  reserveX: BigNumber,
+  reserveX: BigNumber
   reserveY: BigNumber
 }
 
