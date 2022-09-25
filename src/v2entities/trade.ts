@@ -181,7 +181,7 @@ export class TradeV2 {
    * @param provider 
    * @returns 
    */
-  public async getLBFee(provider: Provider | Web3Provider | any): Promise<TradeFee>{
+  public async getLBFee(provider: Provider | Web3Provider | any): Promise<TradeFee | undefined>{
 
     // filter LBPairs 
     const LBPairsAddrs: string[] = []
@@ -192,6 +192,11 @@ export class TradeV2 {
         LBPairsAddrs.push(pairAddr)
       }
     })
+
+    // no LBpairs detected; there is no LBFee
+    if (LBPairsAddrs.length===0){
+      return undefined
+    }
 
     // fetch fees parameters
     const feesParamsData: LBPairFeeParameters[] = await Promise.all(LBPairsAddrs.map(addr => PairV2.getFeeParameters(addr, provider)))
