@@ -18,7 +18,7 @@ const swapAmountIn = async () => {
   // Init: user inputs
   const inputToken = USDC
   const outputToken = USDT
-  const typedValueIn = '0.1' // user string input
+  const typedValueIn = '10' // user string input
   const typedValueInParsed = parseUnits(typedValueIn, inputToken.decimals).toString() // returns 10000
   const amountIn = new TokenAmount(inputToken, JSBI.BigInt(typedValueInParsed)) // wrap into TokenAmount
   const userSlippageTolerance = new Percent(JSBI.BigInt(50), JSBI.BigInt(10000)) // 0.5%
@@ -41,6 +41,12 @@ const swapAmountIn = async () => {
   trades.forEach((trade) => {
     console.log(trade.toLog())
   })
+
+  const { baseFeePct, variableFeePct, totalFeePct, feeAmountIn } = await trades[0].getLBFee(provider)
+  console.debug('\nBase fees percentage',baseFeePct.toSignificant(6), '%')
+  console.debug('Variable fees percentage',variableFeePct.toSignificant(6), '%')
+  console.debug('Total fees percentage',totalFeePct.toSignificant(6), '%')
+  console.debug(`Fee: ${JSBI.toNumber(feeAmountIn.raw)} ${amountIn.token.symbol}`) // in token's decimals
 
   // get gas estimates for each trade
   // const signer = new ethers.Wallet(WALLET_PK, provider)

@@ -5,10 +5,11 @@ import { Token, CAVAX,TokenAmount, Price, Percent, Fraction, CurrencyAmount, Tra
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
 
+import { PairV2 } from './pair'
 import { RouteV2 } from './route'
 import { LB_QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ONE, ZERO, ZERO_HEX } from '../constants'
 import { toHex, validateAndParseAddress, isZero } from '../utils'
-import { TradeOptions, TradeOptionsDeadline, SwapParameters, Quote } from '../types'
+import { TradeOptions, TradeOptionsDeadline, TradeFee, SwapParameters, Quote, LBPairFeePercent, LBPairFeeParameters } from '../types'
 
 import LBQuoterABI from '../abis/LBQuoter.json'
 import LBRouterABI from '../abis/LBRouter.json'
@@ -171,6 +172,46 @@ export class TradeV2 {
       methodName,
       args,
       value
+    }
+  }
+
+  /**
+   * Returns the fee for this swap for the involving LBPairs
+   * 
+   * @param provider 
+   * @returns 
+   */
+  public async getLBFee(provider: Provider | Web3Provider | any): Promise<TradeFee>{
+
+    // filter LBPairs 
+    const LBPairsAddrs: string[] = []
+
+    this.quote.pairs.forEach((pairAddr,i) =>{
+      const binStep = this.quote.binSteps[i].toNumber()
+      if (binStep !== 0){
+        LBPairsAddrs.push(pairAddr)
+      }
+    })
+
+    // fetch fees parameters
+    const feesParamsData: LBPairFeeParameters[] = await Promise.all(LBPairsAddrs.map(addr => PairV2.getFeeParameters(addr, provider)))
+
+    // calculate fees
+    const feePercentages: LBPairFeePercent[] = feesParamsData.map( (feeParamData:LBPairFeeParameters) => PairV2.calculateFeePercentage(feeParamData))
+
+    // sum add fee percentages and get total percentage
+    const baseFeePct = feePercentages.reduce((prev, curr)=> prev.add(curr.baseFeePct), new Percent(BigInt(0),BigInt(1e18))) 
+    const variableFeePct = feePercentages.reduce((prev, curr)=> prev.add(curr.variableFeePct), new Percent(BigInt(0),BigInt(1e18)))
+    const totalFeePct = baseFeePct.add(variableFeePct)
+    
+    // fee in terms of input currency
+    const feeAmountIn = new TokenAmount(this.inputAmount.token, totalFeePct.multiply(this.inputAmount.raw).quotient)
+
+    return {
+      baseFeePct,
+      variableFeePct,
+      totalFeePct,
+      feeAmountIn
     }
   }
 

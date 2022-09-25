@@ -1,4 +1,4 @@
-import { Percent } from '@traderjoe-xyz/sdk'
+import { Percent, TokenAmount } from '@traderjoe-xyz/sdk'
 import { BigNumber } from 'ethers'
 
 /** Interface representing a quote */
@@ -35,4 +35,11 @@ export interface SwapParameters {
   args: (string | string[])[]
   // The amount of wei to send in hex.
   value: string
+}
+
+export interface TradeFee {
+  baseFeePct: Percent,
+  variableFeePct: Percent,
+  totalFeePct: Percent,
+  feeAmountIn: TokenAmount,
 }
