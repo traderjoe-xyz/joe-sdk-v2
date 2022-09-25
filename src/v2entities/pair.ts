@@ -5,7 +5,7 @@ import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
 import { Token, Percent, TokenAmount, Fraction } from '@traderjoe-xyz/sdk'
 
-import { LBPair, LBPairReservesAndId, LBPairFeeParameters, LiquidityDistribution, Bin } from '../types'
+import { LBPair, LBPairReservesAndId, LBPairFeeParameters, LBPairFeePercent, LiquidityDistribution, Bin } from '../types'
 import { ChainId, LB_FACTORY_ADDRESS, ONE } from '../constants'
 import { getLiquidityConfig } from '../utils'
 
@@ -151,6 +151,27 @@ export class PairV2 {
     const feeParametersData: LBPairFeeParameters = await pairContract.feeParameters()
 
     return feeParametersData
+  }
+
+  /**
+   * Calculates LBPairFee percetange
+   *
+   * @param {LBPairFeeParameters} LBPairFeeData
+   * @returns {LBPairFeePercent}
+   */
+   public static calculateFeePercentage(LBPairFeeData: LBPairFeeParameters): LBPairFeePercent {
+    const {
+      baseFactor, 
+      variableFeeControl, 
+      volatilityAccumulated, 
+      binStep
+    } = LBPairFeeData
+    const baseFee = baseFactor * binStep * 1e10
+    const variableFee = variableFeeControl === 0 ? 0 : (((volatilityAccumulated * binStep) ^ 2) * variableFeeControl) / 100
+    return {
+      baseFeePct: new Percent(BigInt(baseFee), BigInt(1e18)), // On the contract level, fees are with a 1e18 precision
+      variableFeePct: new Percent(BigInt(variableFee), BigInt(1e18))
+    }
   }
 
   /**

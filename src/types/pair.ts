@@ -1,3 +1,4 @@
+import { Percent } from '@traderjoe-xyz/sdk'
 import { BigNumber, BigNumberish } from 'ethers'
 
 export interface LBPair {
@@ -14,18 +15,23 @@ export interface LBPairReservesAndId {
 }
 
 export interface LBPairFeeParameters {
-  binStep: BigNumberish
-  baseFactor: BigNumberish
-  filterPeriod: BigNumberish
-  decayPeriod: BigNumberish
-  reductionFactor: BigNumberish
-  variableFeeControl: BigNumberish
-  protocolShare: BigNumberish
-  maxVolatilityAccumulated: BigNumberish
-  volatilityAccumulated: BigNumberish
-  volatilityReference: BigNumberish
-  indexRef: BigNumberish
-  time: BigNumberish
+  binStep: number
+  baseFactor: number
+  filterPeriod: number
+  decayPeriod: number
+  reductionFactor: number
+  variableFeeControl: number
+  protocolShare: number
+  maxVolatilityAccumulated: number
+  volatilityAccumulated: number
+  volatilityReference: number
+  indexRef: number
+  time: number
+}
+
+export interface LBPairFeePercent {
+  baseFeePct: Percent,
+  variableFeePct: Percent,
 }
 
 export interface LiquidityParametersStruct {
