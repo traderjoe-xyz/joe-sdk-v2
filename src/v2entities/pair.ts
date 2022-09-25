@@ -1,5 +1,6 @@
 import { BigNumber, Contract, utils } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
+import { Web3Provider } from '@ethersproject/providers'
 import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
 import { Token, Percent, TokenAmount, Fraction } from '@traderjoe-xyz/sdk'
@@ -143,7 +144,7 @@ export class PairV2 {
    * @param {Provider} provider
    * @returns {Promise<LBPairFeeParameters>}
    */
-  public static async getFeeParameters(LBPairAddr: string, provider: Provider): Promise<LBPairFeeParameters> {
+  public static async getFeeParameters(LBPairAddr: string, provider: Provider | Web3Provider | any): Promise<LBPairFeeParameters> {
     const LBPairInterface = new utils.Interface(LBPairABI.abi)
     const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
 

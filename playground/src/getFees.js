@@ -1,5 +1,5 @@
 const { PairV2 } = require('../../dist')
-const { ChainId, Token } = require('@traderjoe-xyz/sdk')
+const { ChainId, Token, Percent } = require('@traderjoe-xyz/sdk')
 const { ethers } = require('ethers')
 
 const getFees = async () => {
@@ -21,12 +21,12 @@ const getFees = async () => {
   console.log('feeParameters', data)
   // On the contract level, fees are with a 1e18 precision
   const baseFee = data.baseFactor * data.binStep * 1e10
-  console.debug('\nBase fees percentage', (baseFee / 1e18) * 100, '%')
+  console.debug('\nBase fees percentage', new Percent(BigInt(baseFee), BigInt(1e18)).toSignificant(6), '%')
   const variableFee =
     data.variableFeeControl === 0
       ? 0
       : (((data.volatilityAccumulated * data.binStep) ^ 2) * data.variableFeeControl) / 100
-  console.debug('\nVariable fees percentage', (variableFee / 1e18) * 100, '%')
+  console.debug('\nVariable fees percentage',new Percent(BigInt(variableFee), BigInt(1e18)).toSignificant(6), '%')
 }
 
 module.exports = getFees
