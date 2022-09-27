@@ -1,15 +1,39 @@
 import { Contract, utils, Signer, Wallet, BigNumber } from 'ethers'
 import { Provider } from '@ethersproject/abstract-provider'
 import { Web3Provider } from '@ethersproject/providers'
-import { Token, CAVAX,TokenAmount, Price, Percent, Fraction, CurrencyAmount, TradeType, ChainId } from '@traderjoe-xyz/sdk'
+import {
+  Token,
+  CAVAX,
+  TokenAmount,
+  Price,
+  Percent,
+  Fraction,
+  CurrencyAmount,
+  TradeType,
+  ChainId
+} from '@traderjoe-xyz/sdk'
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
 
 import { PairV2 } from './pair'
 import { RouteV2 } from './route'
-import { LB_QUOTER_ADDRESS, LB_ROUTER_ADDRESS, ONE, ZERO, ZERO_HEX } from '../constants'
+import {
+  LB_QUOTER_ADDRESS,
+  LB_ROUTER_ADDRESS,
+  ONE,
+  ZERO,
+  ZERO_HEX
+} from '../constants'
 import { toHex, validateAndParseAddress, isZero } from '../utils'
-import { TradeOptions, TradeOptionsDeadline, TradeFee, SwapParameters, Quote, LBPairFeePercent, LBPairFeeParameters } from '../types'
+import {
+  TradeOptions,
+  TradeOptionsDeadline,
+  TradeFee,
+  SwapParameters,
+  Quote,
+  LBPairFeePercent,
+  LBPairFeeParameters
+} from '../types'
 
 import LBQuoterABI from '../abis/LBQuoter.json'
 import LBRouterABI from '../abis/LBRouter.json'
@@ -25,9 +49,21 @@ export class TradeV2 {
   public readonly midPrice: string // The ratio of reserves along the route (market-clearing price )
   public readonly priceImpact: Percent // The percent difference between the executionPrice and the midPrice due to trade size
 
-  public constructor(route: RouteV2, tokenIn: Token, tokenOut: Token, quote: Quote, isExactIn: boolean) {
-    const inputAmount = new TokenAmount(tokenIn, JSBI.BigInt(quote.amounts[0].toString()))
-    const outputAmount = new TokenAmount(tokenOut, JSBI.BigInt(quote.amounts[quote.amounts.length - 1]))
+  public constructor(
+    route: RouteV2,
+    tokenIn: Token,
+    tokenOut: Token,
+    quote: Quote,
+    isExactIn: boolean
+  ) {
+    const inputAmount = new TokenAmount(
+      tokenIn,
+      JSBI.BigInt(quote.amounts[0].toString())
+    )
+    const outputAmount = new TokenAmount(
+      tokenOut,
+      JSBI.BigInt(quote.amounts[quote.amounts.length - 1])
+    )
 
     this.route = route
     this.tradeType = isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT
@@ -47,7 +83,10 @@ export class TradeV2 {
     )
     const midPrice: Fraction = prices
       .slice(1)
-      .reduce((accumulator, currentValue) => accumulator.multiply(currentValue), prices[0])
+      .reduce(
+        (accumulator, currentValue) => accumulator.multiply(currentValue),
+        prices[0]
+      )
     this.midPrice = midPrice.toSignificant(6)
 
     // compute and set priceImpact
@@ -88,7 +127,9 @@ export class TradeV2 {
     if (this.tradeType === TradeType.EXACT_INPUT) {
       return this.inputAmount
     } else {
-      const slippageAdjustedAmountIn = new Fraction(ONE).add(slippageTolerance).multiply(this.inputAmount.raw).quotient
+      const slippageAdjustedAmountIn = new Fraction(ONE)
+        .add(slippageTolerance)
+        .multiply(this.inputAmount.raw).quotient
       return this.inputAmount instanceof TokenAmount
         ? new TokenAmount(this.inputAmount.token, slippageAdjustedAmountIn)
         : CurrencyAmount.ether(slippageAdjustedAmountIn)
@@ -101,7 +142,9 @@ export class TradeV2 {
    * @param {TradeOptions | TradeOptionsDeadline} options
    * @returns {SwapParameters}
    */
-  public swapCallParameters(options: TradeOptions | TradeOptionsDeadline): SwapParameters {
+  public swapCallParameters(
+    options: TradeOptions | TradeOptionsDeadline
+  ): SwapParameters {
     const avaxIn = this.inputAmount.currency === CAVAX
     const avaxOut = this.outputAmount.currency === CAVAX
     // the router does not support both avax in and out
@@ -109,13 +152,21 @@ export class TradeV2 {
     invariant(!('ttl' in options) || options.ttl > 0, 'TTL')
 
     const to: string = validateAndParseAddress(options.recipient)
-    const amountIn: string = toHex(this.maximumAmountIn(options.allowedSlippage))
-    const amountOut: string = toHex(this.minimumAmountOut(options.allowedSlippage))
-    const binSteps: string[] = this.quote.binSteps.map((bin) => bin.toHexString())
+    const amountIn: string = toHex(
+      this.maximumAmountIn(options.allowedSlippage)
+    )
+    const amountOut: string = toHex(
+      this.minimumAmountOut(options.allowedSlippage)
+    )
+    const binSteps: string[] = this.quote.binSteps.map((bin) =>
+      bin.toHexString()
+    )
     const path: string[] = this.quote.route
     const deadline =
       'ttl' in options
-        ? `0x${(Math.floor(new Date().getTime() / 1000) + options.ttl).toString(16)}`
+        ? `0x${(Math.floor(new Date().getTime() / 1000) + options.ttl).toString(
+            16
+          )}`
         : `0x${options.deadline.toString(16)}`
 
     const useFeeOnTransfer = Boolean(options.feeOnTransfer)
@@ -177,40 +228,55 @@ export class TradeV2 {
 
   /**
    * Returns the fee for this swap for the involving LBPairs
-   * 
-   * @param provider 
-   * @returns 
+   *
+   * @param provider
+   * @returns
    */
-  public async getLBFee(provider: Provider | Web3Provider | any): Promise<TradeFee | undefined>{
-
-    // filter LBPairs 
+  public async getLBFee(
+    provider: Provider | Web3Provider | any
+  ): Promise<TradeFee | undefined> {
+    // filter LBPairs
     const LBPairsAddrs: string[] = []
 
-    this.quote.pairs.forEach((pairAddr,i) =>{
+    this.quote.pairs.forEach((pairAddr, i) => {
       const binStep = this.quote.binSteps[i].toNumber()
-      if (binStep !== 0){
+      if (binStep !== 0) {
         LBPairsAddrs.push(pairAddr)
       }
     })
 
     // no LBpairs detected; there is no LBFee
-    if (LBPairsAddrs.length===0){
+    if (LBPairsAddrs.length === 0) {
       return undefined
     }
 
     // fetch fees parameters
-    const feesParamsData: LBPairFeeParameters[] = await Promise.all(LBPairsAddrs.map(addr => PairV2.getFeeParameters(addr, provider)))
+    const feesParamsData: LBPairFeeParameters[] = await Promise.all(
+      LBPairsAddrs.map((addr) => PairV2.getFeeParameters(addr, provider))
+    )
 
     // calculate fees
-    const feePercentages: LBPairFeePercent[] = feesParamsData.map( (feeParamData:LBPairFeeParameters) => PairV2.calculateFeePercentage(feeParamData))
+    const feePercentages: LBPairFeePercent[] = feesParamsData.map(
+      (feeParamData: LBPairFeeParameters) =>
+        PairV2.calculateFeePercentage(feeParamData)
+    )
 
     // sum add fee percentages and get total percentage
-    const baseFeePct = feePercentages.reduce((prev, curr)=> prev.add(curr.baseFeePct), new Percent(BigInt(0),BigInt(1e18))) 
-    const variableFeePct = feePercentages.reduce((prev, curr)=> prev.add(curr.variableFeePct), new Percent(BigInt(0),BigInt(1e18)))
+    const baseFeePct = feePercentages.reduce(
+      (prev, curr) => prev.add(curr.baseFeePct),
+      new Percent(BigInt(0), BigInt(1e18))
+    )
+    const variableFeePct = feePercentages.reduce(
+      (prev, curr) => prev.add(curr.variableFeePct),
+      new Percent(BigInt(0), BigInt(1e18))
+    )
     const totalFeePct = baseFeePct.add(variableFeePct)
-    
+
     // fee in terms of input currency
-    const feeAmountIn = new TokenAmount(this.inputAmount.token, totalFeePct.multiply(this.inputAmount.raw).quotient)
+    const feeAmountIn = new TokenAmount(
+      this.inputAmount.token,
+      totalFeePct.multiply(this.inputAmount.raw).quotient
+    )
 
     return {
       baseFeePct,
@@ -228,11 +294,21 @@ export class TradeV2 {
    * @param {Percent} slippageTolerance - The slippage tolerance
    * @returns {Promise<BigNumber>}
    */
-  public async estimateGas(signer: Signer, chainId: ChainId, slippageTolerance: Percent): Promise<BigNumber> {
+  public async estimateGas(
+    signer: Signer,
+    chainId: ChainId,
+    slippageTolerance: Percent
+  ): Promise<BigNumber> {
     const routerInterface = new utils.Interface(LBRouterABI.abi)
-    const router = new Contract(LB_ROUTER_ADDRESS[chainId], routerInterface, signer)
+    const router = new Contract(
+      LB_ROUTER_ADDRESS[chainId],
+      routerInterface,
+      signer
+    )
 
-    const currentBlockTimestamp = (await (signer as Wallet).provider.getBlock('latest')).timestamp
+    const currentBlockTimestamp = (
+      await (signer as Wallet).provider.getBlock('latest')
+    ).timestamp
     const userAddr = await signer.getAddress()
 
     const options: TradeOptionsDeadline = {
@@ -241,7 +317,8 @@ export class TradeV2 {
       deadline: currentBlockTimestamp + 120
     }
 
-    const { methodName, args, value }: SwapParameters = this.swapCallParameters(options)
+    const { methodName, args, value }: SwapParameters =
+      this.swapCallParameters(options)
     const msgOptions = !value || isZero(value) ? {} : { value }
 
     const gasPrice = await signer.getGasPrice()
@@ -261,12 +338,15 @@ export class TradeV2 {
       route: {
         path: this.route.path.map((token) => token.address).join(', ')
       },
-      tradeType: this.tradeType === TradeType.EXACT_INPUT ? 'EXACT_INPUT' : 'EXACT_OUTPUT',
+      tradeType:
+        this.tradeType === TradeType.EXACT_INPUT
+          ? 'EXACT_INPUT'
+          : 'EXACT_OUTPUT',
       inputAmount: JSBI.toNumber(this.inputAmount.raw),
       outputAmount: JSBI.toNumber(this.outputAmount.raw),
-      executionPrice: `${this.executionPrice.toSignificant(6)} ${this.outputAmount.currency.symbol} / ${
-        this.inputAmount.currency.symbol
-      }`,
+      executionPrice: `${this.executionPrice.toSignificant(6)} ${
+        this.outputAmount.currency.symbol
+      } / ${this.inputAmount.currency.symbol}`,
       midPrice: this.midPrice,
       priceImpact: `${this.priceImpact.toSignificant(6)}%`,
       quote: {
@@ -274,7 +354,9 @@ export class TradeV2 {
         pairs: this.quote.pairs.join(', '),
         binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
         amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
-        virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage.map((el) => el.toString()).join(', ')
+        virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage
+          .map((el) => el.toString())
+          .join(', ')
       }
     }
   }
@@ -301,14 +383,27 @@ export class TradeV2 {
     const amountIn = JSBI.toNumber(tokenAmountIn.raw)
     console.debug('amountIn', amountIn)
     const quoterInterface = new utils.Interface(LBQuoterABI.abi)
-    const quoter = new Contract(LB_QUOTER_ADDRESS[chainId], quoterInterface, provider)
+    const quoter = new Contract(
+      LB_QUOTER_ADDRESS[chainId],
+      quoterInterface,
+      provider
+    )
 
     const trades: Array<TradeV2 | undefined> = await Promise.all(
       routes.map(async (route) => {
         try {
           const routeStrArr = route.pathToStrArr()
-          const quote: Quote = await quoter.findBestPathAmountIn(routeStrArr, amountIn.toString())
-          const trade: TradeV2 = new TradeV2(route, tokenAmountIn.token, tokenOut, quote, isExactIn)
+          const quote: Quote = await quoter.findBestPathAmountIn(
+            routeStrArr,
+            amountIn.toString()
+          )
+          const trade: TradeV2 = new TradeV2(
+            route,
+            tokenAmountIn.token,
+            tokenOut,
+            quote,
+            isExactIn
+          )
           return trade
         } catch (e) {
           console.debug('Error fetching quote:', e)
@@ -317,7 +412,10 @@ export class TradeV2 {
       })
     )
 
-    return trades.filter((trade) => !!trade && JSBI.greaterThan(trade.outputAmount.raw, JSBI.BigInt(0)))
+    return trades.filter(
+      (trade) =>
+        !!trade && JSBI.greaterThan(trade.outputAmount.raw, JSBI.BigInt(0))
+    )
   }
 
   /**
@@ -341,14 +439,27 @@ export class TradeV2 {
     const isExactIn = false
     const amountOut = JSBI.toNumber(tokenAmountOut.raw)
     const quoterInterface = new utils.Interface(LBQuoterABI.abi)
-    const quoter = new Contract(LB_QUOTER_ADDRESS[chainId], quoterInterface, provider)
+    const quoter = new Contract(
+      LB_QUOTER_ADDRESS[chainId],
+      quoterInterface,
+      provider
+    )
 
     const trades: Array<TradeV2 | undefined> = await Promise.all(
       routes.map(async (route) => {
         try {
           const routeStrArr = route.pathToStrArr()
-          const quote: Quote = await quoter.findBestPathAmountOut(routeStrArr, amountOut)
-          const trade: TradeV2 = new TradeV2(route, tokenIn, tokenAmountOut.token, quote, isExactIn)
+          const quote: Quote = await quoter.findBestPathAmountOut(
+            routeStrArr,
+            amountOut
+          )
+          const trade: TradeV2 = new TradeV2(
+            route,
+            tokenIn,
+            tokenAmountOut.token,
+            quote,
+            isExactIn
+          )
           return trade
         } catch (e) {
           console.debug('Error fetching quote:', e)
@@ -357,7 +468,10 @@ export class TradeV2 {
       })
     )
 
-    return trades.filter((trade) => !!trade && JSBI.greaterThan(trade.inputAmount.raw, JSBI.BigInt(0)))
+    return trades.filter(
+      (trade) =>
+        !!trade && JSBI.greaterThan(trade.inputAmount.raw, JSBI.BigInt(0))
+    )
   }
 
   /**
@@ -385,16 +499,26 @@ export class TradeV2 {
         estimatedGas: estimatedGas[index],
         swapOutcome:
           trade.tradeType === TradeType.EXACT_INPUT
-            ? new Fraction(trade.outputAmount.numerator, trade.outputAmount.denominator).subtract(
+            ? new Fraction(
+                trade.outputAmount.numerator,
+                trade.outputAmount.denominator
+              ).subtract(
                 tradeValueAVAX.eq(0)
                   ? BigInt(0)
                   : // Cross product to get the gas price against the output token
-                    trade.outputAmount.multiply(estimatedGas[index].toString()).divide(tradeValueAVAX.toBigInt())
+                    trade.outputAmount
+                      .multiply(estimatedGas[index].toString())
+                      .divide(tradeValueAVAX.toBigInt())
               )
-            : new Fraction(trade.inputAmount.numerator, trade.inputAmount.denominator).add(
+            : new Fraction(
+                trade.inputAmount.numerator,
+                trade.inputAmount.denominator
+              ).add(
                 tradeValueAVAX.eq(0)
                   ? BigInt(0)
-                  : trade.inputAmount.multiply(estimatedGas[index].toString()).divide(tradeValueAVAX.toBigInt())
+                  : trade.inputAmount
+                      .multiply(estimatedGas[index].toString())
+                      .divide(tradeValueAVAX.toBigInt())
               )
       }
     })

@@ -5,7 +5,14 @@ import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
 import { Token, Percent, TokenAmount, Fraction } from '@traderjoe-xyz/sdk'
 
-import { LBPair, LBPairReservesAndId, LBPairFeeParameters, LBPairFeePercent, LiquidityDistribution, Bin } from '../types'
+import {
+  LBPair,
+  LBPairReservesAndId,
+  LBPairFeeParameters,
+  LBPairFeePercent,
+  LiquidityDistribution,
+  Bin
+} from '../types'
 import { ChainId, LB_FACTORY_ADDRESS, ONE } from '../constants'
 import { getLiquidityConfig } from '../utils'
 
@@ -34,10 +41,20 @@ export class PairV2 {
    * @param {ChainId} chainId
    * @returns {Promise<LBPair[]>}
    */
-  public async fetchAvailableLBPairs(provider: Provider, chainId: ChainId): Promise<LBPair[]> {
+  public async fetchAvailableLBPairs(
+    provider: Provider,
+    chainId: ChainId
+  ): Promise<LBPair[]> {
     const factoryInterface = new utils.Interface(LBFactoryABI.abi)
-    const factory = new Contract(LB_FACTORY_ADDRESS[chainId], factoryInterface, provider)
-    const LBPairs: LBPair[] = await factory.getAvailableLBPairsBinStep(this.token0.address, this.token1.address)
+    const factory = new Contract(
+      LB_FACTORY_ADDRESS[chainId],
+      factoryInterface,
+      provider
+    )
+    const LBPairs: LBPair[] = await factory.getAvailableLBPairsBinStep(
+      this.token0.address,
+      this.token1.address
+    )
     return LBPairs
   }
 
@@ -49,10 +66,22 @@ export class PairV2 {
    * @param {ChainId} chainId
    * @returns {Promise<LBPair>}
    */
-  public async fetchLBPair(binStep: number, provider: Provider, chainId: ChainId): Promise<LBPair> {
+  public async fetchLBPair(
+    binStep: number,
+    provider: Provider,
+    chainId: ChainId
+  ): Promise<LBPair> {
     const factoryInterface = new utils.Interface(LBFactoryABI.abi)
-    const factory = new Contract(LB_FACTORY_ADDRESS[chainId], factoryInterface, provider)
-    const LBPair: LBPair = await factory.getLBPairInfo(this.token0.address, this.token1.address, binStep)
+    const factory = new Contract(
+      LB_FACTORY_ADDRESS[chainId],
+      factoryInterface,
+      provider
+    )
+    const LBPair: LBPair = await factory.getLBPairInfo(
+      this.token0.address,
+      this.token1.address,
+      binStep
+    )
     return LBPair
   }
 
@@ -63,7 +92,10 @@ export class PairV2 {
    * @returns {boolean} true if equal, otherwise false
    */
   public equals(pair: PairV2) {
-    if (this.token0.address === pair.token0.address && this.token1.address === pair.token1.address) {
+    if (
+      this.token0.address === pair.token0.address &&
+      this.token1.address === pair.token1.address
+    ) {
       return true
     }
     return false
@@ -78,10 +110,14 @@ export class PairV2 {
    * @param {Token[]} bases
    * @returns {[Token, Token][]}
    */
-  public static createAllTokenPairs(inputToken: Token, outputToken: Token, bases: Token[]): [Token, Token][] {
-    const basePairs = flatMap(bases, (base: Token) => bases.map((otherBase) => [base, otherBase])).filter(
-      ([t0, t1]) => t0.address !== t1.address
-    )
+  public static createAllTokenPairs(
+    inputToken: Token,
+    outputToken: Token,
+    bases: Token[]
+  ): [Token, Token][] {
+    const basePairs = flatMap(bases, (base: Token) =>
+      bases.map((otherBase) => [base, otherBase])
+    ).filter(([t0, t1]) => t0.address !== t1.address)
 
     const allTokenPairs: [Token, Token][] = [
       // the direct pair
@@ -93,7 +129,9 @@ export class PairV2 {
       // each base against all bases
       ...basePairs
     ]
-      .filter((tokens): tokens is [Token, Token] => Boolean(tokens[0] && tokens[1]))
+      .filter((tokens): tokens is [Token, Token] =>
+        Boolean(tokens[0] && tokens[1])
+      )
       .filter(([t0, t1]) => t0.address !== t1.address)
 
     return allTokenPairs
@@ -128,7 +166,10 @@ export class PairV2 {
    * @param {Provider} provider
    * @returns {Promise<LBPairReservesAndId>}
    */
-  public static async getLBPairReservesAndId(LBPairAddr: string, provider: Provider): Promise<LBPairReservesAndId> {
+  public static async getLBPairReservesAndId(
+    LBPairAddr: string,
+    provider: Provider
+  ): Promise<LBPairReservesAndId> {
     const LBPairInterface = new utils.Interface(LBPairABI.abi)
     const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
 
@@ -144,11 +185,15 @@ export class PairV2 {
    * @param {Provider} provider
    * @returns {Promise<LBPairFeeParameters>}
    */
-  public static async getFeeParameters(LBPairAddr: string, provider: Provider | Web3Provider | any): Promise<LBPairFeeParameters> {
+  public static async getFeeParameters(
+    LBPairAddr: string,
+    provider: Provider | Web3Provider | any
+  ): Promise<LBPairFeeParameters> {
     const LBPairInterface = new utils.Interface(LBPairABI.abi)
     const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
 
-    const feeParametersData: LBPairFeeParameters = await pairContract.feeParameters()
+    const feeParametersData: LBPairFeeParameters =
+      await pairContract.feeParameters()
 
     return feeParametersData
   }
@@ -159,15 +204,16 @@ export class PairV2 {
    * @param {LBPairFeeParameters} LBPairFeeData
    * @returns {LBPairFeePercent}
    */
-   public static calculateFeePercentage(LBPairFeeData: LBPairFeeParameters): LBPairFeePercent {
-    const {
-      baseFactor, 
-      variableFeeControl, 
-      volatilityAccumulated, 
-      binStep
-    } = LBPairFeeData
+  public static calculateFeePercentage(
+    LBPairFeeData: LBPairFeeParameters
+  ): LBPairFeePercent {
+    const { baseFactor, variableFeeControl, volatilityAccumulated, binStep } =
+      LBPairFeeData
     const baseFee = baseFactor * binStep * 1e10
-    const variableFee = variableFeeControl === 0 ? 0 : (((volatilityAccumulated * binStep) ^ 2) * variableFeeControl) / 100
+    const variableFee =
+      variableFeeControl === 0
+        ? 0
+        : (((volatilityAccumulated * binStep) ^ 2) * variableFeeControl) / 100
     return {
       baseFeePct: new Percent(BigInt(baseFee), BigInt(1e18)), // On the contract level, fees are with a 1e18 precision
       variableFeePct: new Percent(BigInt(variableFee), BigInt(1e18))
@@ -195,7 +241,9 @@ export class PairV2 {
    * @returns {number}
    */
   public static getIdFromPrice(price: number, binStep: number): number {
-    return Math.floor(Math.log(price) / Math.log(1 + binStep / 10_000)) + 8388608
+    return (
+      Math.floor(Math.log(price) / Math.log(1 + binStep / 10_000)) + 8388608
+    )
   }
 
   /**
@@ -206,8 +254,13 @@ export class PairV2 {
    * @param {number} binStep
    * @returns {number}
    */
-  public static getIdSlippageFromPriceSlippage(priceSlippage: number, binStep: number): number {
-    return Math.floor(Math.log(1 + priceSlippage) / Math.log(1 + binStep / 10_000))
+  public static getIdSlippageFromPriceSlippage(
+    priceSlippage: number,
+    binStep: number
+  ): number {
+    return Math.floor(
+      Math.log(1 + priceSlippage) / Math.log(1 + binStep / 10_000)
+    )
   }
 
   /**
@@ -238,22 +291,21 @@ export class PairV2 {
     const amountX: number = JSBI.toNumber(_amountX)
     const amountY: number = JSBI.toNumber(_amountY)
     const amountXMin = JSBI.toNumber(
-      new Fraction(ONE)
-        .add(amountSlippage)
-        .invert()
-        .multiply(_amountX).quotient
+      new Fraction(ONE).add(amountSlippage).invert().multiply(_amountX).quotient
     )
     const amountYMin = JSBI.toNumber(
-      new Fraction(ONE)
-        .add(amountSlippage)
-        .invert()
-        .multiply(_amountY).quotient
+      new Fraction(ONE).add(amountSlippage).invert().multiply(_amountY).quotient
     )
 
     const _priceSlippage: number = Number(priceSlippage.toSignificant()) / 100
-    const idSlippage = PairV2.getIdSlippageFromPriceSlippage(_priceSlippage, binStep)
+    const idSlippage = PairV2.getIdSlippageFromPriceSlippage(
+      _priceSlippage,
+      binStep
+    )
 
-    const { deltaIds, distributionX, distributionY } = getLiquidityConfig(liquidityDistribution)
+    const { deltaIds, distributionX, distributionY } = getLiquidityConfig(
+      liquidityDistribution
+    )
 
     return {
       tokenX,
@@ -272,14 +324,14 @@ export class PairV2 {
   /**
    * @static
    * Calculates amountX, amountY, amountXMin, and amountYMin needed for on-chain removeLiquidity() method
-   * 
+   *
    * @param {number[]} userPositionIds - List of binIds that user has position
    * @param {number} activeBin - The active bin id for the LBPair
    * @param {Bin[]} bins - List of bins whose indices match those of userPositionIds
    * @param {BigNumber[]} totalSupplies - List of bin's total supplies whose indices match those of userPositionIds
    * @param {number[]} amountsToRemove - List of amounts specified by the user to remove in each of their position
    * @param {Percent} amountSlippage - The amounts slippage used to calculate amountXMin and amountYMin
-   * @returns 
+   * @returns
    */
   public calculateAmountsToRemove(
     userPositionIds: number[],
@@ -287,35 +339,39 @@ export class PairV2 {
     bins: Bin[],
     totalSupplies: BigNumber[],
     amountsToRemove: number[],
-    amountSlippage: Percent,
+    amountSlippage: Percent
   ): {
-    amountX: JSBI,
-    amountY: JSBI,
+    amountX: JSBI
+    amountY: JSBI
     amountXMin: JSBI
     amountYMin: JSBI
   } {
-
     // calculate expected total to remove for X and Y
     let totalAmountX = JSBI.BigInt(0)
     let totalAmountY = JSBI.BigInt(0)
 
     userPositionIds.forEach((binId, i) => {
-
       // get totalSupply, reserveX, and reserveY for the bin
-      const {reserveX: _reserveX, reserveY: _reserveY} = bins[i]
+      const { reserveX: _reserveX, reserveY: _reserveY } = bins[i]
       const reserveX = JSBI.BigInt(_reserveX.toString())
       const reserveY = JSBI.BigInt(_reserveY.toString())
       const totalSupply = JSBI.BigInt(totalSupplies[i].toString())
       const amountToRemove = JSBI.BigInt(amountsToRemove[i])
-      
+
       // increment totalAmountX and/or totalAmountY
-      if (binId <= activeBin){
-        const amountY = JSBI.divide(JSBI.multiply(amountToRemove, reserveY), totalSupply)
+      if (binId <= activeBin) {
+        const amountY = JSBI.divide(
+          JSBI.multiply(amountToRemove, reserveY),
+          totalSupply
+        )
         totalAmountY = JSBI.add(amountY, totalAmountY)
-      } 
-      
-      if (binId >= activeBin){
-        const amountX = JSBI.divide(JSBI.multiply(amountToRemove, reserveX), totalSupply)
+      }
+
+      if (binId >= activeBin) {
+        const amountX = JSBI.divide(
+          JSBI.multiply(amountToRemove, reserveX),
+          totalSupply
+        )
         totalAmountX = JSBI.add(amountX, totalAmountX)
       }
     })
@@ -330,13 +386,13 @@ export class PairV2 {
       .add(amountSlippage)
       .invert()
       .multiply(totalAmountY).quotient
-    
+
     // return
     return {
       amountX: totalAmountX,
       amountY: totalAmountY,
       amountXMin: amountXMin,
-      amountYMin: amountYMin,
+      amountYMin: amountYMin
     }
   }
 }
