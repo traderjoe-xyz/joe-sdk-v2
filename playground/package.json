@@ -1,0 +1,14 @@
+{
+  "name": "@traderjoe-xyz/sdk-playground",
+  "license": "MIT",
+  "version": "0.0.0",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.1"
+  },
+  "engines": {
+    "node": ">=10"
+  }
+}
