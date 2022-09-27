@@ -278,7 +278,6 @@ export class TradeV2 {
       totalFeePct.multiply(this.inputAmount.raw).quotient
     )
 
-    const test = 'test'
     return {
       baseFeePct,
       variableFeePct,
