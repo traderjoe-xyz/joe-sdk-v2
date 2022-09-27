@@ -30,8 +30,8 @@ export interface LBPairFeeParameters {
 }
 
 export interface LBPairFeePercent {
-  baseFeePct: Percent,
-  variableFeePct: Percent,
+  baseFeePct: Percent
+  variableFeePct: Percent
 }
 
 export interface LiquidityParametersStruct {

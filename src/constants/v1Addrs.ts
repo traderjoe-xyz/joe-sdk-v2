@@ -1,4 +1,4 @@
-import { ChainId } from "./external"
+import { ChainId } from './external'
 
 /**
  * DEX SDK
@@ -134,6 +134,8 @@ export const BOOSTED_MASTERCHEF_ADDRESS: { [chainId in ChainId]: string } = {
 }
 
 export const INIT_CODE_HASH: { [chainId in ChainId]: string } = {
-  [ChainId.FUJI]: '0x6c67ac67d0dad54be7b066edd9b4154fb5a0ab7d01232259b9ff26ebc1739ba2',
-  [ChainId.AVALANCHE]: '0x0bbca9af0511ad1a1da383135cf3a8d2ac620e549ef9f6ae3a4c33c2fed0af91'
+  [ChainId.FUJI]:
+    '0x6c67ac67d0dad54be7b066edd9b4154fb5a0ab7d01232259b9ff26ebc1739ba2',
+  [ChainId.AVALANCHE]:
+    '0x0bbca9af0511ad1a1da383135cf3a8d2ac620e549ef9f6ae3a4c33c2fed0af91'
 }

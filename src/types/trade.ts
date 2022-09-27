@@ -38,8 +38,8 @@ export interface SwapParameters {
 }
 
 export interface TradeFee {
-  baseFeePct: Percent,
-  variableFeePct: Percent,
-  totalFeePct: Percent,
-  feeAmountIn: TokenAmount,
+  baseFeePct: Percent
+  variableFeePct: Percent
+  totalFeePct: Percent
+  feeAmountIn: TokenAmount
 }

@@ -6,24 +6,33 @@ import { BigNumber } from 'ethers'
 
 import { CurrencyAmount } from '@traderjoe-xyz/sdk'
 
-import { 
-  BigintIsh, 
-  ZERO, 
-  ONE, 
-  TWO, 
-  THREE, 
-  SolidityType, 
+import {
+  BigintIsh,
+  ZERO,
+  ONE,
+  TWO,
+  THREE,
+  SolidityType,
   SOLIDITY_TYPE_MAXIMA,
   spotUniform,
   maxUniform,
   bidAsk,
-  normal, 
+  normal
 } from './constants'
 import { LiquidityDistribution } from './types/pair'
 
-export function validateSolidityTypeInstance(value: JSBI, solidityType: SolidityType): void {
-  invariant(JSBI.greaterThanOrEqual(value, ZERO), `${value} is not a ${solidityType}.`)
-  invariant(JSBI.lessThanOrEqual(value, SOLIDITY_TYPE_MAXIMA[solidityType]), `${value} is not a ${solidityType}.`)
+export function validateSolidityTypeInstance(
+  value: JSBI,
+  solidityType: SolidityType
+): void {
+  invariant(
+    JSBI.greaterThanOrEqual(value, ZERO),
+    `${value} is not a ${solidityType}.`
+  )
+  invariant(
+    JSBI.lessThanOrEqual(value, SOLIDITY_TYPE_MAXIMA[solidityType]),
+    `${value} is not a ${solidityType}.`
+  )
 }
 
 // warns if addresses are not checksummed
@@ -65,7 +74,12 @@ export function sqrt(y: JSBI): JSBI {
 
 // given an array of items sorted by `comparator`, insert an item into its sort index and constrain the size to
 // `maxSize` by removing the last item
-export function sortedInsert<T>(items: T[], add: T, maxSize: number, comparator: (a: T, b: T) => number): T | null {
+export function sortedInsert<T>(
+  items: T[],
+  add: T,
+  maxSize: number,
+  comparator: (a: T, b: T) => number
+): T | null {
   invariant(maxSize > 0, 'MAX_SIZE_ZERO')
   // this is an invariant because the interface cannot return multiple removed items if items.length exceeds maxSize
   invariant(items.length <= maxSize, 'ITEMS_SIZE')
@@ -99,21 +113,21 @@ export function sortedInsert<T>(items: T[], add: T, maxSize: number, comparator:
 
 /**
  * Converts currency amount into hex encoding
- * 
- * @param {CurrencyAmount} currencyAmount 
- * @returns {string} 
+ *
+ * @param {CurrencyAmount} currencyAmount
+ * @returns {string}
  */
- export function toHex(currencyAmount: CurrencyAmount) {
+export function toHex(currencyAmount: CurrencyAmount) {
   return `0x${currencyAmount.raw.toString(16)}`
 }
 
 /**
  * Returns true if the string value is zero in hex
- * 
+ *
  * @param {string} hexNumberString
  * @returns {boolean}
  */
- export function isZero(hexNumberString: string) {
+export function isZero(hexNumberString: string) {
   return /^0x0*$/.test(hexNumberString)
 }
 

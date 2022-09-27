@@ -39,22 +39,29 @@ export const ROYALTY_FEE_SETTER_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.AVALANCHE]: '0xA7418654637fFca103Cfa4149a594045294D20F5'
 }
 
-export const STRATEGY_STANDARD_SALE_FOR_FIXED_PRICE_ADDRESS: { [chainId in ChainId]: string } = {
+export const STRATEGY_STANDARD_SALE_FOR_FIXED_PRICE_ADDRESS: {
+  [chainId in ChainId]: string
+} = {
   [ChainId.FUJI]: '0xDb9660C436dEc824B379C59E2411C71f548F76A7',
   [ChainId.AVALANCHE]: '0x24ab13f8B58be64a91a7291b5e0CF32fCDDcc62B'
 }
 
-export const TRANSFER_MANAGER_ERC721_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.FUJI]: '0x06f90fd024d0f21b02cB0e7e504e7653C24Ec434',
-  [ChainId.AVALANCHE]: '0x16736b117ab4842C825599db1f1F4B0fd32D3751'
-}
+export const TRANSFER_MANAGER_ERC721_ADDRESS: { [chainId in ChainId]: string } =
+  {
+    [ChainId.FUJI]: '0x06f90fd024d0f21b02cB0e7e504e7653C24Ec434',
+    [ChainId.AVALANCHE]: '0x16736b117ab4842C825599db1f1F4B0fd32D3751'
+  }
 
-export const TRANSFER_MANAGER_ERC1155_ADDRESS: { [chainId in ChainId]: string } = {
+export const TRANSFER_MANAGER_ERC1155_ADDRESS: {
+  [chainId in ChainId]: string
+} = {
   [ChainId.FUJI]: '0x06ce9F2B31b0dd59388D93b95B3b67aeBd5F4743',
   [ChainId.AVALANCHE]: '0x85fF75F797b0B4132F0ce33E6f6Bf688d23E284F'
 }
 
-export const TRANSFER_MANAGER_NON_COMPLIANT_ERC721_ADDRESS: { [chainId in ChainId]: string } = {
+export const TRANSFER_MANAGER_NON_COMPLIANT_ERC721_ADDRESS: {
+  [chainId in ChainId]: string
+} = {
   [ChainId.FUJI]: '0x5a59bebbE7A95d851D9D5034458420Cb00d9263D',
   [ChainId.AVALANCHE]: '0x3C111Ed8B7237a3343181A75026e0f822CFa52Ab'
 }
