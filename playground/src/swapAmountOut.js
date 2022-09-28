@@ -37,6 +37,15 @@ const swapAmountOut = async () => {
   const provider = new JsonRpcProvider(FUJI_URL)
   const trades = await TradeV2.getTradesExactOut(allRoutes, amountOut, inputToken, provider, chainId) // console.debug('trades', trades.map(el=>el.toLog()))
 
+  // console.log('trades', trades)
+  for (let trade of trades){
+    console.log('\n',trade.toLog())
+    const { totalFeePct, feeAmountIn } = await trade.getTradeFee(provider)
+    console.debug('Total fees percentage',totalFeePct.toSignificant(6), '%')
+    console.debug(`Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`) // in token's decimals
+  }
+  
+
   // get gas estimates for each trade
   // const signer = new ethers.Wallet(WALLET_PK, provider)
   // const estimatedGasCosts = await Promise.all(
