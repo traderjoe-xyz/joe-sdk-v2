@@ -43,10 +43,10 @@ export class TradeV2 {
   public readonly quote: Quote // quote returned by the LBQuoter contract
   public readonly route: RouteV2 // The route of the trade, i.e. which pairs the trade goes through.
   public readonly tradeType: TradeType // The type of the trade, either exact in or exact out.
-  public readonly inputAmount: TokenAmount // The input amount for the trade assuming no slippage.
-  public readonly outputAmount: TokenAmount // The output amount for the trade assuming no slippage.
+  public readonly inputAmount: TokenAmount // The input amount for the trade returned by the quote
+  public readonly outputAmount: TokenAmount // The output amount for the trade returned by the quote
   public readonly executionPrice: Price // The price expressed in terms of output amount/input amount.
-  public readonly midPrice: string // The ratio of reserves along the route (market-clearing price )
+  public readonly exactQuote: TokenAmount // The exact amount if there was not slippage
   public readonly priceImpact: Percent // The percent difference between the executionPrice and the midPrice due to trade size
 
   public constructor(
@@ -77,21 +77,15 @@ export class TradeV2 {
       this.outputAmount.raw
     )
 
-    // compute and set trade route midPrice
-    const prices: Fraction[] = quote.virtualAmountsWithoutSlippage.map(
-      (price: BigNumber) => new Fraction(price.toString(), (1e18).toString())
-    )
-    const midPrice: Fraction = prices
-      .slice(1)
-      .reduce(
-        (accumulator, currentValue) => accumulator.multiply(currentValue),
-        prices[0]
-      )
-    this.midPrice = midPrice.toSignificant(6)
-
-    // compute and set priceImpact
-    const exactQuote = midPrice.multiply(inputAmount.raw)
-    const slippage = exactQuote.subtract(outputAmount.raw).divide(exactQuote)
+    // compute exactQuote and priceImpact
+    const exactQuoteStr =
+      quote.virtualAmountsWithoutSlippage[
+        quote.virtualAmountsWithoutSlippage.length - 1
+      ].toString()
+    this.exactQuote = new TokenAmount(tokenOut, JSBI.BigInt(exactQuoteStr))
+    const slippage = this.exactQuote
+      .subtract(outputAmount)
+      .divide(this.exactQuote)
     this.priceImpact = new Percent(slippage.numerator, slippage.denominator)
   }
 
@@ -342,12 +336,18 @@ export class TradeV2 {
         this.tradeType === TradeType.EXACT_INPUT
           ? 'EXACT_INPUT'
           : 'EXACT_OUTPUT',
-      inputAmount: JSBI.toNumber(this.inputAmount.raw),
-      outputAmount: JSBI.toNumber(this.outputAmount.raw),
+      inputAmount: `${this.inputAmount.toSignificant(6)} ${
+        this.inputAmount.currency.symbol
+      }`,
+      outputAmount: `${this.outputAmount.toSignificant(6)} ${
+        this.outputAmount.currency.symbol
+      }`,
       executionPrice: `${this.executionPrice.toSignificant(6)} ${
         this.outputAmount.currency.symbol
       } / ${this.inputAmount.currency.symbol}`,
-      midPrice: this.midPrice,
+      exactQuote: `${this.exactQuote.toSignificant(6)} ${
+        this.exactQuote.currency.symbol
+      }`,
       priceImpact: `${this.priceImpact.toSignificant(6)}%`,
       quote: {
         route: this.quote.route.join(', '),
