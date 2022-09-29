@@ -30,9 +30,7 @@ import {
   TradeOptionsDeadline,
   TradeFee,
   SwapParameters,
-  Quote,
-  LBPairFeePercent,
-  LBPairFeeParameters
+  Quote
 } from '../types'
 
 import LBQuoterABI from '../abis/LBQuoter.json'
@@ -220,61 +218,44 @@ export class TradeV2 {
     }
   }
 
-  /**
-   * Returns the fee for this swap for the involving LBPairs
-   *
-   * @param provider
-   * @returns
-   */
-  public async getLBFee(
+  public async getTradeFee(
     provider: Provider | Web3Provider | any
-  ): Promise<TradeFee | undefined> {
-    // filter LBPairs
-    const LBPairsAddrs: string[] = []
-
-    this.quote.pairs.forEach((pairAddr, i) => {
-      const binStep = this.quote.binSteps[i].toNumber()
-      if (binStep !== 0) {
-        LBPairsAddrs.push(pairAddr)
-      }
-    })
-
-    // no LBpairs detected; there is no LBFee
-    if (LBPairsAddrs.length === 0) {
-      return undefined
-    }
-
-    // fetch fees parameters
-    const feesParamsData: LBPairFeeParameters[] = await Promise.all(
-      LBPairsAddrs.map((addr) => PairV2.getFeeParameters(addr, provider))
+  ): Promise<TradeFee> {
+    const ONE_HUNDRED_PERCENT = new Percent(
+      JSBI.BigInt(10000),
+      JSBI.BigInt(10000)
     )
 
-    // calculate fees
-    const feePercentages: LBPairFeePercent[] = feesParamsData.map(
-      (feeParamData: LBPairFeeParameters) =>
-        PairV2.calculateFeePercentage(feeParamData)
+    // get fees for each pair in the trade route
+    const fees: Fraction[] = await Promise.all(
+      this.quote.pairs.map((pairAddr, i) => {
+        const binStep = this.quote.binSteps[i].toNumber()
+        return PairV2.getPairFee(pairAddr, binStep, provider)
+      })
     )
 
-    // sum add fee percentages and get total percentage
-    const baseFeePct = feePercentages.reduce(
-      (prev, curr) => prev.add(curr.baseFeePct),
-      new Percent(BigInt(0), BigInt(1e18))
+    // get realized fee
+    // e.g. for 2 pairs X an Y: 1 - ((1 - feeX%) * (1 - feeY%))
+    const realizedLPFee = ONE_HUNDRED_PERCENT.subtract(
+      fees.reduce(
+        (feeSofar: Fraction, currentFee: Fraction) =>
+          feeSofar.multiply(ONE_HUNDRED_PERCENT.subtract(currentFee)),
+        ONE_HUNDRED_PERCENT
+      )
     )
-    const variableFeePct = feePercentages.reduce(
-      (prev, curr) => prev.add(curr.variableFeePct),
-      new Percent(BigInt(0), BigInt(1e18))
-    )
-    const totalFeePct = baseFeePct.add(variableFeePct)
 
-    // fee in terms of input currency
+    // get fee % and amount of the input that accrues to LPs
+    const totalFeePct = new Percent(
+      realizedLPFee.numerator,
+      realizedLPFee.denominator
+    )
+
     const feeAmountIn = new TokenAmount(
       this.inputAmount.token,
       totalFeePct.multiply(this.inputAmount.raw).quotient
     )
 
     return {
-      baseFeePct,
-      variableFeePct,
       totalFeePct,
       feeAmountIn
     }

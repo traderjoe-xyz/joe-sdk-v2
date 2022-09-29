@@ -16,9 +16,9 @@ const swapAmountIn = async () => {
   const BASES = [WAVAX, USDC, USDT]
 
   // Init: user inputs
-  const inputToken = USDC
+  const inputToken = WAVAX
   const outputToken = USDT
-  const typedValueIn = '10' // user string input
+  const typedValueIn = '0.01' // user string input
   const typedValueInParsed = parseUnits(typedValueIn, inputToken.decimals).toString() // returns 10000
   const amountIn = new TokenAmount(inputToken, JSBI.BigInt(typedValueInParsed)) // wrap into TokenAmount
   const userSlippageTolerance = new Percent(JSBI.BigInt(50), JSBI.BigInt(10000)) // 0.5%
@@ -36,17 +36,14 @@ const swapAmountIn = async () => {
   const chainId = ChainId.FUJI
   const provider = new JsonRpcProvider(FUJI_URL)
   const trades = await TradeV2.getTradesExactIn(allRoutes, amountIn, outputToken, provider, chainId) // console.log('trades', trades.map(el=>el.toLog()))
-  console.debug('trades', trades)
 
-  trades.forEach((trade) => {
-    console.log(trade.toLog())
-  })
-
-  const { baseFeePct, variableFeePct, totalFeePct, feeAmountIn } = await trades[0].getLBFee(provider)
-  console.debug('\nBase fees percentage',baseFeePct.toSignificant(6), '%')
-  console.debug('Variable fees percentage',variableFeePct.toSignificant(6), '%')
-  console.debug('Total fees percentage',totalFeePct.toSignificant(6), '%')
-  console.debug(`Fee: ${JSBI.toNumber(feeAmountIn.raw)} ${amountIn.token.symbol}`) // in token's decimals
+  for (let trade of trades){
+    console.log('\n',trade.toLog())
+    const { totalFeePct, feeAmountIn } = await trade.getTradeFee(provider)
+    console.debug('Total fees percentage',totalFeePct.toSignificant(6), '%')
+    console.debug(`Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`) // in token's decimals
+  }
+  
 
   // get gas estimates for each trade
   // const signer = new ethers.Wallet(WALLET_PK, provider)
