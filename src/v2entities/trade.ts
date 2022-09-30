@@ -3,7 +3,6 @@ import { Provider } from '@ethersproject/abstract-provider'
 import { Web3Provider } from '@ethersproject/providers'
 import {
   Token,
-  CAVAX,
   TokenAmount,
   Price,
   Percent,
