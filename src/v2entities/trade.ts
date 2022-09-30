@@ -10,7 +10,8 @@ import {
   Fraction,
   CurrencyAmount,
   TradeType,
-  ChainId
+  ChainId,
+  WAVAX
 } from '@traderjoe-xyz/sdk'
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
@@ -46,13 +47,17 @@ export class TradeV2 {
   public readonly executionPrice: Price // The price expressed in terms of output amount/input amount.
   public readonly exactQuote: TokenAmount // The exact amount if there was not slippage
   public readonly priceImpact: Percent // The percent difference between the executionPrice and the midPrice due to trade size
+  public readonly isAvaxIn: boolean
+  public readonly isAvaxOut: boolean
 
   public constructor(
     route: RouteV2,
     tokenIn: Token,
     tokenOut: Token,
     quote: Quote,
-    isExactIn: boolean
+    isExactIn: boolean,
+    isAvaxIn: boolean,
+    isAvaxOut: boolean
   ) {
     const inputAmount = new TokenAmount(
       tokenIn,
@@ -66,6 +71,8 @@ export class TradeV2 {
     this.route = route
     this.tradeType = isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT
     this.quote = quote
+    this.isAvaxIn = isAvaxIn
+    this.isAvaxOut = isAvaxOut
     this.inputAmount = inputAmount
     this.outputAmount = outputAmount
     this.executionPrice = new Price(
@@ -137,8 +144,8 @@ export class TradeV2 {
   public swapCallParameters(
     options: TradeOptions | TradeOptionsDeadline
   ): SwapParameters {
-    const avaxIn = this.inputAmount.currency === CAVAX
-    const avaxOut = this.outputAmount.currency === CAVAX
+    const avaxIn = this.isAvaxIn
+    const avaxOut = this.isAvaxOut
     // the router does not support both avax in and out
     invariant(!(avaxIn && avaxOut), 'AVAX_IN_OUT')
     invariant(!('ttl' in options) || options.ttl > 0, 'TTL')
@@ -361,6 +368,8 @@ export class TradeV2 {
     chainId: ChainId
   ): Promise<Array<TradeV2 | undefined>> {
     const isExactIn = true
+    const isAvaxIn = tokenAmountIn.token.address === WAVAX[chainId].address
+    const isAvaxOut = tokenOut.address === WAVAX[chainId].address
     const amountIn = JSBI.toNumber(tokenAmountIn.raw)
     console.debug('amountIn', amountIn)
     const quoterInterface = new utils.Interface(LBQuoterABI.abi)
@@ -383,7 +392,9 @@ export class TradeV2 {
             tokenAmountIn.token,
             tokenOut,
             quote,
-            isExactIn
+            isExactIn,
+            isAvaxIn,
+            isAvaxOut
           )
           return trade
         } catch (e) {
@@ -418,6 +429,8 @@ export class TradeV2 {
     chainId: ChainId
   ): Promise<Array<TradeV2 | undefined>> {
     const isExactIn = false
+    const isAvaxIn = tokenIn.address === WAVAX[chainId].address
+    const isAvaxOut = tokenAmountOut.token.address === WAVAX[chainId].address
     const amountOut = JSBI.toNumber(tokenAmountOut.raw)
     const quoterInterface = new utils.Interface(LBQuoterABI.abi)
     const quoter = new Contract(
@@ -439,7 +452,9 @@ export class TradeV2 {
             tokenIn,
             tokenAmountOut.token,
             quote,
-            isExactIn
+            isExactIn,
+            isAvaxIn,
+            isAvaxOut
           )
           return trade
         } catch (e) {
