@@ -36,11 +36,22 @@
       "inputs": [
         {
           "internalType": "int256",
-          "name": "_id",
+          "name": "id",
           "type": "int256"
         }
       ],
       "name": "BinHelper__IdOverflows",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "BinHelper__IntOverflows",
       "type": "error"
     },
     {
@@ -715,6 +726,11 @@
           "internalType": "uint256",
           "name": "amountIn",
           "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "feesIn",
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -742,7 +758,12 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "_amountOut",
+          "name": "amountOut",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "feesIn",
           "type": "uint256"
         }
       ],
@@ -1285,6 +1306,34 @@
         }
       ],
       "name": "sweep",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract ILBToken",
+          "name": "_lbToken",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_ids",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256[]",
+          "name": "_amounts",
+          "type": "uint256[]"
+        }
+      ],
+      "name": "sweepLBToken",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
