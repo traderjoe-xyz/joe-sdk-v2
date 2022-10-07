@@ -9,8 +9,20 @@ const getLBPairsAndActiveIds = async () => {
   const FUJI_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
   const provider = new ethers.providers.JsonRpcProvider(FUJI_URL)
   const chainId = ChainId.FUJI
-  const USDC = new Token(ChainId.FUJI, '0x8c0f5Ade9cBdb19a49B06aDFB67b6702B459162B', 6, 'USDC', 'USD Coin')
-  const USDT = new Token(ChainId.FUJI, '0x791B0c848AD79549F950f69E6E4CF9e3C112a230', 6, 'USDT.e', 'Tether USD')
+  const USDC = new Token(
+    ChainId.FUJI,
+    '0xB6076C93701D6a07266c31066B298AeC6dd65c2d',
+    6,
+    'USDC',
+    'USD Coin'
+  )
+  const USDT = new Token(
+    ChainId.FUJI,
+    '0xAb231A5744C8E6c45481754928cCfFFFD4aa0732',
+    6,
+    'USDT.e',
+    'Tether USD'
+  )
 
   // fetch LBPairs
   const pair = new PairV2(USDC, USDT)
