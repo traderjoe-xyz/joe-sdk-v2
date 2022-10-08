@@ -26,6 +26,17 @@
       "inputs": [
         {
           "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "BinHelper__IntOverflows",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
           "name": "expectedBalance",
           "type": "uint256"
         },
@@ -94,6 +105,22 @@
         }
       ],
       "name": "LBPair__InsufficientLiquidityMinted",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "newSize",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "oracleSize",
+          "type": "uint256"
+        }
+      ],
+      "name": "LBPair__NewSizeTooSmall",
       "type": "error"
     },
     {
@@ -309,7 +336,12 @@
     },
     {
       "inputs": [],
-      "name": "ReentrancyGuard__ReentrantCall",
+      "name": "ReentrancyGuardUpgradeable__AlreadyInitialized",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardUpgradeable__ReentrantCall",
       "type": "error"
     },
     {
@@ -332,17 +364,6 @@
         }
       ],
       "name": "SafeCast__Exceeds128Bits",
-      "type": "error"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "x",
-          "type": "uint256"
-        }
-      ],
-      "name": "SafeCast__Exceeds16Bits",
       "type": "error"
     },
     {
@@ -1030,9 +1051,9 @@
       "name": "findFirstNonEmptyBinId",
       "outputs": [
         {
-          "internalType": "uint256",
+          "internalType": "uint24",
           "name": "",
-          "type": "uint256"
+          "type": "uint24"
         }
       ],
       "stateMutability": "view",
@@ -1172,7 +1193,7 @@
       "inputs": [
         {
           "internalType": "uint256",
-          "name": "_ago",
+          "name": "_timeDelta",
           "type": "uint256"
         }
       ],
@@ -1224,7 +1245,7 @@
       "inputs": [
         {
           "internalType": "uint16",
-          "name": "_nb",
+          "name": "_newSize",
           "type": "uint16"
         }
       ],
@@ -1563,7 +1584,7 @@
           "type": "uint256"
         }
       ],
-      "name": "userPositionAt",
+      "name": "userPositionAtIndex",
       "outputs": [
         {
           "internalType": "uint256",
@@ -1582,7 +1603,7 @@
           "type": "address"
         }
       ],
-      "name": "userPositionNb",
+      "name": "userPositionNumber",
       "outputs": [
         {
           "internalType": "uint256",

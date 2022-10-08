@@ -9,16 +9,16 @@ export const MULTICALL_ADDRESS: { [chainId in ChainId]: string } = {
 }
 
 export const LB_QUOTER_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.FUJI]: '0x095808Ee0C8248bF37d7Bf0C050d563f078Ef674',
+  [ChainId.FUJI]: '0x0C926BF1E71725eD68AE3041775e9Ba29142dca9',
   [ChainId.AVALANCHE]: ''
 }
 
 export const LB_ROUTER_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.FUJI]: '0x88080086a243616008294725A4B0fD78B4d6a6c2',
+  [ChainId.FUJI]: '0x0C344c52841d3F8d488E1CcDBafB42CE2C7fdFA9',
   [ChainId.AVALANCHE]: ''
 }
 
 export const LB_FACTORY_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.FUJI]: '0x2c2A4F4F0d5BABB0E501784F4D66a7131eff86F1',
+  [ChainId.FUJI]: '0x2950b9bd19152C91d69227364747b3e6EFC8Ab7F',
   [ChainId.AVALANCHE]: ''
 }
