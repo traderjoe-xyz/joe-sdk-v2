@@ -33,6 +33,37 @@
       "type": "error"
     },
     {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        }
+      ],
+      "name": "BinHelper__IntOverflows",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "JoeLibrary__AddressZero",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "JoeLibrary__IdenticalAddresses",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "JoeLibrary__InsufficientAmount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "JoeLibrary__InsufficientLiquidity",
+      "type": "error"
+    },
+    {
       "inputs": [],
       "name": "LBQuoter_InvalidLength",
       "type": "error"
@@ -51,6 +82,49 @@
         }
       ],
       "name": "Math128x128__PowerUnderflow",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "prod1",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "denominator",
+          "type": "uint256"
+        }
+      ],
+      "name": "Math512Bits__MulDivOverflow",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "prod1",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "offset",
+          "type": "uint256"
+        }
+      ],
+      "name": "Math512Bits__MulShiftOverflow",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "offset",
+          "type": "uint256"
+        }
+      ],
+      "name": "Math512Bits__OffsetOverflows",
       "type": "error"
     },
     {
@@ -92,7 +166,7 @@
           "type": "uint256"
         }
       ],
-      "name": "findBestPathAmountIn",
+      "name": "findBestPathFromAmountIn",
       "outputs": [
         {
           "components": [
@@ -119,6 +193,11 @@
             {
               "internalType": "uint256[]",
               "name": "virtualAmountsWithoutSlippage",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "fees",
               "type": "uint256[]"
             }
           ],
@@ -143,7 +222,7 @@
           "type": "uint256"
         }
       ],
-      "name": "findBestPathAmountOut",
+      "name": "findBestPathFromAmountOut",
       "outputs": [
         {
           "components": [
@@ -170,6 +249,11 @@
             {
               "internalType": "uint256[]",
               "name": "virtualAmountsWithoutSlippage",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "fees",
               "type": "uint256[]"
             }
           ],

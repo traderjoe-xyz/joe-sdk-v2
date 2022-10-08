@@ -8,10 +8,10 @@ config() // loads env variables
 
 const main = async () => {
   await swapAmountIn()
-  // await swapAmountOut()
-  // await pricesAndBinsRelations()
-  // await getLBPairsAndActiveIds()
-  // await getFees()
+  await swapAmountOut()
+  await pricesAndBinsRelations()
+  await getLBPairsAndActiveIds()
+  await getFees()
 }
 
 main()

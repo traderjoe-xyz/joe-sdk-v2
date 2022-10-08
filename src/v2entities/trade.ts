@@ -82,10 +82,9 @@ export class TradeV2 {
     )
 
     // compute exactQuote and priceImpact
-    const exactQuoteStr =
-      quote.virtualAmountsWithoutSlippage[
-        quote.virtualAmountsWithoutSlippage.length - 1
-      ].toString()
+    const exactQuoteStr = quote.virtualAmountsWithoutSlippage[
+      quote.virtualAmountsWithoutSlippage.length - 1
+    ].toString()
     this.exactQuote = new TokenAmount(tokenOut, JSBI.BigInt(exactQuoteStr))
     const slippage = this.exactQuote
       .subtract(outputAmount)
@@ -298,8 +297,9 @@ export class TradeV2 {
       deadline: currentBlockTimestamp + 120
     }
 
-    const { methodName, args, value }: SwapParameters =
-      this.swapCallParameters(options)
+    const { methodName, args, value }: SwapParameters = this.swapCallParameters(
+      options
+    )
     const msgOptions = !value || isZero(value) ? {} : { value }
 
     const gasPrice = await signer.getGasPrice()
@@ -382,7 +382,7 @@ export class TradeV2 {
       routes.map(async (route) => {
         try {
           const routeStrArr = route.pathToStrArr()
-          const quote: Quote = await quoter.findBestPathAmountIn(
+          const quote: Quote = await quoter.findBestPathFromAmountIn(
             routeStrArr,
             amountIn.toString()
           )
@@ -442,7 +442,7 @@ export class TradeV2 {
       routes.map(async (route) => {
         try {
           const routeStrArr = route.pathToStrArr()
-          const quote: Quote = await quoter.findBestPathAmountOut(
+          const quote: Quote = await quoter.findBestPathFromAmountOut(
             routeStrArr,
             amountOut
           )
