@@ -196,9 +196,8 @@ export class PairV2 {
 
     // for v2 LBPair, fetch and calculate fee %
     const feeParams = await PairV2.getFeeParameters(pairAddr, provider)
-    const { baseFeePct, variableFeePct } = PairV2.calculateFeePercentage(
-      feeParams
-    )
+    const { baseFeePct, variableFeePct } =
+      PairV2.calculateFeePercentage(feeParams)
     const totalFeeFraction = baseFeePct.add(variableFeePct)
     const totalFeePct = new Percent(
       totalFeeFraction.numerator,
@@ -221,7 +220,8 @@ export class PairV2 {
     const LBPairInterface = new utils.Interface(LBPairABI.abi)
     const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
 
-    const feeParametersData: LBPairFeeParameters = await pairContract.feeParameters()
+    const feeParametersData: LBPairFeeParameters =
+      await pairContract.feeParameters()
 
     return feeParametersData
   }
@@ -235,12 +235,8 @@ export class PairV2 {
   public static calculateFeePercentage(
     LBPairFeeData: LBPairFeeParameters
   ): LBPairFeePercent {
-    const {
-      baseFactor,
-      variableFeeControl,
-      volatilityAccumulated,
-      binStep
-    } = LBPairFeeData
+    const { baseFactor, variableFeeControl, volatilityAccumulated, binStep } =
+      LBPairFeeData
     const baseFee = baseFactor * binStep * 1e10
     const variableFee =
       variableFeeControl === 0
@@ -323,16 +319,10 @@ export class PairV2 {
     const amountX: number = JSBI.toNumber(_amountX)
     const amountY: number = JSBI.toNumber(_amountY)
     const amountXMin = JSBI.toNumber(
-      new Fraction(ONE)
-        .add(amountSlippage)
-        .invert()
-        .multiply(_amountX).quotient
+      new Fraction(ONE).add(amountSlippage).invert().multiply(_amountX).quotient
     )
     const amountYMin = JSBI.toNumber(
-      new Fraction(ONE)
-        .add(amountSlippage)
-        .invert()
-        .multiply(_amountY).quotient
+      new Fraction(ONE).add(amountSlippage).invert().multiply(_amountY).quotient
     )
 
     const _priceSlippage: number = Number(priceSlippage.toSignificant()) / 100

@@ -15,7 +15,6 @@ import {
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
 
-import { PairV2 } from './pair'
 import { RouteV2 } from './route'
 import {
   LB_QUOTER_ADDRESS,
@@ -82,9 +81,10 @@ export class TradeV2 {
     )
 
     // compute exactQuote and priceImpact
-    const exactQuoteStr = quote.virtualAmountsWithoutSlippage[
-      quote.virtualAmountsWithoutSlippage.length - 1
-    ].toString()
+    const exactQuoteStr =
+      quote.virtualAmountsWithoutSlippage[
+        quote.virtualAmountsWithoutSlippage.length - 1
+      ].toString()
     this.exactQuote = new TokenAmount(tokenOut, JSBI.BigInt(exactQuoteStr))
     const slippage = this.exactQuote
       .subtract(outputAmount)
@@ -223,42 +223,52 @@ export class TradeV2 {
     }
   }
 
-  public async getTradeFee(
-    provider: Provider | Web3Provider | any
-  ): Promise<TradeFee> {
-    const ONE_HUNDRED_PERCENT = new Percent(
-      JSBI.BigInt(10000),
-      JSBI.BigInt(10000)
+  /**
+   * Calculates trade fee in terms of inputToken
+   *
+   * @returns {TradeFee}
+   */
+  public async getTradeFee(): Promise<TradeFee> {
+    // amounts for each step of the swap
+    const amounts = this.quote.amounts.map((bn) => bn.toString())
+
+    // fee % for each step of the swap
+    const feesPct = this.quote.fees.map(
+      (bn) => new Percent(JSBI.BigInt(bn.toString()), JSBI.BigInt(1e18))
     )
 
-    // get fees for each pair in the trade route
-    const fees: Fraction[] = await Promise.all(
-      this.quote.pairs.map((pairAddr, i) => {
-        const binStep = this.quote.binSteps[i].toNumber()
-        return PairV2.getPairFee(pairAddr, binStep, provider)
-      })
-    )
+    // fee amount
+    const fees = feesPct.map((pct, i) => {
+      const amount = amounts[i]
+      return pct.multiply(JSBI.BigInt(amount)).quotient
+    })
 
-    // get realized fee
-    // e.g. for 2 pairs X an Y: 1 - ((1 - feeX%) * (1 - feeY%))
-    const realizedLPFee = ONE_HUNDRED_PERCENT.subtract(
-      fees.reduce(
-        (feeSofar: Fraction, currentFee: Fraction) =>
-          feeSofar.multiply(ONE_HUNDRED_PERCENT.subtract(currentFee)),
-        ONE_HUNDRED_PERCENT
+    // fees in terms of the inputToken
+    const feesTokenIn = fees.map((fee, i) => {
+      // first fee will always be in terms of inputToken
+      if (i === 0) {
+        return fee
+      }
+
+      const { virtualAmountsWithoutSlippage } = this.quote
+      const midPrice = new Fraction(
+        JSBI.BigInt(virtualAmountsWithoutSlippage[i - 1].toString()),
+        JSBI.BigInt(virtualAmountsWithoutSlippage[i].toString())
       )
+      return midPrice.multiply(fee).quotient
+    })
+
+    // sum of all fees
+    const totalFee = feesTokenIn.reduce(
+      (a, b) => JSBI.add(a, b),
+      JSBI.BigInt('0')
     )
 
-    // get fee % and amount of the input that accrues to LPs
-    const totalFeePct = new Percent(
-      realizedLPFee.numerator,
-      realizedLPFee.denominator
-    )
+    // get total fee in inputToken
+    const feeAmountIn = new TokenAmount(this.inputAmount.token, totalFee)
 
-    const feeAmountIn = new TokenAmount(
-      this.inputAmount.token,
-      totalFeePct.multiply(this.inputAmount.raw).quotient
-    )
+    // get total fee pct
+    const totalFeePct = new Percent(totalFee, JSBI.BigInt(this.inputAmount.raw))
 
     return {
       totalFeePct,
@@ -297,9 +307,8 @@ export class TradeV2 {
       deadline: currentBlockTimestamp + 120
     }
 
-    const { methodName, args, value }: SwapParameters = this.swapCallParameters(
-      options
-    )
+    const { methodName, args, value }: SwapParameters =
+      this.swapCallParameters(options)
     const msgOptions = !value || isZero(value) ? {} : { value }
 
     const gasPrice = await signer.getGasPrice()
@@ -341,6 +350,7 @@ export class TradeV2 {
         pairs: this.quote.pairs.join(', '),
         binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
         amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
+        fees: this.quote.fees.map((el) => el.toString()).join(', '),
         virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage
           .map((el) => el.toString())
           .join(', ')
@@ -370,7 +380,6 @@ export class TradeV2 {
     const isAvaxIn = tokenAmountIn.token.address === WAVAX[chainId].address
     const isAvaxOut = tokenOut.address === WAVAX[chainId].address
     const amountIn = JSBI.toNumber(tokenAmountIn.raw)
-    console.debug('amountIn', amountIn)
     const quoterInterface = new utils.Interface(LBQuoterABI.abi)
     const quoter = new Contract(
       LB_QUOTER_ADDRESS[chainId],
