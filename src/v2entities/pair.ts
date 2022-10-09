@@ -45,7 +45,7 @@ export class PairV2 {
     provider: Provider,
     chainId: ChainId
   ): Promise<LBPair[]> {
-    const factoryInterface = new utils.Interface(LBFactoryABI.abi)
+    const factoryInterface = new utils.Interface(LBFactoryABI)
     const factory = new Contract(
       LB_FACTORY_ADDRESS[chainId],
       factoryInterface,
@@ -71,7 +71,7 @@ export class PairV2 {
     provider: Provider,
     chainId: ChainId
   ): Promise<LBPair> {
-    const factoryInterface = new utils.Interface(LBFactoryABI.abi)
+    const factoryInterface = new utils.Interface(LBFactoryABI)
     const factory = new Contract(
       LB_FACTORY_ADDRESS[chainId],
       factoryInterface,
@@ -170,7 +170,7 @@ export class PairV2 {
     LBPairAddr: string,
     provider: Provider
   ): Promise<LBPairReservesAndId> {
-    const LBPairInterface = new utils.Interface(LBPairABI.abi)
+    const LBPairInterface = new utils.Interface(LBPairABI)
     const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
 
     const pairData: LBPairReservesAndId = await pairContract.getReservesAndId()
@@ -217,7 +217,7 @@ export class PairV2 {
     LBPairAddr: string,
     provider: Provider | Web3Provider | any
   ): Promise<LBPairFeeParameters> {
-    const LBPairInterface = new utils.Interface(LBPairABI.abi)
+    const LBPairInterface = new utils.Interface(LBPairABI)
     const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
 
     const feeParametersData: LBPairFeeParameters =

@@ -289,7 +289,7 @@ export class TradeV2 {
     chainId: ChainId,
     slippageTolerance: Percent
   ): Promise<BigNumber> {
-    const routerInterface = new utils.Interface(LBRouterABI.abi)
+    const routerInterface = new utils.Interface(LBRouterABI)
     const router = new Contract(
       LB_ROUTER_ADDRESS[chainId],
       routerInterface,
@@ -380,7 +380,7 @@ export class TradeV2 {
     const isAvaxIn = tokenAmountIn.token.address === WAVAX[chainId].address
     const isAvaxOut = tokenOut.address === WAVAX[chainId].address
     const amountIn = JSBI.toNumber(tokenAmountIn.raw)
-    const quoterInterface = new utils.Interface(LBQuoterABI.abi)
+    const quoterInterface = new utils.Interface(LBQuoterABI)
     const quoter = new Contract(
       LB_QUOTER_ADDRESS[chainId],
       quoterInterface,
@@ -440,7 +440,7 @@ export class TradeV2 {
     const isAvaxIn = tokenIn.address === WAVAX[chainId].address
     const isAvaxOut = tokenAmountOut.token.address === WAVAX[chainId].address
     const amountOut = JSBI.toNumber(tokenAmountOut.raw)
-    const quoterInterface = new utils.Interface(LBQuoterABI.abi)
+    const quoterInterface = new utils.Interface(LBQuoterABI)
     const quoter = new Contract(
       LB_QUOTER_ADDRESS[chainId],
       quoterInterface,
