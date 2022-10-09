@@ -1,4 +1,4 @@
-const { PairV2, RouteV2, TradeV2 } = require('../../dist')
+const { PairV2, RouteV2, TradeV2, LBFactoryABI } = require('../../dist')
 const {
   Token,
   ChainId,
@@ -11,6 +11,7 @@ const { JsonRpcProvider } = require('@ethersproject/providers')
 const JSBI = require('JSBI')
 
 const swapAmountIn = async () => {
+  console.log('LBFactoryABI', LBFactoryABI)
   console.log('\n------- swapAmountIn() called -------\n')
 
   // Init constants
