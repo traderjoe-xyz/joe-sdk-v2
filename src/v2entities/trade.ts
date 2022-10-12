@@ -63,7 +63,7 @@ export class TradeV2 {
     )
     const outputAmount = new TokenAmount(
       tokenOut,
-      JSBI.BigInt(quote.amounts[quote.amounts.length - 1])
+      JSBI.BigInt(quote.amounts[quote.amounts.length - 1].toString())
     )
 
     this.route = route
@@ -478,6 +478,34 @@ export class TradeV2 {
     )
   }
 
+  public static chooseBestTrade(
+    trades: TradeV2[],
+    isExactIn: boolean
+  ): TradeV2 | undefined {
+    if (trades.length === 0) {
+      return undefined
+    }
+
+    let bestTrade = trades[0]
+
+    trades.forEach((trade) => {
+      if (isExactIn) {
+        if (
+          JSBI.greaterThan(trade.outputAmount.raw, bestTrade.outputAmount.raw)
+        ) {
+          bestTrade = trade
+        }
+      } else {
+        if (
+          JSBI.greaterThan(trade.outputAmount.raw, JSBI.BigInt(0)) &&
+          JSBI.lessThan(trade.outputAmount.raw, bestTrade.outputAmount.raw)
+        ) {
+          bestTrade = trade
+        }
+      }
+    })
+    return bestTrade
+  }
   /**
    * Selects the best trade given trades and gas
    *
@@ -485,59 +513,59 @@ export class TradeV2 {
    * @param {BigNumber[]} estimatedGas
    * @returns {bestTrade: TradeV2, estimatedGas: BigNumber}
    */
-  public static chooseBestTrade(
-    trades: TradeV2[],
-    estimatedGas: BigNumber[]
-  ): {
-    bestTrade: TradeV2
-    estimatedGas: BigNumber
-  } {
-    const tradeType = trades[0].tradeType
-    // The biggest tradeValueAVAX will be the most accurate
-    // If we haven't found any equivalent of the trade in AVAX, we won't take gas cost into account
-    const tradeValueAVAX = BigNumber.from(0)
+  // public static chooseBestTrade(
+  //   trades: TradeV2[],
+  //   estimatedGas: BigNumber[]
+  // ): {
+  //   bestTrade: TradeV2
+  //   estimatedGas: BigNumber
+  // } {
+  //   const tradeType = trades[0].tradeType
+  //   // The biggest tradeValueAVAX will be the most accurate
+  //   // If we haven't found any equivalent of the trade in AVAX, we won't take gas cost into account
+  //   const tradeValueAVAX = BigNumber.from(0)
 
-    const tradesWithGas = trades.map((trade, index) => {
-      return {
-        trade: trade,
-        estimatedGas: estimatedGas[index],
-        swapOutcome:
-          trade.tradeType === TradeType.EXACT_INPUT
-            ? new Fraction(
-                trade.outputAmount.numerator,
-                trade.outputAmount.denominator
-              ).subtract(
-                tradeValueAVAX.eq(0)
-                  ? BigInt(0)
-                  : // Cross product to get the gas price against the output token
-                    trade.outputAmount
-                      .multiply(estimatedGas[index].toString())
-                      .divide(tradeValueAVAX.toBigInt())
-              )
-            : new Fraction(
-                trade.inputAmount.numerator,
-                trade.inputAmount.denominator
-              ).add(
-                tradeValueAVAX.eq(0)
-                  ? BigInt(0)
-                  : trade.inputAmount
-                      .multiply(estimatedGas[index].toString())
-                      .divide(tradeValueAVAX.toBigInt())
-              )
-      }
-    })
+  //   const tradesWithGas = trades.map((trade, index) => {
+  //     return {
+  //       trade: trade,
+  //       estimatedGas: estimatedGas[index],
+  //       swapOutcome:
+  //         trade.tradeType === TradeType.EXACT_INPUT
+  //           ? new Fraction(
+  //               trade.outputAmount.numerator,
+  //               trade.outputAmount.denominator
+  //             ).subtract(
+  //               tradeValueAVAX.eq(0)
+  //                 ? BigInt(0)
+  //                 : // Cross product to get the gas price against the output token
+  //                   trade.outputAmount
+  //                     .multiply(estimatedGas[index].toString())
+  //                     .divide(tradeValueAVAX.toBigInt())
+  //             )
+  //           : new Fraction(
+  //               trade.inputAmount.numerator,
+  //               trade.inputAmount.denominator
+  //             ).add(
+  //               tradeValueAVAX.eq(0)
+  //                 ? BigInt(0)
+  //                 : trade.inputAmount
+  //                     .multiply(estimatedGas[index].toString())
+  //                     .divide(tradeValueAVAX.toBigInt())
+  //             )
+  //     }
+  //   })
 
-    const bestTrade = tradesWithGas.reduce((previousTrade, currentTrade) =>
-      tradeType === TradeType.EXACT_INPUT
-        ? currentTrade.swapOutcome.greaterThan(previousTrade.swapOutcome)
-          ? currentTrade
-          : previousTrade
-        : currentTrade.trade.inputAmount.greaterThan('0') &&
-          currentTrade.swapOutcome.lessThan(previousTrade.swapOutcome)
-        ? currentTrade
-        : previousTrade
-    )
+  //   const bestTrade = tradesWithGas.reduce((previousTrade, currentTrade) =>
+  //     tradeType === TradeType.EXACT_INPUT
+  //       ? currentTrade.swapOutcome.greaterThan(previousTrade.swapOutcome)
+  //         ? currentTrade
+  //         : previousTrade
+  //       : currentTrade.trade.inputAmount.greaterThan('0') &&
+  //         currentTrade.swapOutcome.lessThan(previousTrade.swapOutcome)
+  //       ? currentTrade
+  //       : previousTrade
+  //   )
 
-    return { bestTrade: bestTrade.trade, estimatedGas: bestTrade.estimatedGas }
-  }
+  //   return { bestTrade: bestTrade.trade, estimatedGas: bestTrade.estimatedGas }
+  // }
 }
