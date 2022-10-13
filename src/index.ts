@@ -55,7 +55,8 @@ export {
   LAUNCHPEG_LENS_ADDRESS,
   LB_ROUTER_ADDRESS,
   LB_FACTORY_ADDRESS,
-  DEX_V2_SUBGRAPH
+  DEX_V2_SUBGRAPH,
+  DEXCANDLES_SUBGRAPH_V2
 } from './constants'
 
 export * from './abis'
