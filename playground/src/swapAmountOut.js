@@ -35,11 +35,11 @@ const swapAmountOut = async () => {
 
   // Init: user inputs
   const inputToken = USDC
-  const outputToken = USDT
-  const typedValueOut = '0.01' // user string input
+  const outputToken = WAVAX
+  const typedValueOut = '1' // user string input
   const typedValueOutParsed = parseUnits(
     typedValueOut,
-    inputToken.decimals
+    outputToken.decimals
   ).toString() // returns 10000
   const amountOut = new TokenAmount(
     outputToken,
@@ -69,7 +69,7 @@ const swapAmountOut = async () => {
     inputToken,
     provider,
     chainId
-  ) // console.debug('trades', trades.map(el=>el.toLog()))
+  )  
 
   // console.log('trades', trades)
   for (let trade of trades) {
