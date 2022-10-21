@@ -58,7 +58,7 @@ export class PairV2 {
       factoryInterface,
       provider
     )
-    const LBPairs: LBPair[] = await factory.getAvailableLBPairsBinStep(
+    const LBPairs: LBPair[] = await factory.getAllLBPairs(
       this.token0.address,
       this.token1.address
     )
