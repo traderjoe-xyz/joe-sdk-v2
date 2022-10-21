@@ -34,9 +34,9 @@ const swapAmountIn = async () => {
   const BASES = [WAVAX, USDC, USDT]
 
   // Init: user inputs
-  const inputToken = WAVAX
-  const outputToken = USDT
-  const typedValueIn = '0.01' // user string input
+  const inputToken = USDC
+  const outputToken = WAVAX
+  const typedValueIn = '10' // user string input
   const typedValueInParsed = parseUnits(
     typedValueIn,
     inputToken.decimals
@@ -74,7 +74,7 @@ const swapAmountIn = async () => {
     console.debug('Total fees percentage', totalFeePct.toSignificant(6), '%')
     console.debug(
       `Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`
-    ) // in token's decimals
+    ) 
   }
 
   // get gas estimates for each trade

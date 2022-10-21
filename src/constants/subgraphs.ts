@@ -1,4 +1,4 @@
-import { ChainId } from './external'
+import { ChainId } from './internal'
 
 export const DEX_V2_SUBGRAPH: { [chainId in ChainId]: string } = {
   [ChainId.FUJI]:

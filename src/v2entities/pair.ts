@@ -3,7 +3,13 @@ import { Provider } from '@ethersproject/abstract-provider'
 import { Web3Provider } from '@ethersproject/providers'
 import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
-import { Token, Percent, TokenAmount, Fraction } from '@traderjoe-xyz/sdk'
+import {
+  Token,
+  Percent,
+  TokenAmount,
+  Fraction,
+  ChainId
+} from '@traderjoe-xyz/sdk'
 
 import {
   LBPair,
@@ -13,7 +19,7 @@ import {
   LiquidityDistribution,
   BinReserves
 } from '../types'
-import { ChainId, LB_FACTORY_ADDRESS, ONE } from '../constants'
+import { LB_FACTORY_ADDRESS, ONE } from '../constants'
 import { Bin } from './bin'
 import { getLiquidityConfig } from '../utils'
 
