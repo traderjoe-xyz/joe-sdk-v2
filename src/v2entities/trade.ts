@@ -229,10 +229,12 @@ export class TradeV2 {
    * @returns {TradeFee}
    */
   public async getTradeFee(): Promise<TradeFee> {
-    // amounts for each step of the swap; e.g. [10 WAVAX, 20 USDC, 19.9 USDT ] when inputAmount is 10 WAVAX and resulting outputToken is USDT
+    // amounts for each step of the swap returned from quoter contract
+    // e.g. [10 WAVAX, 20 USDC, 19.9 USDT ] when inputAmount is 10 WAVAX and resulting outputToken is USDT
     const amounts = this.quote.amounts
 
-    // fee % for each step of the swap; e.g. [WAVAX-USDC pool 0.05%, USDC-USDT pool 0.01%]
+    // pool fee % for each step of the swap from quoter contract
+    // e.g. [WAVAX-USDC pool 0.05%, USDC-USDT pool 0.01%]
     const feesPct = this.quote.fees.map(
       (bn) => new Percent(JSBI.BigInt(bn.toString()), JSBI.BigInt(1e18))
     )
@@ -243,7 +245,7 @@ export class TradeV2 {
       return pct.multiply(JSBI.BigInt(amount)).quotient
     })
 
-    // change fees in terms of the inputToken; e.g. [0.005 WAVAX, 0.0001 WAVAX]
+    // change each fees in terms of the inputToken; e.g. [0.005 WAVAX, 0.0001 WAVAX]
     const feesTokenIn = fees.map((fee, i) => {
       // first fee will always be in terms of inputToken
       if (i === 0) {
