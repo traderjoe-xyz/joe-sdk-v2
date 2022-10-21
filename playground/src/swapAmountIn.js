@@ -3,7 +3,7 @@ const {
   Token,
   ChainId,
   WAVAX: _WAVAX,
-  TokenAmount,
+  TokenAmount
 } = require('@traderjoe-xyz/sdk')
 const { parseUnits } = require('@ethersproject/units')
 const { JsonRpcProvider } = require('@ethersproject/providers')
@@ -52,7 +52,12 @@ const swapAmountIn = async () => {
   const allPairs = PairV2.initPairs(allTokenPairs) // console.log('allPairs', allPairs)
 
   // routes to consider in finding the best trade
-  const allRoutes = RouteV2.createAllRoutes(allPairs, inputToken, outputToken) // console.log('allRoutes', allRoutes)
+  const allRoutes = RouteV2.createAllRoutes(
+    allPairs,
+    inputToken,
+    outputToken,
+    2
+  ) // console.log('allRoutes', allRoutes)
 
   // get trades
   const chainId = ChainId.FUJI

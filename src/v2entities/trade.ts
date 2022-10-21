@@ -537,7 +537,9 @@ export class TradeV2 {
   public toLog() {
     return {
       route: {
-        path: this.route.path.map((token) => token.address).join(', ')
+        path: this.route.path
+          .map((token) => `${token.name}(${token.address})`)
+          .join(', ')
       },
       tradeType:
         this.tradeType === TradeType.EXACT_INPUT
