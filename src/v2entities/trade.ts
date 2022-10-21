@@ -230,7 +230,7 @@ export class TradeV2 {
    */
   public async getTradeFee(): Promise<TradeFee> {
     // amounts for each step of the swap
-    const amounts = this.quote.amounts.map((bn) => bn.toString())
+    const amounts = this.quote.amounts
 
     // fee % for each step of the swap
     const feesPct = this.quote.fees.map(
@@ -239,7 +239,7 @@ export class TradeV2 {
 
     // fee amount
     const fees = feesPct.map((pct, i) => {
-      const amount = amounts[i]
+      const amount = amounts[i].toString()
       return pct.multiply(JSBI.BigInt(amount)).quotient
     })
 
@@ -250,10 +250,9 @@ export class TradeV2 {
         return fee
       }
 
-      const { virtualAmountsWithoutSlippage } = this.quote
       const midPrice = new Fraction(
-        JSBI.BigInt(virtualAmountsWithoutSlippage[i - 1].toString()),
-        JSBI.BigInt(virtualAmountsWithoutSlippage[i].toString())
+        JSBI.BigInt(amounts[0].toString()),
+        JSBI.BigInt(amounts[i].toString())
       )
       return midPrice.multiply(fee).quotient
     })
@@ -316,46 +315,6 @@ export class TradeV2 {
     const response = await router.estimateGas[methodName](...args, msgOptions)
 
     return response.mul(gasPrice)
-  }
-
-  /**
-   * Returns an object representing this trade for a readable cosole.log
-   *
-   * @returns {Object}
-   */
-  public toLog() {
-    return {
-      route: {
-        path: this.route.path.map((token) => token.address).join(', ')
-      },
-      tradeType:
-        this.tradeType === TradeType.EXACT_INPUT
-          ? 'EXACT_INPUT'
-          : 'EXACT_OUTPUT',
-      inputAmount: `${this.inputAmount.toSignificant(6)} ${
-        this.inputAmount.currency.symbol
-      }`,
-      outputAmount: `${this.outputAmount.toSignificant(6)} ${
-        this.outputAmount.currency.symbol
-      }`,
-      executionPrice: `${this.executionPrice.toSignificant(6)} ${
-        this.outputAmount.currency.symbol
-      } / ${this.inputAmount.currency.symbol}`,
-      exactQuote: `${this.exactQuote.toSignificant(6)} ${
-        this.exactQuote.currency.symbol
-      }`,
-      priceImpact: `${this.priceImpact.toSignificant(6)}%`,
-      quote: {
-        route: this.quote.route.join(', '),
-        pairs: this.quote.pairs.join(', '),
-        binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
-        amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
-        fees: this.quote.fees.map((el) => el.toString()).join(', '),
-        virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage
-          .map((el) => el.toString())
-          .join(', ')
-      }
-    }
   }
 
   /**
@@ -506,6 +465,7 @@ export class TradeV2 {
     })
     return bestTrade
   }
+
   /**
    * Selects the best trade given trades and gas
    *
@@ -513,59 +473,99 @@ export class TradeV2 {
    * @param {BigNumber[]} estimatedGas
    * @returns {bestTrade: TradeV2, estimatedGas: BigNumber}
    */
-  // public static chooseBestTrade(
-  //   trades: TradeV2[],
-  //   estimatedGas: BigNumber[]
-  // ): {
-  //   bestTrade: TradeV2
-  //   estimatedGas: BigNumber
-  // } {
-  //   const tradeType = trades[0].tradeType
-  //   // The biggest tradeValueAVAX will be the most accurate
-  //   // If we haven't found any equivalent of the trade in AVAX, we won't take gas cost into account
-  //   const tradeValueAVAX = BigNumber.from(0)
+  public static chooseBestTradeWithGas(
+    trades: TradeV2[],
+    estimatedGas: BigNumber[]
+  ): {
+    bestTrade: TradeV2
+    estimatedGas: BigNumber
+  } {
+    const tradeType = trades[0].tradeType
+    // The biggest tradeValueAVAX will be the most accurate
+    // If we haven't found any equivalent of the trade in AVAX, we won't take gas cost into account
+    const tradeValueAVAX = BigNumber.from(0)
 
-  //   const tradesWithGas = trades.map((trade, index) => {
-  //     return {
-  //       trade: trade,
-  //       estimatedGas: estimatedGas[index],
-  //       swapOutcome:
-  //         trade.tradeType === TradeType.EXACT_INPUT
-  //           ? new Fraction(
-  //               trade.outputAmount.numerator,
-  //               trade.outputAmount.denominator
-  //             ).subtract(
-  //               tradeValueAVAX.eq(0)
-  //                 ? BigInt(0)
-  //                 : // Cross product to get the gas price against the output token
-  //                   trade.outputAmount
-  //                     .multiply(estimatedGas[index].toString())
-  //                     .divide(tradeValueAVAX.toBigInt())
-  //             )
-  //           : new Fraction(
-  //               trade.inputAmount.numerator,
-  //               trade.inputAmount.denominator
-  //             ).add(
-  //               tradeValueAVAX.eq(0)
-  //                 ? BigInt(0)
-  //                 : trade.inputAmount
-  //                     .multiply(estimatedGas[index].toString())
-  //                     .divide(tradeValueAVAX.toBigInt())
-  //             )
-  //     }
-  //   })
+    const tradesWithGas = trades.map((trade, index) => {
+      return {
+        trade: trade,
+        estimatedGas: estimatedGas[index],
+        swapOutcome:
+          trade.tradeType === TradeType.EXACT_INPUT
+            ? new Fraction(
+                trade.outputAmount.numerator,
+                trade.outputAmount.denominator
+              ).subtract(
+                tradeValueAVAX.eq(0)
+                  ? BigInt(0)
+                  : // Cross product to get the gas price against the output token
+                    trade.outputAmount
+                      .multiply(estimatedGas[index].toString())
+                      .divide(tradeValueAVAX.toBigInt())
+              )
+            : new Fraction(
+                trade.inputAmount.numerator,
+                trade.inputAmount.denominator
+              ).add(
+                tradeValueAVAX.eq(0)
+                  ? BigInt(0)
+                  : trade.inputAmount
+                      .multiply(estimatedGas[index].toString())
+                      .divide(tradeValueAVAX.toBigInt())
+              )
+      }
+    })
 
-  //   const bestTrade = tradesWithGas.reduce((previousTrade, currentTrade) =>
-  //     tradeType === TradeType.EXACT_INPUT
-  //       ? currentTrade.swapOutcome.greaterThan(previousTrade.swapOutcome)
-  //         ? currentTrade
-  //         : previousTrade
-  //       : currentTrade.trade.inputAmount.greaterThan('0') &&
-  //         currentTrade.swapOutcome.lessThan(previousTrade.swapOutcome)
-  //       ? currentTrade
-  //       : previousTrade
-  //   )
+    const bestTrade = tradesWithGas.reduce((previousTrade, currentTrade) =>
+      tradeType === TradeType.EXACT_INPUT
+        ? currentTrade.swapOutcome.greaterThan(previousTrade.swapOutcome)
+          ? currentTrade
+          : previousTrade
+        : currentTrade.trade.inputAmount.greaterThan('0') &&
+          currentTrade.swapOutcome.lessThan(previousTrade.swapOutcome)
+        ? currentTrade
+        : previousTrade
+    )
 
-  //   return { bestTrade: bestTrade.trade, estimatedGas: bestTrade.estimatedGas }
-  // }
+    return { bestTrade: bestTrade.trade, estimatedGas: bestTrade.estimatedGas }
+  }
+
+  /**
+   * Returns an object representing this trade for a readable cosole.log
+   *
+   * @returns {Object}
+   */
+  public toLog() {
+    return {
+      route: {
+        path: this.route.path.map((token) => token.address).join(', ')
+      },
+      tradeType:
+        this.tradeType === TradeType.EXACT_INPUT
+          ? 'EXACT_INPUT'
+          : 'EXACT_OUTPUT',
+      inputAmount: `${this.inputAmount.toSignificant(6)} ${
+        this.inputAmount.currency.symbol
+      }`,
+      outputAmount: `${this.outputAmount.toSignificant(6)} ${
+        this.outputAmount.currency.symbol
+      }`,
+      executionPrice: `${this.executionPrice.toSignificant(6)} ${
+        this.outputAmount.currency.symbol
+      } / ${this.inputAmount.currency.symbol}`,
+      exactQuote: `${this.exactQuote.toSignificant(6)} ${
+        this.exactQuote.currency.symbol
+      }`,
+      priceImpact: `${this.priceImpact.toSignificant(6)}%`,
+      quote: {
+        route: this.quote.route.join(', '),
+        pairs: this.quote.pairs.join(', '),
+        binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
+        amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
+        fees: this.quote.fees.map((el) => el.toString()).join(', '),
+        virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage
+          .map((el) => el.toString())
+          .join(', ')
+      }
+    }
+  }
 }
