@@ -338,6 +338,11 @@ export class TradeV2 {
     const isExactIn = true
     const isAvaxIn = tokenAmountIn.token.address === WAVAX[chainId].address
     const isAvaxOut = tokenOut.address === WAVAX[chainId].address
+
+    if (isAvaxIn && isAvaxOut) {
+      return []
+    }
+
     const amountIn = tokenAmountIn.raw.toString()
     const quoterInterface = new utils.Interface(LBQuoterABI)
     const quoter = new Contract(
@@ -398,6 +403,11 @@ export class TradeV2 {
     const isExactIn = false
     const isAvaxIn = tokenIn.address === WAVAX[chainId].address
     const isAvaxOut = tokenAmountOut.token.address === WAVAX[chainId].address
+
+    if (isAvaxIn && isAvaxOut) {
+      return []
+    }
+
     const amountOut = tokenAmountOut.raw.toString()
     const quoterInterface = new utils.Interface(LBQuoterABI)
     const quoter = new Contract(
