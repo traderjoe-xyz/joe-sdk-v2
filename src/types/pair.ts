@@ -51,7 +51,7 @@ export interface LiquidityParametersStruct {
   deadline: BigNumberish
 }
 
-export interface Bin {
+export interface BinReserves {
   reserveX: BigNumber
   reserveY: BigNumber
 }

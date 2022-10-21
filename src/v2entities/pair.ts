@@ -11,9 +11,10 @@ import {
   LBPairFeeParameters,
   LBPairFeePercent,
   LiquidityDistribution,
-  Bin
+  BinReserves
 } from '../types'
 import { ChainId, LB_FACTORY_ADDRESS, ONE } from '../constants'
+import { Bin } from './bin'
 import { getLiquidityConfig } from '../utils'
 
 import LBFactoryABI from '../abis/LBFactory.json'
@@ -250,49 +251,6 @@ export class PairV2 {
 
   /**
    * @static
-   * Returns the price of bin given its id and the bin step
-   *
-   * @param {number} id - The bin id
-   * @param {number} binStep
-   * @returns {number}
-   */
-  public static getPriceFromId(id: number, binStep: number): number {
-    return (1 + binStep / 10_000) ** (id - 8388608)
-  }
-
-  /**
-   * @static
-   * Returns the bin id given its price and the bin step
-   *
-   * @param {number} price - The price of the bin
-   * @param {number} binStep
-   * @returns {number}
-   */
-  public static getIdFromPrice(price: number, binStep: number): number {
-    return (
-      Math.floor(Math.log(price) / Math.log(1 + binStep / 10_000)) + 8388608
-    )
-  }
-
-  /**
-   * @static
-   * Returns idSlippage given slippage tolerance and the bin step
-   *
-   * @param {number} priceSlippage
-   * @param {number} binStep
-   * @returns {number}
-   */
-  public static getIdSlippageFromPriceSlippage(
-    priceSlippage: number,
-    binStep: number
-  ): number {
-    return Math.floor(
-      Math.log(1 + priceSlippage) / Math.log(1 + binStep / 10_000)
-    )
-  }
-
-  /**
-   * @static
    * Returns the amount and distribution args for on-chain addLiquidity() method
    *
    * @param binStep
@@ -326,7 +284,7 @@ export class PairV2 {
     )
 
     const _priceSlippage: number = Number(priceSlippage.toSignificant()) / 100
-    const idSlippage = PairV2.getIdSlippageFromPriceSlippage(
+    const idSlippage = Bin.getIdSlippageFromPriceSlippage(
       _priceSlippage,
       binStep
     )
@@ -364,7 +322,7 @@ export class PairV2 {
   public calculateAmountsToRemove(
     userPositionIds: number[],
     activeBin: number,
-    bins: Bin[],
+    bins: BinReserves[],
     totalSupplies: BigNumber[],
     amountsToRemove: number[],
     amountSlippage: Percent
