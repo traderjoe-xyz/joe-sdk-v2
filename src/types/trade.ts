@@ -8,6 +8,7 @@ export interface Quote {
   binSteps: BigNumber[]
   amounts: BigNumber[]
   virtualAmountsWithoutSlippage: BigNumber[]
+  fees: BigNumber[]
 }
 
 /** Options for producing the arguments to send call to the router. */

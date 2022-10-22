@@ -4,7 +4,6 @@ const {
   ChainId,
   WAVAX: _WAVAX,
   TokenAmount,
-  Percent
 } = require('@traderjoe-xyz/sdk')
 const { parseUnits } = require('@ethersproject/units')
 const { JsonRpcProvider } = require('@ethersproject/providers')
@@ -14,7 +13,6 @@ const swapAmountOut = async () => {
   console.debug('\n------- swapAmountOut() called -------\n')
 
   // Init constants
-  const WALLET_PK = process.env.PRIVATE_KEY
   const FUJI_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
   const WAVAX = _WAVAX[ChainId.FUJI]
   const USDC = new Token(
@@ -35,17 +33,16 @@ const swapAmountOut = async () => {
 
   // Init: user inputs
   const inputToken = USDC
-  const outputToken = USDT
-  const typedValueOut = '0.01' // user string input
+  const outputToken = WAVAX
+  const typedValueOut = '1' // user string input
   const typedValueOutParsed = parseUnits(
     typedValueOut,
-    inputToken.decimals
+    outputToken.decimals
   ).toString() // returns 10000
   const amountOut = new TokenAmount(
     outputToken,
     JSBI.BigInt(typedValueOutParsed)
   ) // wrap into TokenAmount
-  const userSlippageTolerance = new Percent(JSBI.BigInt(50), JSBI.BigInt(10000)) // 0.1%
 
   // get all [Token, Token] combinations
   const allTokenPairs = PairV2.createAllTokenPairs(
@@ -69,7 +66,7 @@ const swapAmountOut = async () => {
     inputToken,
     provider,
     chainId
-  ) // console.debug('trades', trades.map(el=>el.toLog()))
+  )
 
   // console.log('trades', trades)
   for (let trade of trades) {
@@ -82,6 +79,8 @@ const swapAmountOut = async () => {
   }
 
   // get gas estimates for each trade
+  // const WALLET_PK = process.env.PRIVATE_KEY
+  // const userSlippageTolerance = new Percent(JSBI.BigInt(50), JSBI.BigInt(10000)) // 0.1%
   // const signer = new ethers.Wallet(WALLET_PK, provider)
   // const estimatedGasCosts = await Promise.all(
   //   trades.map((trade) => trade.estimateGas(signer, chainId, userSlippageTolerance))

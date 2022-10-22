@@ -41,6 +41,7 @@ export class RouteV2 {
    * @param {PairV2[]} pairs - The pairs to consider
    * @param {Token} inputToken - The input token
    * @param {Token} outputToken - The output token
+   * @param {number} maxHops - maximum # of hops to allow in the trade route
    * @param {PairV2[]} currentPairs - The current list of pairs forming a route (used in recursion)
    * @param {Token} originalInputToken - The original value of the inputToken param (used in recursion)
    * @param {RouteV2[]} outcome - The current list of routes (used in recursion)
@@ -50,6 +51,7 @@ export class RouteV2 {
     pairs: PairV2[],
     inputToken: Token,
     outputToken: Token,
+    maxHops = 3,
     currentPairs: PairV2[] = [],
     originalInputToken: Token = inputToken,
     outcome: RouteV2[] = []
@@ -71,7 +73,7 @@ export class RouteV2 {
         outcome.push(
           new RouteV2([...currentPairs, pair], originalInputToken, outputToken)
         )
-      } else {
+      } else if (maxHops > 1) {
         const pairsExcludingThisPair = pairs
           .slice(0, i)
           .concat(pairs.slice(i + 1, pairs.length))
@@ -81,6 +83,7 @@ export class RouteV2 {
           pairsExcludingThisPair,
           nextToken,
           outputToken,
+          maxHops - 1,
           [...currentPairs, pair],
           originalInputToken,
           outcome

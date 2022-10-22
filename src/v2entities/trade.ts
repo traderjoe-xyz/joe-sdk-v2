@@ -15,7 +15,6 @@ import {
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
 
-import { PairV2 } from './pair'
 import { RouteV2 } from './route'
 import {
   LB_QUOTER_ADDRESS,
@@ -64,7 +63,7 @@ export class TradeV2 {
     )
     const outputAmount = new TokenAmount(
       tokenOut,
-      JSBI.BigInt(quote.amounts[quote.amounts.length - 1])
+      JSBI.BigInt(quote.amounts[quote.amounts.length - 1].toString())
     )
 
     this.route = route
@@ -82,9 +81,10 @@ export class TradeV2 {
     )
 
     // compute exactQuote and priceImpact
-    const exactQuoteStr = quote.virtualAmountsWithoutSlippage[
-      quote.virtualAmountsWithoutSlippage.length - 1
-    ].toString()
+    const exactQuoteStr =
+      quote.virtualAmountsWithoutSlippage[
+        quote.virtualAmountsWithoutSlippage.length - 1
+      ].toString()
     this.exactQuote = new TokenAmount(tokenOut, JSBI.BigInt(exactQuoteStr))
     const slippage = this.exactQuote
       .subtract(outputAmount)
@@ -223,42 +223,53 @@ export class TradeV2 {
     }
   }
 
-  public async getTradeFee(
-    provider: Provider | Web3Provider | any
-  ): Promise<TradeFee> {
-    const ONE_HUNDRED_PERCENT = new Percent(
-      JSBI.BigInt(10000),
-      JSBI.BigInt(10000)
+  /**
+   * Calculates trade fee in terms of inputToken
+   *
+   * @returns {TradeFee}
+   */
+  public async getTradeFee(): Promise<TradeFee> {
+    // amounts for each step of the swap returned from quoter contract
+    // e.g. [10 WAVAX, 20 USDC, 19.9 USDT ] when inputAmount is 10 WAVAX and resulting outputToken is USDT
+    const amounts = this.quote.amounts
+
+    // pool fee % for each step of the swap from quoter contract
+    // e.g. [WAVAX-USDC pool 0.05%, USDC-USDT pool 0.01%]
+    const feesPct = this.quote.fees.map(
+      (bn) => new Percent(JSBI.BigInt(bn.toString()), JSBI.BigInt(1e18))
     )
 
-    // get fees for each pair in the trade route
-    const fees: Fraction[] = await Promise.all(
-      this.quote.pairs.map((pairAddr, i) => {
-        const binStep = this.quote.binSteps[i].toNumber()
-        return PairV2.getPairFee(pairAddr, binStep, provider)
-      })
-    )
+    // actual fee amounts paid at each step of the swap; e.g. [0.005 WAVAX, 0.002 USDC]
+    const fees = feesPct.map((pct, i) => {
+      const amount = amounts[i].toString()
+      return pct.multiply(JSBI.BigInt(amount)).quotient
+    })
 
-    // get realized fee
-    // e.g. for 2 pairs X an Y: 1 - ((1 - feeX%) * (1 - feeY%))
-    const realizedLPFee = ONE_HUNDRED_PERCENT.subtract(
-      fees.reduce(
-        (feeSofar: Fraction, currentFee: Fraction) =>
-          feeSofar.multiply(ONE_HUNDRED_PERCENT.subtract(currentFee)),
-        ONE_HUNDRED_PERCENT
+    // change each fees in terms of the inputToken; e.g. [0.005 WAVAX, 0.0001 WAVAX]
+    const feesTokenIn = fees.map((fee, i) => {
+      // first fee will always be in terms of inputToken
+      if (i === 0) {
+        return fee
+      }
+
+      const midPrice = new Fraction(
+        JSBI.BigInt(amounts[0].toString()),
+        JSBI.BigInt(amounts[i].toString())
       )
+      return midPrice.multiply(fee).quotient
+    })
+
+    // sum of all fees; e.g. 0.0051 WAVAX
+    const totalFee = feesTokenIn.reduce(
+      (a, b) => JSBI.add(a, b),
+      JSBI.BigInt('0')
     )
 
-    // get fee % and amount of the input that accrues to LPs
-    const totalFeePct = new Percent(
-      realizedLPFee.numerator,
-      realizedLPFee.denominator
-    )
+    // get total fee in TokenAmount
+    const feeAmountIn = new TokenAmount(this.inputAmount.token, totalFee)
 
-    const feeAmountIn = new TokenAmount(
-      this.inputAmount.token,
-      totalFeePct.multiply(this.inputAmount.raw).quotient
-    )
+    // get total fee pct; e.g. 0.0051 / 10 * 100 = 0.051%
+    const totalFeePct = new Percent(totalFee, JSBI.BigInt(this.inputAmount.raw))
 
     return {
       totalFeePct,
@@ -279,7 +290,7 @@ export class TradeV2 {
     chainId: ChainId,
     slippageTolerance: Percent
   ): Promise<BigNumber> {
-    const routerInterface = new utils.Interface(LBRouterABI.abi)
+    const routerInterface = new utils.Interface(LBRouterABI)
     const router = new Contract(
       LB_ROUTER_ADDRESS[chainId],
       routerInterface,
@@ -297,9 +308,8 @@ export class TradeV2 {
       deadline: currentBlockTimestamp + 120
     }
 
-    const { methodName, args, value }: SwapParameters = this.swapCallParameters(
-      options
-    )
+    const { methodName, args, value }: SwapParameters =
+      this.swapCallParameters(options)
     const msgOptions = !value || isZero(value) ? {} : { value }
 
     const gasPrice = await signer.getGasPrice()
@@ -307,45 +317,6 @@ export class TradeV2 {
     const response = await router.estimateGas[methodName](...args, msgOptions)
 
     return response.mul(gasPrice)
-  }
-
-  /**
-   * Returns an object representing this trade for a readable cosole.log
-   *
-   * @returns {Object}
-   */
-  public toLog() {
-    return {
-      route: {
-        path: this.route.path.map((token) => token.address).join(', ')
-      },
-      tradeType:
-        this.tradeType === TradeType.EXACT_INPUT
-          ? 'EXACT_INPUT'
-          : 'EXACT_OUTPUT',
-      inputAmount: `${this.inputAmount.toSignificant(6)} ${
-        this.inputAmount.currency.symbol
-      }`,
-      outputAmount: `${this.outputAmount.toSignificant(6)} ${
-        this.outputAmount.currency.symbol
-      }`,
-      executionPrice: `${this.executionPrice.toSignificant(6)} ${
-        this.outputAmount.currency.symbol
-      } / ${this.inputAmount.currency.symbol}`,
-      exactQuote: `${this.exactQuote.toSignificant(6)} ${
-        this.exactQuote.currency.symbol
-      }`,
-      priceImpact: `${this.priceImpact.toSignificant(6)}%`,
-      quote: {
-        route: this.quote.route.join(', '),
-        pairs: this.quote.pairs.join(', '),
-        binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
-        amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
-        virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage
-          .map((el) => el.toString())
-          .join(', ')
-      }
-    }
   }
 
   /**
@@ -369,9 +340,13 @@ export class TradeV2 {
     const isExactIn = true
     const isAvaxIn = tokenAmountIn.token.address === WAVAX[chainId].address
     const isAvaxOut = tokenOut.address === WAVAX[chainId].address
-    const amountIn = JSBI.toNumber(tokenAmountIn.raw)
-    console.debug('amountIn', amountIn)
-    const quoterInterface = new utils.Interface(LBQuoterABI.abi)
+
+    if (isAvaxIn && isAvaxOut) {
+      return []
+    }
+
+    const amountIn = tokenAmountIn.raw.toString()
+    const quoterInterface = new utils.Interface(LBQuoterABI)
     const quoter = new Contract(
       LB_QUOTER_ADDRESS[chainId],
       quoterInterface,
@@ -430,8 +405,13 @@ export class TradeV2 {
     const isExactIn = false
     const isAvaxIn = tokenIn.address === WAVAX[chainId].address
     const isAvaxOut = tokenAmountOut.token.address === WAVAX[chainId].address
-    const amountOut = JSBI.toNumber(tokenAmountOut.raw)
-    const quoterInterface = new utils.Interface(LBQuoterABI.abi)
+
+    if (isAvaxIn && isAvaxOut) {
+      return []
+    }
+
+    const amountOut = tokenAmountOut.raw.toString()
+    const quoterInterface = new utils.Interface(LBQuoterABI)
     const quoter = new Contract(
       LB_QUOTER_ADDRESS[chainId],
       quoterInterface,
@@ -469,6 +449,35 @@ export class TradeV2 {
     )
   }
 
+  public static chooseBestTrade(
+    trades: TradeV2[],
+    isExactIn: boolean
+  ): TradeV2 | undefined {
+    if (trades.length === 0) {
+      return undefined
+    }
+
+    let bestTrade = trades[0]
+
+    trades.forEach((trade) => {
+      if (isExactIn) {
+        if (
+          JSBI.greaterThan(trade.outputAmount.raw, bestTrade.outputAmount.raw)
+        ) {
+          bestTrade = trade
+        }
+      } else {
+        if (
+          JSBI.greaterThan(trade.outputAmount.raw, JSBI.BigInt(0)) &&
+          JSBI.lessThan(trade.outputAmount.raw, bestTrade.outputAmount.raw)
+        ) {
+          bestTrade = trade
+        }
+      }
+    })
+    return bestTrade
+  }
+
   /**
    * Selects the best trade given trades and gas
    *
@@ -476,7 +485,7 @@ export class TradeV2 {
    * @param {BigNumber[]} estimatedGas
    * @returns {bestTrade: TradeV2, estimatedGas: BigNumber}
    */
-  public static chooseBestTrade(
+  public static chooseBestTradeWithGas(
     trades: TradeV2[],
     estimatedGas: BigNumber[]
   ): {
@@ -530,5 +539,47 @@ export class TradeV2 {
     )
 
     return { bestTrade: bestTrade.trade, estimatedGas: bestTrade.estimatedGas }
+  }
+
+  /**
+   * Returns an object representing this trade for a readable cosole.log
+   *
+   * @returns {Object}
+   */
+  public toLog() {
+    return {
+      route: {
+        path: this.route.path
+          .map((token) => `${token.name}(${token.address})`)
+          .join(', ')
+      },
+      tradeType:
+        this.tradeType === TradeType.EXACT_INPUT
+          ? 'EXACT_INPUT'
+          : 'EXACT_OUTPUT',
+      inputAmount: `${this.inputAmount.toSignificant(6)} ${
+        this.inputAmount.currency.symbol
+      }`,
+      outputAmount: `${this.outputAmount.toSignificant(6)} ${
+        this.outputAmount.currency.symbol
+      }`,
+      executionPrice: `${this.executionPrice.toSignificant(6)} ${
+        this.outputAmount.currency.symbol
+      } / ${this.inputAmount.currency.symbol}`,
+      exactQuote: `${this.exactQuote.toSignificant(6)} ${
+        this.exactQuote.currency.symbol
+      }`,
+      priceImpact: `${this.priceImpact.toSignificant(6)}%`,
+      quote: {
+        route: this.quote.route.join(', '),
+        pairs: this.quote.pairs.join(', '),
+        binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
+        amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
+        fees: this.quote.fees.map((el) => el.toString()).join(', '),
+        virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage
+          .map((el) => el.toString())
+          .join(', ')
+      }
+    }
   }
 }

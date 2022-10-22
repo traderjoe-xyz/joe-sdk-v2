@@ -3,7 +3,13 @@ import { Provider } from '@ethersproject/abstract-provider'
 import { Web3Provider } from '@ethersproject/providers'
 import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
-import { Token, Percent, TokenAmount, Fraction } from '@traderjoe-xyz/sdk'
+import {
+  Token,
+  Percent,
+  TokenAmount,
+  Fraction,
+  ChainId
+} from '@traderjoe-xyz/sdk'
 
 import {
   LBPair,
@@ -11,9 +17,10 @@ import {
   LBPairFeeParameters,
   LBPairFeePercent,
   LiquidityDistribution,
-  Bin
+  BinReserves
 } from '../types'
-import { ChainId, LB_FACTORY_ADDRESS, ONE } from '../constants'
+import { LB_FACTORY_ADDRESS, ONE } from '../constants'
+import { Bin } from './bin'
 import { getLiquidityConfig } from '../utils'
 
 import LBFactoryABI from '../abis/LBFactory.json'
@@ -45,13 +52,13 @@ export class PairV2 {
     provider: Provider,
     chainId: ChainId
   ): Promise<LBPair[]> {
-    const factoryInterface = new utils.Interface(LBFactoryABI.abi)
+    const factoryInterface = new utils.Interface(LBFactoryABI)
     const factory = new Contract(
       LB_FACTORY_ADDRESS[chainId],
       factoryInterface,
       provider
     )
-    const LBPairs: LBPair[] = await factory.getAvailableLBPairsBinStep(
+    const LBPairs: LBPair[] = await factory.getAllLBPairs(
       this.token0.address,
       this.token1.address
     )
@@ -71,7 +78,7 @@ export class PairV2 {
     provider: Provider,
     chainId: ChainId
   ): Promise<LBPair> {
-    const factoryInterface = new utils.Interface(LBFactoryABI.abi)
+    const factoryInterface = new utils.Interface(LBFactoryABI)
     const factory = new Contract(
       LB_FACTORY_ADDRESS[chainId],
       factoryInterface,
@@ -170,7 +177,7 @@ export class PairV2 {
     LBPairAddr: string,
     provider: Provider
   ): Promise<LBPairReservesAndId> {
-    const LBPairInterface = new utils.Interface(LBPairABI.abi)
+    const LBPairInterface = new utils.Interface(LBPairABI)
     const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
 
     const pairData: LBPairReservesAndId = await pairContract.getReservesAndId()
@@ -196,9 +203,8 @@ export class PairV2 {
 
     // for v2 LBPair, fetch and calculate fee %
     const feeParams = await PairV2.getFeeParameters(pairAddr, provider)
-    const { baseFeePct, variableFeePct } = PairV2.calculateFeePercentage(
-      feeParams
-    )
+    const { baseFeePct, variableFeePct } =
+      PairV2.calculateFeePercentage(feeParams)
     const totalFeeFraction = baseFeePct.add(variableFeePct)
     const totalFeePct = new Percent(
       totalFeeFraction.numerator,
@@ -218,10 +224,11 @@ export class PairV2 {
     LBPairAddr: string,
     provider: Provider | Web3Provider | any
   ): Promise<LBPairFeeParameters> {
-    const LBPairInterface = new utils.Interface(LBPairABI.abi)
+    const LBPairInterface = new utils.Interface(LBPairABI)
     const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
 
-    const feeParametersData: LBPairFeeParameters = await pairContract.feeParameters()
+    const feeParametersData: LBPairFeeParameters =
+      await pairContract.feeParameters()
 
     return feeParametersData
   }
@@ -235,12 +242,8 @@ export class PairV2 {
   public static calculateFeePercentage(
     LBPairFeeData: LBPairFeeParameters
   ): LBPairFeePercent {
-    const {
-      baseFactor,
-      variableFeeControl,
-      volatilityAccumulated,
-      binStep
-    } = LBPairFeeData
+    const { baseFactor, variableFeeControl, volatilityAccumulated, binStep } =
+      LBPairFeeData
     const baseFee = baseFactor * binStep * 1e10
     const variableFee =
       variableFeeControl === 0
@@ -250,49 +253,6 @@ export class PairV2 {
       baseFeePct: new Percent(BigInt(baseFee), BigInt(1e18)), // On the contract level, fees are with a 1e18 precision
       variableFeePct: new Percent(BigInt(Math.floor(variableFee)), BigInt(1e18))
     }
-  }
-
-  /**
-   * @static
-   * Returns the price of bin given its id and the bin step
-   *
-   * @param {number} id - The bin id
-   * @param {number} binStep
-   * @returns {number}
-   */
-  public static getPriceFromId(id: number, binStep: number): number {
-    return (1 + binStep / 10_000) ** (id - 8388608)
-  }
-
-  /**
-   * @static
-   * Returns the bin id given its price and the bin step
-   *
-   * @param {number} price - The price of the bin
-   * @param {number} binStep
-   * @returns {number}
-   */
-  public static getIdFromPrice(price: number, binStep: number): number {
-    return (
-      Math.floor(Math.log(price) / Math.log(1 + binStep / 10_000)) + 8388608
-    )
-  }
-
-  /**
-   * @static
-   * Returns idSlippage given slippage tolerance and the bin step
-   *
-   * @param {number} priceSlippage
-   * @param {number} binStep
-   * @returns {number}
-   */
-  public static getIdSlippageFromPriceSlippage(
-    priceSlippage: number,
-    binStep: number
-  ): number {
-    return Math.floor(
-      Math.log(1 + priceSlippage) / Math.log(1 + binStep / 10_000)
-    )
   }
 
   /**
@@ -323,20 +283,14 @@ export class PairV2 {
     const amountX: number = JSBI.toNumber(_amountX)
     const amountY: number = JSBI.toNumber(_amountY)
     const amountXMin = JSBI.toNumber(
-      new Fraction(ONE)
-        .add(amountSlippage)
-        .invert()
-        .multiply(_amountX).quotient
+      new Fraction(ONE).add(amountSlippage).invert().multiply(_amountX).quotient
     )
     const amountYMin = JSBI.toNumber(
-      new Fraction(ONE)
-        .add(amountSlippage)
-        .invert()
-        .multiply(_amountY).quotient
+      new Fraction(ONE).add(amountSlippage).invert().multiply(_amountY).quotient
     )
 
     const _priceSlippage: number = Number(priceSlippage.toSignificant()) / 100
-    const idSlippage = PairV2.getIdSlippageFromPriceSlippage(
+    const idSlippage = Bin.getIdSlippageFromPriceSlippage(
       _priceSlippage,
       binStep
     )
@@ -374,7 +328,7 @@ export class PairV2 {
   public calculateAmountsToRemove(
     userPositionIds: number[],
     activeBin: number,
-    bins: Bin[],
+    bins: BinReserves[],
     totalSupplies: BigNumber[],
     amountsToRemove: number[],
     amountSlippage: Percent
