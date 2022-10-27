@@ -69,7 +69,7 @@ export const getUniformDistributionFromBinRange = (
   // range only includes B tokens (Y tokens)
   if (binRange[1] <= activeId && parsedAmountA.raw.toString() === '0') {
     const negDelta = binRange[1] - binRange[0] + 1
-    const negativeDeltaIds = [...Array(activeId - binRange[0]).keys()]
+    const negativeDeltaIds = Array.from(Array(activeId - binRange[0]).keys())
       .reverse()
       .slice(0, negDelta)
       .map((el) => -1 * (el + 1))
@@ -86,7 +86,7 @@ export const getUniformDistributionFromBinRange = (
   // range only includes A tokens (X tokens)
   else if (activeId <= binRange[0] && parsedAmountB.raw.toString() === '0') {
     const posDelta = binRange[1] - binRange[0] + 1
-    const positiveDeltaIds = [...Array(binRange[1] - activeId).keys()]
+    const positiveDeltaIds = Array.from(Array(binRange[1] - activeId).keys())
       .reverse()
       .slice(0, posDelta)
       .reverse()
@@ -106,10 +106,12 @@ export const getUniformDistributionFromBinRange = (
     const negDelta = activeId - binRange[0]
     const posDelta = binRange[1] - activeId
 
-    const negativeDeltaIds = [...Array(negDelta).keys()]
+    const negativeDeltaIds = Array.from(Array(negDelta).keys())
       .reverse()
       .map((el) => -1 * (el + 1))
-    const positiveDeltaIds = [...Array(posDelta).keys()].map((el) => el + 1)
+    const positiveDeltaIds = Array.from(Array(posDelta).keys()).map(
+      (el) => el + 1
+    )
     deltaIds = [...negativeDeltaIds, 0, ...positiveDeltaIds]
 
     const posPctPerBin = 1 / (0.5 + posDelta)
