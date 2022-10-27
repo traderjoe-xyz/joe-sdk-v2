@@ -256,7 +256,62 @@ export class PairV2 {
   }
 
   /**
-   * @static
+   * Calculate amountX and amountY
+   *
+   * @param {number[]} binIds
+   * @param {number[]} activeBin
+   * @param {BinReserves[]} bins
+   * @param {BigNumber[]} totalSupplies
+   * @param {number[]} liquidity
+   * @returns
+   */
+  public static calculateAmounts(
+    binIds: number[],
+    activeBin: number,
+    bins: BinReserves[],
+    totalSupplies: BigNumber[],
+    liquidity: number[]
+  ): {
+    amountX: JSBI
+    amountY: JSBI
+  } {
+    // calculate expected total to remove for X and Y
+    let totalAmountX = JSBI.BigInt(0)
+    let totalAmountY = JSBI.BigInt(0)
+
+    binIds.forEach((binId, i) => {
+      // get totalSupply, reserveX, and reserveY for the bin
+      const { reserveX: _reserveX, reserveY: _reserveY } = bins[i]
+      const reserveX = JSBI.BigInt(_reserveX.toString())
+      const reserveY = JSBI.BigInt(_reserveY.toString())
+      const totalSupply = JSBI.BigInt(totalSupplies[i].toString())
+      const amountToRemove = JSBI.BigInt(liquidity[i])
+
+      // increment totalAmountX and/or totalAmountY
+      if (binId <= activeBin) {
+        const amountY = JSBI.divide(
+          JSBI.multiply(amountToRemove, reserveY),
+          totalSupply
+        )
+        totalAmountY = JSBI.add(amountY, totalAmountY)
+      }
+
+      if (binId >= activeBin) {
+        const amountX = JSBI.divide(
+          JSBI.multiply(amountToRemove, reserveX),
+          totalSupply
+        )
+        totalAmountX = JSBI.add(amountX, totalAmountX)
+      }
+    })
+
+    return {
+      amountX: totalAmountX,
+      amountY: totalAmountY
+    }
+  }
+
+  /**
    * Returns the amount and distribution args for on-chain addLiquidity() method
    *
    * @param binStep
@@ -314,7 +369,6 @@ export class PairV2 {
   }
 
   /**
-   * @static
    * Calculates amountX, amountY, amountXMin, and amountYMin needed for on-chain removeLiquidity() method
    *
    * @param {number[]} userPositionIds - List of binIds that user has position
@@ -339,52 +393,31 @@ export class PairV2 {
     amountYMin: JSBI
   } {
     // calculate expected total to remove for X and Y
-    let totalAmountX = JSBI.BigInt(0)
-    let totalAmountY = JSBI.BigInt(0)
-
-    userPositionIds.forEach((binId, i) => {
-      // get totalSupply, reserveX, and reserveY for the bin
-      const { reserveX: _reserveX, reserveY: _reserveY } = bins[i]
-      const reserveX = JSBI.BigInt(_reserveX.toString())
-      const reserveY = JSBI.BigInt(_reserveY.toString())
-      const totalSupply = JSBI.BigInt(totalSupplies[i].toString())
-      const amountToRemove = JSBI.BigInt(amountsToRemove[i])
-
-      // increment totalAmountX and/or totalAmountY
-      if (binId <= activeBin) {
-        const amountY = JSBI.divide(
-          JSBI.multiply(amountToRemove, reserveY),
-          totalSupply
-        )
-        totalAmountY = JSBI.add(amountY, totalAmountY)
-      }
-
-      if (binId >= activeBin) {
-        const amountX = JSBI.divide(
-          JSBI.multiply(amountToRemove, reserveX),
-          totalSupply
-        )
-        totalAmountX = JSBI.add(amountX, totalAmountX)
-      }
-    })
+    const { amountX, amountY } = PairV2.calculateAmounts(
+      userPositionIds,
+      activeBin,
+      bins,
+      totalSupplies,
+      amountsToRemove
+    )
 
     // compute min amounts taking into consideration slippage
     const amountXMin = new Fraction(ONE)
       .add(amountSlippage)
       .invert()
-      .multiply(totalAmountX).quotient
+      .multiply(amountX).quotient
 
     const amountYMin = new Fraction(ONE)
       .add(amountSlippage)
       .invert()
-      .multiply(totalAmountY).quotient
+      .multiply(amountY).quotient
 
     // return
     return {
-      amountX: totalAmountX,
-      amountY: totalAmountY,
-      amountXMin: amountXMin,
-      amountYMin: amountYMin
+      amountX,
+      amountY,
+      amountXMin,
+      amountYMin
     }
   }
 }
