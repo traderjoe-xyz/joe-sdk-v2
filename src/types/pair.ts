@@ -62,3 +62,9 @@ export enum LiquidityDistribution {
   BID_ASK,
   NORMAL
 }
+
+export interface LiquidityDistributionParams {
+  deltaIds: number[]
+  distributionX: BigNumber[]
+  distributionY: BigNumber[]
+}
