@@ -6,7 +6,8 @@ export {
   LB_ROUTER_ADDRESS,
   LB_FACTORY_ADDRESS,
   DEX_V2_SUBGRAPH,
-  DEXCANDLES_SUBGRAPH_V2
+  DEXCANDLES_SUBGRAPH_V2,
+  DEXLENS_ADDRESS
 } from './constants'
 
 export * from './abis'

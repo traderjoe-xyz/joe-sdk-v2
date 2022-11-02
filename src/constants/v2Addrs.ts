@@ -22,3 +22,8 @@ export const LB_FACTORY_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.FUJI]: '0x2950b9bd19152C91d69227364747b3e6EFC8Ab7F',
   [ChainId.AVALANCHE]: ''
 }
+
+export const DEXLENS_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.FUJI]: '0x8b9e4f329f013320670459Bcab01C2b8DC9C32c3',
+  [ChainId.AVALANCHE]: ''
+}
