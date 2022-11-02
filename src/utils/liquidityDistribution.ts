@@ -29,7 +29,7 @@ export const getLiquidityConfig = (
 }
 
 /**
- * Retruns distribution params for on-chain addLiquidity() call when liquidity is focused at a target bin
+ * Returns distribution params for on-chain addLiquidity() call when liquidity is focused at a target bin
  * @param {number} activeId
  * @param {number} targetBin
  * @returns {LiquidityDistributionParams}
@@ -47,7 +47,7 @@ export const getDistributionFromTargetBin = (
 }
 
 /**
- * Retruns distribution params for on-chain addLiquidity() call when liquidity is focused at a custom range of bins
+ * Returns distribution params for on-chain addLiquidity() call when liquidity is focused at a custom range of bins
  *
  * @param {number} activeId
  * @param {number[]} binRange
