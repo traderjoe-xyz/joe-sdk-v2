@@ -16,24 +16,24 @@
     "type": "constructor"
   },
   {
-    "inputs": [],
-    "name": "LBFactory__AddressZero",
-    "type": "error"
-  },
-  {
     "inputs": [
       {
-        "internalType": "uint16",
-        "name": "baseFactor",
-        "type": "uint16"
-      },
-      {
         "internalType": "uint256",
-        "name": "max",
+        "name": "bp",
         "type": "uint256"
       }
     ],
-    "name": "LBFactory__BaseFactorOverflows",
+    "name": "BinHelper__BinStepOverflows",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BinHelper__IdOverflows",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LBFactory__AddressZero",
     "type": "error"
   },
   {
@@ -103,6 +103,22 @@
       }
     ],
     "name": "LBFactory__FeesAboveMax",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "fees",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxFees",
+        "type": "uint256"
+      }
+    ],
+    "name": "LBFactory__FlashLoanFeeAboveMax",
     "type": "error"
   },
   {
@@ -278,6 +294,22 @@
     "type": "error"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "x",
+        "type": "uint256"
+      },
+      {
+        "internalType": "int256",
+        "name": "y",
+        "type": "int256"
+      }
+    ],
+    "name": "Math128x128__PowerUnderflow",
+    "type": "error"
+  },
+  {
     "inputs": [],
     "name": "PendingOwnable__AddressZero",
     "type": "error"
@@ -310,7 +342,7 @@
         "type": "uint256"
       }
     ],
-    "name": "SafeCast__Exceeds24Bits",
+    "name": "SafeCast__Exceeds16Bits",
     "type": "error"
   },
   {
@@ -859,9 +891,9 @@
       {
         "components": [
           {
-            "internalType": "uint24",
+            "internalType": "uint16",
             "name": "binStep",
-            "type": "uint24"
+            "type": "uint16"
           },
           {
             "internalType": "contract ILBPair",
@@ -910,9 +942,9 @@
       {
         "components": [
           {
-            "internalType": "uint24",
+            "internalType": "uint16",
             "name": "binStep",
-            "type": "uint24"
+            "type": "uint16"
           },
           {
             "internalType": "contract ILBPair",

@@ -22,30 +22,8 @@
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "BinHelper__IntOverflows",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "expectedBalance",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "balance",
-        "type": "uint256"
-      }
-    ],
-    "name": "FeeDistributionHelper__FlashLoanUnderflow",
+    "inputs": [],
+    "name": "BinHelper__IdOverflows",
     "type": "error"
   },
   {
@@ -55,12 +33,12 @@
   },
   {
     "inputs": [],
-    "name": "LBPair__AlreadyInitialized",
+    "name": "LBPair__AddressZeroOrThis",
     "type": "error"
   },
   {
     "inputs": [],
-    "name": "LBPair__BrokenSwapSafetyCheck",
+    "name": "LBPair__AlreadyInitialized",
     "type": "error"
   },
   {
@@ -77,6 +55,21 @@
   {
     "inputs": [],
     "name": "LBPair__DistributionsOverflow",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LBPair__FlashLoanCallbackFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LBPair__FlashLoanTokenNotSupported",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LBPair__FlashLoanWrongFee",
     "type": "error"
   },
   {
@@ -201,6 +194,11 @@
     "type": "error"
   },
   {
+    "inputs": [],
+    "name": "LBToken__NotSupported",
+    "type": "error"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -251,6 +249,11 @@
   {
     "inputs": [],
     "name": "LBToken__TransferFromOrToAddress0",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LBToken__TransferToSelf",
     "type": "error"
   },
   {
@@ -389,6 +392,21 @@
   },
   {
     "inputs": [],
+    "name": "TokenHelper__CallFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TokenHelper__NonContract",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "TokenHelper__TransferFailed",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "TreeMath__ErrorDepthSearch",
     "type": "error"
   },
@@ -415,6 +433,37 @@
       }
     ],
     "name": "ApprovalForAll",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountX",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountY",
+        "type": "uint256"
+      }
+    ],
+    "name": "Burn",
     "type": "event"
   },
   {
@@ -470,6 +519,43 @@
         "type": "address"
       },
       {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountX",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountY",
+        "type": "uint256"
+      }
+    ],
+    "name": "DepositedToBin",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
         "indexed": false,
         "internalType": "uint256",
         "name": "amountX",
@@ -496,134 +582,30 @@
       },
       {
         "indexed": true,
-        "internalType": "address",
-        "name": "recipient",
+        "internalType": "contract ILBFlashLoanCallback",
+        "name": "receiver",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "contract IERC20",
+        "name": "token",
         "type": "address"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountX",
+        "name": "amount",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountY",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "feesX",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "feesY",
+        "name": "fee",
         "type": "uint256"
       }
     ],
     "name": "FlashLoan",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "minted",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountX",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountY",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "distributionX",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "distributionY",
-        "type": "uint256"
-      }
-    ],
-    "name": "LiquidityAdded",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "sender",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "burned",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountX",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountY",
-        "type": "uint256"
-      }
-    ],
-    "name": "LiquidityRemoved",
     "type": "event"
   },
   {
@@ -693,32 +675,26 @@
       },
       {
         "indexed": true,
-        "internalType": "uint24",
+        "internalType": "uint256",
         "name": "id",
-        "type": "uint24"
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "swapForY",
+        "type": "bool"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountXIn",
+        "name": "amountIn",
         "type": "uint256"
       },
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "amountYIn",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountXOut",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "amountYOut",
+        "name": "amountOut",
         "type": "uint256"
       },
       {
@@ -730,13 +706,7 @@
       {
         "indexed": false,
         "internalType": "uint256",
-        "name": "feesX",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "feesY",
+        "name": "fees",
         "type": "uint256"
       }
     ],
@@ -815,6 +785,43 @@
       }
     ],
     "name": "TransferSingle",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "id",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountX",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountY",
+        "type": "uint256"
+      }
+    ],
+    "name": "WithdrawnFromBin",
     "type": "event"
   },
   {
@@ -933,14 +940,14 @@
     "name": "collectProtocolFees",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint128",
         "name": "amountX",
-        "type": "uint256"
+        "type": "uint128"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint128",
         "name": "amountY",
-        "type": "uint256"
+        "type": "uint128"
       }
     ],
     "stateMutability": "nonpayable",
@@ -1061,18 +1068,18 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_to",
+        "internalType": "contract ILBFlashLoanCallback",
+        "name": "_receiver",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "_token",
         "type": "address"
       },
       {
         "internalType": "uint256",
-        "name": "_amountXOut",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amountYOut",
+        "name": "_amount",
         "type": "uint256"
       },
       {
@@ -1122,24 +1129,24 @@
     "name": "getGlobalFees",
     "outputs": [
       {
-        "internalType": "uint256",
+        "internalType": "uint128",
         "name": "feesXTotal",
-        "type": "uint256"
+        "type": "uint128"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint128",
         "name": "feesYTotal",
-        "type": "uint256"
+        "type": "uint128"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint128",
         "name": "feesXProtocol",
-        "type": "uint256"
+        "type": "uint128"
       },
       {
-        "internalType": "uint256",
+        "internalType": "uint128",
         "name": "feesYProtocol",
-        "type": "uint256"
+        "type": "uint128"
       }
     ],
     "stateMutability": "view",
@@ -1486,6 +1493,25 @@
   {
     "inputs": [
       {
+        "internalType": "bytes4",
+        "name": "_interfaceId",
+        "type": "bytes4"
+      }
+    ],
+    "name": "supportsInterface",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "bool",
         "name": "_swapForY",
         "type": "bool"
@@ -1560,49 +1586,6 @@
       }
     ],
     "name": "totalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_index",
-        "type": "uint256"
-      }
-    ],
-    "name": "userPositionAtIndex",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "_account",
-        "type": "address"
-      }
-    ],
-    "name": "userPositionNumber",
     "outputs": [
       {
         "internalType": "uint256",
