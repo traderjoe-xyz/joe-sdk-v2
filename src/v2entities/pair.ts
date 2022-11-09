@@ -15,7 +15,6 @@ import {
   LBPair,
   LBPairReservesAndId,
   LBPairFeeParameters,
-  LBPairFeePercent,
   LiquidityDistribution,
   BinReserves
 } from '../types'
@@ -186,34 +185,6 @@ export class PairV2 {
   }
 
   /**
-   *
-   * @param {string} pairAddr
-   * @param {Provider} binStep
-   * @param provider
-   */
-  public static async getPairFee(
-    pairAddr: string,
-    binStep: number,
-    provider: Provider | Web3Provider | any
-  ): Promise<Fraction> {
-    // if v1 pair, return base fee 0.3%
-    if (binStep === 0) {
-      return new Percent(JSBI.BigInt(30), JSBI.BigInt(10000))
-    }
-
-    // for v2 LBPair, fetch and calculate fee %
-    const feeParams = await PairV2.getFeeParameters(pairAddr, provider)
-    const { baseFeePct, variableFeePct } =
-      PairV2.calculateFeePercentage(feeParams)
-    const totalFeeFraction = baseFeePct.add(variableFeePct)
-    const totalFeePct = new Percent(
-      totalFeeFraction.numerator,
-      totalFeeFraction.denominator
-    )
-    return totalFeePct
-  }
-
-  /**
    * Fetches the fee parameters for the LBPair
    *
    * @param {string} LBPairAddr
@@ -231,28 +202,6 @@ export class PairV2 {
       await pairContract.feeParameters()
 
     return feeParametersData
-  }
-
-  /**
-   * Calculates LBPairFee percetange
-   *
-   * @param {LBPairFeeParameters} LBPairFeeData
-   * @returns {LBPairFeePercent}
-   */
-  public static calculateFeePercentage(
-    LBPairFeeData: LBPairFeeParameters
-  ): LBPairFeePercent {
-    const { baseFactor, variableFeeControl, volatilityAccumulated, binStep } =
-      LBPairFeeData
-    const baseFee = baseFactor * binStep * 1e10
-    const variableFee =
-      variableFeeControl === 0
-        ? 0
-        : (((volatilityAccumulated * binStep) ^ 2) * variableFeeControl) / 100
-    return {
-      baseFeePct: new Percent(BigInt(baseFee), BigInt(1e18)), // On the contract level, fees are with a 1e18 precision
-      variableFeePct: new Percent(BigInt(Math.floor(variableFee)), BigInt(1e18))
-    }
   }
 
   /**
