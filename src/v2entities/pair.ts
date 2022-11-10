@@ -262,7 +262,7 @@ export class PairV2 {
    * @param {number[]} activeBin
    * @param {BinReserves[]} bins
    * @param {BigNumber[]} totalSupplies
-   * @param {number[]} liquidity
+   * @param {string[]} liquidity
    * @returns
    */
   public static calculateAmounts(
@@ -270,7 +270,7 @@ export class PairV2 {
     activeBin: number,
     bins: BinReserves[],
     totalSupplies: BigNumber[],
-    liquidity: number[]
+    liquidity: string[]
   ): {
     amountX: JSBI
     amountY: JSBI
@@ -285,12 +285,12 @@ export class PairV2 {
       const reserveX = JSBI.BigInt(_reserveX.toString())
       const reserveY = JSBI.BigInt(_reserveY.toString())
       const totalSupply = JSBI.BigInt(totalSupplies[i].toString())
-      const amountToRemove = JSBI.BigInt(liquidity[i])
+      const liquidityAmount = JSBI.BigInt(liquidity[i])
 
       // increment totalAmountX and/or totalAmountY
       if (binId <= activeBin) {
         const amountY = JSBI.divide(
-          JSBI.multiply(amountToRemove, reserveY),
+          JSBI.multiply(liquidityAmount, reserveY),
           totalSupply
         )
         totalAmountY = JSBI.add(amountY, totalAmountY)
@@ -298,7 +298,7 @@ export class PairV2 {
 
       if (binId >= activeBin) {
         const amountX = JSBI.divide(
-          JSBI.multiply(amountToRemove, reserveX),
+          JSBI.multiply(liquidityAmount, reserveX),
           totalSupply
         )
         totalAmountX = JSBI.add(amountX, totalAmountX)
@@ -375,7 +375,7 @@ export class PairV2 {
    * @param {number} activeBin - The active bin id for the LBPair
    * @param {Bin[]} bins - List of bins whose indices match those of userPositionIds
    * @param {BigNumber[]} totalSupplies - List of bin's total supplies whose indices match those of userPositionIds
-   * @param {number[]} amountsToRemove - List of amounts specified by the user to remove in each of their position
+   * @param {string[]} amountsToRemove - List of amounts specified by the user to remove in each of their position
    * @param {Percent} amountSlippage - The amounts slippage used to calculate amountXMin and amountYMin
    * @returns
    */
@@ -384,7 +384,7 @@ export class PairV2 {
     activeBin: number,
     bins: BinReserves[],
     totalSupplies: BigNumber[],
-    amountsToRemove: number[],
+    amountsToRemove: string[],
     amountSlippage: Percent
   ): {
     amountX: JSBI
