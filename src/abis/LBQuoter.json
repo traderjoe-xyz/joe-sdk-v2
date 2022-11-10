@@ -32,14 +32,8 @@
     "type": "error"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "id",
-        "type": "uint256"
-      }
-    ],
-    "name": "BinHelper__IntOverflows",
+    "inputs": [],
+    "name": "BinHelper__IdOverflows",
     "type": "error"
   },
   {
