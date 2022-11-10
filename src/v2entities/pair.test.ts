@@ -1,5 +1,5 @@
 // import {Bin} from './bin'
-import { ethers } from 'ethers'
+import { BigNumber, ethers } from 'ethers'
 import { ChainId, WAVAX, Token } from '@traderjoe-xyz/sdk'
 import { PairV2 } from './pair'
 
@@ -109,6 +109,97 @@ describe('PairV2 entity', () => {
 
       expect(lbPairFeeParams.baseFactor).not.toBeUndefined()
       expect(lbPairFeeParams.maxVolatilityAccumulated).not.toBeUndefined()
+    })
+  })
+
+  describe('PairV2.calculateAmounts()', () => {
+    it('can accurately amounts when activeBin is included', async () => {
+      const liquidity = ['13333333', '13600300', '13903508']
+      const binIds = [8376297, 8376298, 8376299]
+      const activeBin = 8376298
+      const binsReserves = [
+        {
+          reserveX: '0',
+          reserveY: '420588469'
+        },
+        {
+          reserveX: '16644559640250455745',
+          reserveY: '75236144'
+        },
+        {
+          reserveX: '20272546666666666600',
+          reserveY: '0'
+        }
+      ].map((el) => ({
+        reserveX: BigNumber.from(el.reserveX),
+        reserveY: BigNumber.from(el.reserveY)
+      }))
+      const totalSupplies = ['420588467', '421669945', '422789291'].map((el) =>
+        BigNumber.from(el)
+      )
+
+      const { amountX, amountY } = PairV2.calculateAmounts(
+        binIds,
+        activeBin,
+        binsReserves,
+        totalSupplies,
+        liquidity
+      )
+
+      expect(amountX.toString()).toBe('1203510695082363975')
+      expect(amountY.toString()).toBe('15759956')
+    })
+    it('can accurately calculate amounts when bin < activeBin', async () => {
+      const liquidity = ['13333333']
+      const binIds = [8376297]
+      const activeBin = 8376298
+      const binsReserves = [
+        {
+          reserveX: '0',
+          reserveY: '420588469'
+        }
+      ].map((el) => ({
+        reserveX: BigNumber.from(el.reserveX),
+        reserveY: BigNumber.from(el.reserveY)
+      }))
+      const totalSupplies = ['420588467'].map((el) => BigNumber.from(el))
+
+      const { amountX, amountY } = PairV2.calculateAmounts(
+        binIds,
+        activeBin,
+        binsReserves,
+        totalSupplies,
+        liquidity
+      )
+
+      expect(amountX.toString()).toBe('0')
+      expect(amountY.toString()).toBe('13333333')
+    })
+    it('can accurately calculate amounts when bin > activeBin', async () => {
+      const liquidity = ['13903508']
+      const binIds = [8376299]
+      const activeBin = 8376298
+      const binsReserves = [
+        {
+          reserveX: '20272546666666666600',
+          reserveY: '0'
+        }
+      ].map((el) => ({
+        reserveX: BigNumber.from(el.reserveX),
+        reserveY: BigNumber.from(el.reserveY)
+      }))
+      const totalSupplies = ['422789291'].map((el) => BigNumber.from(el))
+
+      const { amountX, amountY } = PairV2.calculateAmounts(
+        binIds,
+        activeBin,
+        binsReserves,
+        totalSupplies,
+        liquidity
+      )
+
+      expect(amountX.toString()).toBe('666666636928543519')
+      expect(amountY.toString()).toBe('0')
     })
   })
 })
