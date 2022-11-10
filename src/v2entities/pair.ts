@@ -278,20 +278,36 @@ export class PairV2 {
     amountSlippage: Percent,
     priceSlippage: Percent,
     liquidityDistribution: LiquidityDistribution
-  ) {
+  ): {
+    tokenX: Token
+    tokenY: Token
+    amountX: string
+    amountY: string
+    amountXMin: string
+    amountYMin: string
+    idSlippage: number
+    deltaIds: number[]
+    distributionX: BigNumber[]
+    distributionY: BigNumber[]
+  } {
     const token0isX = token0Amount.token.sortsBefore(token1Amount.token)
     const tokenX = token0isX ? token0Amount.token : token1Amount.token
     const tokenY = token0isX ? token1Amount.token : token0Amount.token
     const _amountX: JSBI = token0isX ? token0Amount.raw : token1Amount.raw
     const _amountY: JSBI = token0isX ? token1Amount.raw : token0Amount.raw
-    const amountX: number = JSBI.toNumber(_amountX)
-    const amountY: number = JSBI.toNumber(_amountY)
-    const amountXMin = JSBI.toNumber(
-      new Fraction(ONE).add(amountSlippage).invert().multiply(_amountX).quotient
-    )
-    const amountYMin = JSBI.toNumber(
-      new Fraction(ONE).add(amountSlippage).invert().multiply(_amountY).quotient
-    )
+
+    const amountX: string = _amountX.toString()
+    const amountY: string = _amountY.toString()
+    const amountXMin = new Fraction(ONE)
+      .add(amountSlippage)
+      .invert()
+      .multiply(_amountX)
+      .quotient.toString()
+    const amountYMin = new Fraction(ONE)
+      .add(amountSlippage)
+      .invert()
+      .multiply(_amountY)
+      .quotient.toString()
 
     const _priceSlippage: number = Number(priceSlippage.toSignificant()) / 100
     const idSlippage = Bin.getIdSlippageFromPriceSlippage(
