@@ -449,6 +449,14 @@ export class TradeV2 {
     )
   }
 
+  /**
+   * @static
+   * Returns the best trade
+   *
+   * @param {TradeV2[]} trades
+   * @param {boolean} isExactIn
+   * @returns {TradeV2}
+   */
   public static chooseBestTrade(
     trades: TradeV2[],
     isExactIn: boolean
@@ -468,8 +476,8 @@ export class TradeV2 {
         }
       } else {
         if (
-          JSBI.greaterThan(trade.outputAmount.raw, JSBI.BigInt(0)) &&
-          JSBI.lessThan(trade.outputAmount.raw, bestTrade.outputAmount.raw)
+          JSBI.greaterThan(trade.inputAmount.raw, JSBI.BigInt(0)) &&
+          JSBI.lessThan(trade.inputAmount.raw, bestTrade.inputAmount.raw)
         ) {
           bestTrade = trade
         }
