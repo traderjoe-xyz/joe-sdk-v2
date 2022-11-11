@@ -34,7 +34,7 @@ const swapAmountIn = async () => {
   // Init: user inputs
   const inputToken = USDC
   const outputToken = WAVAX
-  const typedValueIn = '10' // user string input
+  const typedValueIn = '20' // user string input
   const typedValueInParsed = parseUnits(
     typedValueIn,
     inputToken.decimals
@@ -78,6 +78,9 @@ const swapAmountIn = async () => {
       `Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`
     )
   }
+
+  const bestTrade = TradeV2.chooseBestTrade(trades, true)
+  console.log('bestTrade', bestTrade.toLog())
 
   // get gas estimates for each trade
   // const WALLET_PK = process.env.PRIVATE_KEY
