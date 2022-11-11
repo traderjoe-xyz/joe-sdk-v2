@@ -4,6 +4,7 @@ const {
   ChainId,
   WAVAX: _WAVAX,
   TokenAmount,
+  Trade,
 } = require('@traderjoe-xyz/sdk')
 const { parseUnits } = require('@ethersproject/units')
 const { JsonRpcProvider } = require('@ethersproject/providers')
@@ -77,6 +78,9 @@ const swapAmountOut = async () => {
       `Fee: ${feeAmountIn.toSignificant(6)} ${feeAmountIn.token.symbol}`
     ) // in token's decimals
   }
+
+  const bestTrade = TradeV2.chooseBestTrade(trades, false)
+  console.log('bestTrade', bestTrade.toLog())
 
   // get gas estimates for each trade
   // const WALLET_PK = process.env.PRIVATE_KEY
