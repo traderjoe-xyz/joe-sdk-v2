@@ -1,5 +1,12 @@
 import { ethers } from 'ethers'
-import { ChainId, WAVAX, Token, TokenAmount, JSBI } from '@traderjoe-xyz/sdk'
+import {
+  ChainId,
+  WAVAX as _WAVAX,
+  Token,
+  TokenAmount,
+  JSBI,
+  Percent
+} from '@traderjoe-xyz/sdk'
 import { parseUnits } from '@ethersproject/units'
 import { PairV2 } from './pair'
 import { RouteV2 } from './route'
@@ -25,12 +32,12 @@ describe('TradeV2 entity', () => {
     'USDT.e',
     'Tether USD'
   )
-  const AVAX = WAVAX[ChainId.FUJI]
-  const BASES = [AVAX, USDC, USDT]
+  const WAVAX = _WAVAX[ChainId.FUJI]
+  const BASES = [WAVAX, USDC, USDT]
 
   // init input / output
   const inputToken = USDC
-  const outputToken = AVAX
+  const outputToken = WAVAX
 
   // token pairs
   const allTokenPairs = PairV2.createAllTokenPairs(
@@ -74,6 +81,8 @@ describe('TradeV2 entity', () => {
         allRoutes,
         amountIn,
         outputToken,
+        false,
+        false,
         PROVIDER,
         CHAIN_ID
       )
@@ -87,6 +96,8 @@ describe('TradeV2 entity', () => {
         allRoutes,
         amountOut,
         inputToken,
+        false,
+        false,
         PROVIDER,
         CHAIN_ID
       )
@@ -100,6 +111,8 @@ describe('TradeV2 entity', () => {
         allRoutes,
         amountIn,
         outputToken,
+        false,
+        false,
         PROVIDER,
         CHAIN_ID
       )
@@ -127,6 +140,8 @@ describe('TradeV2 entity', () => {
         allRoutes,
         amountOut,
         inputToken,
+        false,
+        false,
         PROVIDER,
         CHAIN_ID
       )
@@ -156,6 +171,8 @@ describe('TradeV2 entity', () => {
         allRoutes,
         amountIn,
         outputToken,
+        false,
+        false,
         PROVIDER,
         CHAIN_ID
       )
@@ -164,6 +181,8 @@ describe('TradeV2 entity', () => {
         allRoutes,
         amountOut,
         inputToken,
+        false,
+        false,
         PROVIDER,
         CHAIN_ID
       )
@@ -188,6 +207,56 @@ describe('TradeV2 entity', () => {
           expect(token.address).toBe(otherRouteToken.address)
         })
       }
+    })
+  })
+  describe('TradeV2.swapCallParameters()', () => {
+    it('generates swapExactTokensForAVAX method', async () => {
+      const isAvaxOut = true
+
+      const trades = await TradeV2.getTradesExactIn(
+        allRoutes,
+        amountIn,
+        outputToken,
+        false,
+        isAvaxOut,
+        PROVIDER,
+        CHAIN_ID
+      )
+
+      const bestTrade = TradeV2.chooseBestTrade(trades as TradeV2[], true)
+
+      const options = {
+        allowedSlippage: new Percent(JSBI.BigInt(50), JSBI.BigInt(10000)),
+        ttl: 1000,
+        recipient: '0x0000000000000000000000000000000000000000'
+      }
+      expect(bestTrade?.swapCallParameters(options)?.methodName).toBe(
+        'swapExactTokensForAVAX'
+      )
+    })
+    it('generates swapExactTokensForTokens method', async () => {
+      const isAvaxOut = false
+
+      const trades = await TradeV2.getTradesExactIn(
+        allRoutes,
+        amountIn,
+        outputToken,
+        false,
+        isAvaxOut,
+        PROVIDER,
+        CHAIN_ID
+      )
+
+      const bestTrade = TradeV2.chooseBestTrade(trades as TradeV2[], true)
+
+      const options = {
+        allowedSlippage: new Percent(JSBI.BigInt(50), JSBI.BigInt(10000)),
+        ttl: 1000,
+        recipient: '0x0000000000000000000000000000000000000000'
+      }
+      expect(bestTrade?.swapCallParameters(options)?.methodName).toBe(
+        'swapExactTokensForTokens'
+      )
     })
   })
 })
