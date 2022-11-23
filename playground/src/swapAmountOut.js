@@ -65,6 +65,8 @@ const swapAmountOut = async () => {
     allRoutes,
     amountOut,
     inputToken,
+    false,
+    false,
     provider,
     chainId
   )

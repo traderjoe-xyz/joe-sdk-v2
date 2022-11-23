@@ -66,6 +66,8 @@ const swapAmountIn = async () => {
     allRoutes,
     amountIn,
     outputToken,
+    false,
+    false,
     provider,
     chainId
   ) // console.log('trades', trades.map(el=>el.toLog()))

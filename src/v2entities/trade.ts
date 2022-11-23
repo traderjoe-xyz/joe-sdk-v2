@@ -326,6 +326,8 @@ export class TradeV2 {
    * @param {RouteV2[]} routes
    * @param {TokenAmount} tokenAmountIn
    * @param {Token} tokenOut
+   * @param {boolean} isAvaxIn
+   * @param {boolean} isAvaxOut
    * @param {Provider | Web3Provider | any} provider
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
@@ -334,14 +336,19 @@ export class TradeV2 {
     routes: RouteV2[],
     tokenAmountIn: TokenAmount,
     tokenOut: Token,
+    isAvaxIn: boolean,
+    isAvaxOut: boolean,
     provider: Provider | Web3Provider | any,
     chainId: ChainId
   ): Promise<Array<TradeV2 | undefined>> {
     const isExactIn = true
-    const isAvaxIn = tokenAmountIn.token.address === WAVAX[chainId].address
-    const isAvaxOut = tokenOut.address === WAVAX[chainId].address
 
-    if (isAvaxIn && isAvaxOut) {
+    // handle wavax<->avax wrap swaps
+    const isWrapSwap =
+      (isAvaxIn && tokenOut.address === WAVAX[chainId].address) ||
+      (isAvaxOut && tokenAmountIn.token.address === WAVAX[chainId].address)
+
+    if (isWrapSwap) {
       return []
     }
 
@@ -391,6 +398,8 @@ export class TradeV2 {
    * @param {RouteV2[]} routes
    * @param {TokenAmount} tokenAmountOut
    * @param {Token} tokenIn
+   * @param {boolean} isAvaxIn
+   * @param {boolean} isAvaxOut
    * @param {Provider | Web3Provider | any} provider
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
@@ -399,14 +408,19 @@ export class TradeV2 {
     routes: RouteV2[],
     tokenAmountOut: TokenAmount,
     tokenIn: Token,
+    isAvaxIn: boolean,
+    isAvaxOut: boolean,
     provider: Provider | Web3Provider | any,
     chainId: ChainId
   ): Promise<Array<TradeV2 | undefined>> {
     const isExactIn = false
-    const isAvaxIn = tokenIn.address === WAVAX[chainId].address
-    const isAvaxOut = tokenAmountOut.token.address === WAVAX[chainId].address
 
-    if (isAvaxIn && isAvaxOut) {
+    // handle wavax<->avax wrap swaps
+    const isWrapSwap =
+      (isAvaxIn && tokenAmountOut.token.address === WAVAX[chainId].address) ||
+      (isAvaxOut && tokenIn.address === WAVAX[chainId].address)
+
+    if (isWrapSwap) {
       return []
     }
 
