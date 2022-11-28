@@ -1,7 +1,7 @@
 {
   "name": "mc-sdk-v2",
   "license": "MIT",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
