@@ -6,7 +6,7 @@ import {
   TokenAmount,
   JSBI,
   Percent
-} from '@traderjoe-xyz/sdk'
+} from 'mc-sdk'
 import { parseUnits } from '@ethersproject/units'
 import { PairV2 } from './pair'
 import { RouteV2 } from './route'

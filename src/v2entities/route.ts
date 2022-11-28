@@ -1,5 +1,5 @@
 import { PairV2 } from './pair'
-import { Token } from '@traderjoe-xyz/sdk'
+import { Token } from 'mc-sdk'
 
 /** Class representing a trade route. */
 export class RouteV2 {

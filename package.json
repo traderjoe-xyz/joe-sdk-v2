@@ -1,7 +1,7 @@
 {
-  "name": "@traderjoe-xyz/sdk-v2",
+  "name": "mc-sdk-v2",
   "license": "MIT",
-  "version": "0.3.0",
+  "version": "0.0.1",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -28,10 +28,10 @@
   },
   "dependencies": {
     "@traderjoe-xyz/core": "^2.3.0",
-    "@traderjoe-xyz/sdk": "^2.1.0",
     "ethers": "^5.7.2",
     "jsbi": "^3.1.1",
     "lodash.flatmap": "^4.5.0",
+    "mc-sdk": "^0.0.3",
     "tiny-invariant": "^1.1.0",
     "tiny-warning": "^1.0.3",
     "toformat": "^2.0.0"

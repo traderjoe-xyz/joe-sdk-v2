@@ -11,7 +11,7 @@ import {
   TradeType,
   ChainId,
   WAVAX
-} from '@traderjoe-xyz/sdk'
+} from 'mc-sdk'
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
 
