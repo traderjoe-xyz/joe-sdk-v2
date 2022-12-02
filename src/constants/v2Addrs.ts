@@ -10,7 +10,7 @@ export const MULTICALL_ADDRESS: { [chainId in ChainId]: string } = {
 
 export const LB_QUOTER_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.FUJI]: '0x2644fE413b8Fe94D69c4706455108368fa36354F',
-  [ChainId.AVALANCHE]: '0x51409fD32C15E9857eeF9F28275FA0842C3C4545'
+  [ChainId.AVALANCHE]: '0x9dbf1706577636941ab5f443d2aebe251ccd1648'
 }
 
 export const LB_ROUTER_ADDRESS: { [chainId in ChainId]: string } = {
