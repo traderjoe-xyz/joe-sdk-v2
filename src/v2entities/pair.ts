@@ -3,7 +3,13 @@ import { Provider } from '@ethersproject/abstract-provider'
 import { Web3Provider } from '@ethersproject/providers'
 import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
-import { Token, Percent, TokenAmount, Fraction, ChainId } from 'mc-sdk'
+import {
+  Token,
+  Percent,
+  TokenAmount,
+  Fraction,
+  ChainId
+} from '@traderjoe-xyz/sdk'
 
 import {
   LBPair,

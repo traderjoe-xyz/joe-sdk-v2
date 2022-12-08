@@ -1,5 +1,5 @@
 import { parseEther } from 'ethers/lib/utils'
-import { CurrencyAmount } from 'mc-sdk'
+import { CurrencyAmount } from '@traderjoe-xyz/sdk'
 
 import { spotUniform, maxUniform, bidAsk, normal } from '../constants'
 import {

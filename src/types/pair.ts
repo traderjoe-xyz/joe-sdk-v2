@@ -1,4 +1,4 @@
-import { Percent } from 'mc-sdk'
+import { Percent } from '@traderjoe-xyz/sdk'
 import { BigNumber, BigNumberish } from 'ethers'
 
 export interface LBPair {

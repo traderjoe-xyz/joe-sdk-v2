@@ -1,5 +1,5 @@
 const { PairV2, Bin } = require('../../dist')
-const { ChainId, Token, WAVAX: _WAVAX } = require('mc-sdk')
+const { ChainId, Token, WAVAX: _WAVAX } = require('@traderjoe-xyz/sdk')
 const { ethers } = require('ethers')
 
 const getLBPairsAndActiveIds = async () => {

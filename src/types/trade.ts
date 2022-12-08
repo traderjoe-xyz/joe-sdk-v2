@@ -1,4 +1,4 @@
-import { Percent, TokenAmount } from 'mc-sdk'
+import { Percent, TokenAmount } from '@traderjoe-xyz/sdk'
 import { BigNumber } from 'ethers'
 
 /** Interface representing a quote */
