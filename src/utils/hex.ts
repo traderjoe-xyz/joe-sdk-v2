@@ -1,7 +1,7 @@
 import invariant from 'tiny-invariant'
 import warning from 'tiny-warning'
 import { getAddress } from '@ethersproject/address'
-import { CurrencyAmount } from '@traderjoe-xyz/sdk'
+import { CurrencyAmount } from 'mc-sdk'
 
 // warns if addresses are not checksummed
 export function validateAndParseAddress(address: string): string {

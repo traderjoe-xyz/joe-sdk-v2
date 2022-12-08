@@ -1,4 +1,4 @@
-import { ChainId, WAVAX, Token } from '@traderjoe-xyz/sdk'
+import { ChainId, WAVAX, Token } from 'mc-sdk'
 import { PairV2 } from './pair'
 import { RouteV2 } from './route'
 

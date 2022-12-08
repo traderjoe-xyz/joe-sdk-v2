@@ -1408,10 +1408,10 @@
   resolved "https://registry.yarnpkg.com/@traderjoe-xyz/core/-/core-2.3.0.tgz#d43977920cf43c848126eaa021547f2925c6ed81"
   integrity sha512-8iZDTpjQgv0fbmfpIJ/NZAO1yxLRQdAR4/6hPWP3e6KGtCSS9RWKo99o3Iyg+YRZGBsd0p/99wLa5WhEfibjXw==
 
-"@traderjoe-xyz/sdk@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-2.1.0.tgz#e501a1515043f103f078847ffc7a96c042c41ab6"
-  integrity sha512-N8Gn6UNJ7yuJ/OL2ctYIKbl7LUVezKkzp/lzrX2f/cLQJHK1LklVAwA/JhQTldOZBeuV8IPHjRd98yW90ePqRw==
+"@traderjoe-xyz/sdk@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-2.2.0.tgz#2b4b0cede9e0696cbba7f440e20d617ba1782a48"
+  integrity sha512-ynAdTfIOa/yi1bzDqAFttNz+Ep71CWU8IDCv6SbK4Cm0RdB8sa0hzJYSgt/wnGScWky8RvcbPdU2wtgOQ2POTg==
   dependencies:
     "@traderjoe-xyz/core" "^2.3.0"
     big.js "^5.2.2"

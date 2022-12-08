@@ -1,6 +1,6 @@
 // import {Bin} from './bin'
 import { BigNumber, ethers } from 'ethers'
-import { ChainId, WAVAX, Token } from '@traderjoe-xyz/sdk'
+import { ChainId, WAVAX, Token } from 'mc-sdk'
 import { PairV2 } from './pair'
 
 describe('PairV2 entity', () => {

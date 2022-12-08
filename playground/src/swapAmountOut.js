@@ -1,11 +1,5 @@
 const { PairV2, RouteV2, TradeV2 } = require('../../dist')
-const {
-  Token,
-  ChainId,
-  WAVAX: _WAVAX,
-  TokenAmount,
-  Trade,
-} = require('@traderjoe-xyz/sdk')
+const { Token, ChainId, WAVAX: _WAVAX, TokenAmount, Trade } = require('mc-sdk')
 const { parseUnits } = require('@ethersproject/units')
 const { JsonRpcProvider } = require('@ethersproject/providers')
 const JSBI = require('JSBI')
