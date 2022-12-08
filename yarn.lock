@@ -4859,10 +4859,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-mc-sdk@^0.0.3:
-  version "0.0.3"
-  resolved "https://registry.yarnpkg.com/mc-sdk/-/mc-sdk-0.0.3.tgz#86f6616c4b0e35aad37b0c94140e887a9c5e7b6f"
-  integrity sha512-NdBBVH9EZa3vUYNJIn/nGXGlWa82GSZpkYzQg+eFgwkzvtauaaU0sV5ikKvJjh0E27xvdM+JztDP8sndBv3/SA==
+mc-sdk@0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/mc-sdk/-/mc-sdk-0.0.4.tgz#346cbec7490d35496906e1d3b03c5d1f4a88c715"
+  integrity sha512-JTnngRAB596SvoKrYaYLNlvPNw24gdfaCK4aInSxKWaMobW/N61mtCMeIyLIVf5a9zlK9nLkw5yeiEjegrRQJw==
   dependencies:
     "@traderjoe-xyz/core" "^2.3.0"
     big.js "^5.2.2"

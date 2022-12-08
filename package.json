@@ -31,7 +31,7 @@
     "ethers": "^5.7.2",
     "jsbi": "^3.1.1",
     "lodash.flatmap": "^4.5.0",
-    "mc-sdk": "^0.0.3",
+    "mc-sdk": "0.0.4",
     "tiny-invariant": "^1.1.0",
     "tiny-warning": "^1.0.3",
     "toformat": "^2.0.0"
