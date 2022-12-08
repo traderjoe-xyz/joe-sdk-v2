@@ -1408,6 +1408,20 @@
   resolved "https://registry.yarnpkg.com/@traderjoe-xyz/core/-/core-2.3.0.tgz#d43977920cf43c848126eaa021547f2925c6ed81"
   integrity sha512-8iZDTpjQgv0fbmfpIJ/NZAO1yxLRQdAR4/6hPWP3e6KGtCSS9RWKo99o3Iyg+YRZGBsd0p/99wLa5WhEfibjXw==
 
+"@traderjoe-xyz/sdk@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-2.2.0.tgz#2b4b0cede9e0696cbba7f440e20d617ba1782a48"
+  integrity sha512-ynAdTfIOa/yi1bzDqAFttNz+Ep71CWU8IDCv6SbK4Cm0RdB8sa0hzJYSgt/wnGScWky8RvcbPdU2wtgOQ2POTg==
+  dependencies:
+    "@traderjoe-xyz/core" "^2.3.0"
+    big.js "^5.2.2"
+    decimal.js-light "^2.5.0"
+    ethers "^5.7.2"
+    jsbi "^3.1.1"
+    tiny-invariant "^1.1.0"
+    tiny-warning "^1.0.3"
+    toformat "^2.0.0"
+
 "@types/babel__core@^7.1.0":
   version "7.1.12"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.12.tgz#4d8e9e51eb265552a7e4f1ff2219ab6133bdfb2d"
@@ -4858,20 +4872,6 @@ map-visit@^1.0.0:
   integrity sha1-7Nyo8TFE5mDxtb1B8S80edmN+48=
   dependencies:
     object-visit "^1.0.0"
-
-mc-sdk@0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/mc-sdk/-/mc-sdk-0.0.4.tgz#346cbec7490d35496906e1d3b03c5d1f4a88c715"
-  integrity sha512-JTnngRAB596SvoKrYaYLNlvPNw24gdfaCK4aInSxKWaMobW/N61mtCMeIyLIVf5a9zlK9nLkw5yeiEjegrRQJw==
-  dependencies:
-    "@traderjoe-xyz/core" "^2.3.0"
-    big.js "^5.2.2"
-    decimal.js-light "^2.5.0"
-    ethers "^5.7.2"
-    jsbi "^3.1.1"
-    tiny-invariant "^1.1.0"
-    tiny-warning "^1.0.3"
-    toformat "^2.0.0"
 
 merge-stream@^2.0.0:
   version "2.0.0"
