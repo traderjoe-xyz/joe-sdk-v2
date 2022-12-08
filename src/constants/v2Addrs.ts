@@ -15,7 +15,6 @@ export const LB_QUOTER_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.AVALANCHE]: '0x9dbf1706577636941ab5f443d2aebe251ccd1648',
   [ChainId.ARBITRUM_ONE]: '',
   [ChainId.ARB_GOERLI]: '0x42B0D9a10ee9B96a599C98a618205d0288636762'
-  [ChainId.AVALANCHE]: '0x9dbf1706577636941ab5f443d2aebe251ccd1648'
 }
 
 export const LB_ROUTER_ADDRESS: { [chainId in ChainId]: string } = {
