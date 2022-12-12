@@ -1,4 +1,4 @@
-import { ChainId, WAVAX, Token } from '@traderjoe-xyz/sdk'
+import { ChainId, WNATIVE, Token } from '@traderjoe-xyz/sdk'
 import { PairV2 } from './pair'
 import { RouteV2 } from './route'
 
@@ -18,7 +18,7 @@ describe('RouteV2.createAllRoute()', () => {
     'USDT.e',
     'Tether USD'
   )
-  const AVAX = WAVAX[ChainId.FUJI]
+  const AVAX = WNATIVE[ChainId.FUJI]
   const BASES = [AVAX, USDC, USDT]
 
   // init input / output
