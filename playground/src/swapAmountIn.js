@@ -2,7 +2,7 @@ const { PairV2, RouteV2, TradeV2 } = require('../../dist')
 const {
   Token,
   ChainId,
-  WAVAX: _WAVAX,
+  WNATIVE,
   TokenAmount
 } = require('@traderjoe-xyz/sdk')
 const { parseUnits } = require('@ethersproject/units')
@@ -14,7 +14,7 @@ const swapAmountIn = async () => {
 
   // Init constants
   const FUJI_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
-  const WAVAX = _WAVAX[ChainId.FUJI]
+  const WAVAX = WNATIVE[ChainId.FUJI]
   const USDC = new Token(
     ChainId.FUJI,
     '0xB6076C93701D6a07266c31066B298AeC6dd65c2d',
