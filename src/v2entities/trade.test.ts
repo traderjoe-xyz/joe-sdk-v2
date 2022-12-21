@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import {
   ChainId,
-  WAVAX as _WAVAX,
+  WNATIVE as _WNATIVE,
   Token,
   TokenAmount,
   JSBI,
@@ -32,12 +32,12 @@ describe('TradeV2 entity', () => {
     'USDT.e',
     'Tether USD'
   )
-  const WAVAX = _WAVAX[ChainId.FUJI]
-  const BASES = [WAVAX, USDC, USDT]
+  const WNATIVE = _WNATIVE[ChainId.FUJI]
+  const BASES = [WNATIVE, USDC, USDT]
 
   // init input / output
   const inputToken = USDC
-  const outputToken = WAVAX
+  const outputToken = WNATIVE
 
   // token pairs
   const allTokenPairs = PairV2.createAllTokenPairs(
@@ -211,14 +211,14 @@ describe('TradeV2 entity', () => {
   })
   describe('TradeV2.swapCallParameters()', () => {
     it('generates swapExactTokensForAVAX method', async () => {
-      const isAvaxOut = true
+      const isNativeOut = true
 
       const trades = await TradeV2.getTradesExactIn(
         allRoutes,
         amountIn,
         outputToken,
         false,
-        isAvaxOut,
+        isNativeOut,
         PROVIDER,
         CHAIN_ID
       )
@@ -235,14 +235,14 @@ describe('TradeV2 entity', () => {
       )
     })
     it('generates swapExactTokensForTokens method', async () => {
-      const isAvaxOut = false
+      const isNativeOut = false
 
       const trades = await TradeV2.getTradesExactIn(
         allRoutes,
         amountIn,
         outputToken,
         false,
-        isAvaxOut,
+        isNativeOut,
         PROVIDER,
         CHAIN_ID
       )

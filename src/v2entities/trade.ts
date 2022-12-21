@@ -10,7 +10,7 @@ import {
   CurrencyAmount,
   TradeType,
   ChainId,
-  WAVAX
+  WNATIVE
 } from '@traderjoe-xyz/sdk'
 import JSBI from 'jsbi'
 import invariant from 'tiny-invariant'
@@ -45,8 +45,8 @@ export class TradeV2 {
   public readonly executionPrice: Price // The price expressed in terms of output amount/input amount.
   public readonly exactQuote: TokenAmount // The exact amount if there was not slippage
   public readonly priceImpact: Percent // The percent difference between the executionPrice and the midPrice due to trade size
-  public readonly isAvaxIn: boolean
-  public readonly isAvaxOut: boolean
+  public readonly isNativeIn: boolean
+  public readonly isNativeOut: boolean
 
   public constructor(
     route: RouteV2,
@@ -54,8 +54,8 @@ export class TradeV2 {
     tokenOut: Token,
     quote: Quote,
     isExactIn: boolean,
-    isAvaxIn: boolean,
-    isAvaxOut: boolean
+    isNativeIn: boolean,
+    isNativeOut: boolean
   ) {
     const inputAmount = new TokenAmount(
       tokenIn,
@@ -69,8 +69,8 @@ export class TradeV2 {
     this.route = route
     this.tradeType = isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT
     this.quote = quote
-    this.isAvaxIn = isAvaxIn
-    this.isAvaxOut = isAvaxOut
+    this.isNativeIn = isNativeIn
+    this.isNativeOut = isNativeOut
     this.inputAmount = inputAmount
     this.outputAmount = outputAmount
     this.executionPrice = new Price(
@@ -107,9 +107,10 @@ export class TradeV2 {
         .add(slippageTolerance)
         .invert()
         .multiply(this.outputAmount.raw).quotient
+      const chainId = this.outputAmount.token.chainId
       return this.outputAmount instanceof TokenAmount
         ? new TokenAmount(this.outputAmount.token, slippageAdjustedAmountOut)
-        : CurrencyAmount.ether(slippageAdjustedAmountOut)
+        : CurrencyAmount.ether(chainId, slippageAdjustedAmountOut)
     }
   }
 
@@ -127,9 +128,10 @@ export class TradeV2 {
       const slippageAdjustedAmountIn = new Fraction(ONE)
         .add(slippageTolerance)
         .multiply(this.inputAmount.raw).quotient
+      const chainId = this.outputAmount.token.chainId
       return this.inputAmount instanceof TokenAmount
         ? new TokenAmount(this.inputAmount.token, slippageAdjustedAmountIn)
-        : CurrencyAmount.ether(slippageAdjustedAmountIn)
+        : CurrencyAmount.ether(chainId, slippageAdjustedAmountIn)
     }
   }
 
@@ -142,10 +144,10 @@ export class TradeV2 {
   public swapCallParameters(
     options: TradeOptions | TradeOptionsDeadline
   ): SwapParameters {
-    const avaxIn = this.isAvaxIn
-    const avaxOut = this.isAvaxOut
+    const nativeIn = this.isNativeIn
+    const nativeOut = this.isNativeOut
     // the router does not support both avax in and out
-    invariant(!(avaxIn && avaxOut), 'AVAX_IN_OUT')
+    invariant(!(nativeIn && nativeOut), 'AVAX_IN_OUT')
     invariant(!('ttl' in options) || options.ttl > 0, 'TTL')
 
     const to: string = validateAndParseAddress(options.recipient)
@@ -173,14 +175,14 @@ export class TradeV2 {
     let value: string
     switch (this.tradeType) {
       case TradeType.EXACT_INPUT:
-        if (avaxIn) {
+        if (nativeIn) {
           methodName = useFeeOnTransfer
             ? 'swapExactAVAXForTokensSupportingFeeOnTransferTokens'
             : 'swapExactAVAXForTokens'
           // (uint amountOutMin, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
           args = [amountOut, binSteps, path, to, deadline]
           value = amountIn
-        } else if (avaxOut) {
+        } else if (nativeOut) {
           methodName = useFeeOnTransfer
             ? 'swapExactTokensForAVAXSupportingFeeOnTransferTokens'
             : 'swapExactTokensForAVAX'
@@ -198,12 +200,12 @@ export class TradeV2 {
         break
       case TradeType.EXACT_OUTPUT:
         invariant(!useFeeOnTransfer, 'EXACT_OUT_FOT')
-        if (avaxIn) {
+        if (nativeIn) {
           methodName = 'swapAVAXForExactTokens'
           // (uint amountOut, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
           args = [amountOut, binSteps, path, to, deadline]
           value = amountIn
-        } else if (avaxOut) {
+        } else if (nativeOut) {
           methodName = 'swapTokensForExactAVAX'
           // (uint amountOut, uint amountInMax, uint[] pairVersions, address[] calldata path, address to, uint deadline)
           args = [amountOut, amountIn, binSteps, path, to, deadline]
@@ -326,8 +328,8 @@ export class TradeV2 {
    * @param {RouteV2[]} routes
    * @param {TokenAmount} tokenAmountIn
    * @param {Token} tokenOut
-   * @param {boolean} isAvaxIn
-   * @param {boolean} isAvaxOut
+   * @param {boolean} isNativeIn
+   * @param {boolean} isNativeOut
    * @param {Provider | Web3Provider | any} provider
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
@@ -336,8 +338,8 @@ export class TradeV2 {
     routes: RouteV2[],
     tokenAmountIn: TokenAmount,
     tokenOut: Token,
-    isAvaxIn: boolean,
-    isAvaxOut: boolean,
+    isNativeIn: boolean,
+    isNativeOut: boolean,
     provider: Provider | Web3Provider | any,
     chainId: ChainId
   ): Promise<Array<TradeV2 | undefined>> {
@@ -345,8 +347,8 @@ export class TradeV2 {
 
     // handle wavax<->avax wrap swaps
     const isWrapSwap =
-      (isAvaxIn && tokenOut.address === WAVAX[chainId].address) ||
-      (isAvaxOut && tokenAmountIn.token.address === WAVAX[chainId].address)
+      (isNativeIn && tokenOut.address === WNATIVE[chainId].address) ||
+      (isNativeOut && tokenAmountIn.token.address === WNATIVE[chainId].address)
 
     if (isWrapSwap) {
       return []
@@ -374,8 +376,8 @@ export class TradeV2 {
             tokenOut,
             quote,
             isExactIn,
-            isAvaxIn,
-            isAvaxOut
+            isNativeIn,
+            isNativeOut
           )
           return trade
         } catch (e) {
@@ -398,8 +400,8 @@ export class TradeV2 {
    * @param {RouteV2[]} routes
    * @param {TokenAmount} tokenAmountOut
    * @param {Token} tokenIn
-   * @param {boolean} isAvaxIn
-   * @param {boolean} isAvaxOut
+   * @param {boolean} isNativeIn
+   * @param {boolean} isNativeOut
    * @param {Provider | Web3Provider | any} provider
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
@@ -408,8 +410,8 @@ export class TradeV2 {
     routes: RouteV2[],
     tokenAmountOut: TokenAmount,
     tokenIn: Token,
-    isAvaxIn: boolean,
-    isAvaxOut: boolean,
+    isNativeIn: boolean,
+    isNativeOut: boolean,
     provider: Provider | Web3Provider | any,
     chainId: ChainId
   ): Promise<Array<TradeV2 | undefined>> {
@@ -417,8 +419,9 @@ export class TradeV2 {
 
     // handle wavax<->avax wrap swaps
     const isWrapSwap =
-      (isAvaxIn && tokenAmountOut.token.address === WAVAX[chainId].address) ||
-      (isAvaxOut && tokenIn.address === WAVAX[chainId].address)
+      (isNativeIn &&
+        tokenAmountOut.token.address === WNATIVE[chainId].address) ||
+      (isNativeOut && tokenIn.address === WNATIVE[chainId].address)
 
     if (isWrapSwap) {
       return []
@@ -446,8 +449,8 @@ export class TradeV2 {
             tokenAmountOut.token,
             quote,
             isExactIn,
-            isAvaxIn,
-            isAvaxOut
+            isNativeIn,
+            isNativeOut
           )
           return trade
         } catch (e) {
