@@ -21,9 +21,7 @@ export class Bin {
    * @returns {number}
    */
   public static getIdFromPrice(price: number, binStep: number): number {
-    return (
-      Math.floor(Math.log(price) / Math.log(1 + binStep / 10_000)) + 8388608
-    )
+    return ~~(Math.log(price) / Math.log(1 + binStep / 10_000)) + 8388608
   }
 
   /**
