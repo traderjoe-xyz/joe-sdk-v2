@@ -22,7 +22,7 @@ export class Bin {
    */
   public static getIdFromPrice(price: number, binStep: number): number {
     return (
-      Math.floor(Math.log(price) / Math.log(1 + binStep / 10_000)) + 8388608
+      Math.trunc(Math.log(price) / Math.log(1 + binStep / 10_000)) + 8388608
     )
   }
 
