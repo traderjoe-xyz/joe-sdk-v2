@@ -10,8 +10,7 @@ export {
   DEXLENS_ADDRESS
 } from './constants'
 
-export * as jsonAbis from './abis/json'
-export * as tsAbis from './abis/ts'
+export * from './abis/ts'
 
 export * from './v2entities'
 export * from './types'
