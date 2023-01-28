@@ -22,8 +22,8 @@ import { LB_FACTORY_ADDRESS, ONE } from '../constants'
 import { Bin } from './bin'
 import { getLiquidityConfig } from '../utils'
 
-import LBFactoryABI from '../abis/LBFactory.json'
-import LBPairABI from '../abis/LBPair.json'
+import LBFactoryABI from '../abis/json/LBFactory.json'
+import LBPairABI from '../abis/json/LBPair.json'
 
 /** Class representing a pair of tokens. */
 export class PairV2 {
