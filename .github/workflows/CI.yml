@@ -3,12 +3,12 @@ env:
   CI: true
 
 on:
-  pull_request:
-    branches:
-      - v2
   push:
     branches:
-      - v2
+      - main
+  pull_request:
+  # manual trigger
+  workflow_dispatch:
 
 jobs:
   test:
