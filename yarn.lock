@@ -1458,17 +1458,11 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
-"@traderjoe-xyz/core@^2.3.0":
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/core/-/core-2.3.0.tgz#d43977920cf43c848126eaa021547f2925c6ed81"
-  integrity sha512-8iZDTpjQgv0fbmfpIJ/NZAO1yxLRQdAR4/6hPWP3e6KGtCSS9RWKo99o3Iyg+YRZGBsd0p/99wLa5WhEfibjXw==
-
-"@traderjoe-xyz/sdk@^3.0.6":
-  version "3.0.6"
-  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-3.0.6.tgz#cd0066163aae41f191810df8eedf12112eaa0705"
-  integrity sha512-xiLFcXO+TZEqDpwurA27rpRUI/As8on22m6uDXy5qk2P8iN5MGrfpbGwqMA4mKFrr4BrI4NTelD6QxiGVmG9jw==
+"@traderjoe-xyz/sdk@^3.0.7":
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-3.0.7.tgz#03183b7517d0237289ac23464514b582920422aa"
+  integrity sha512-7QXlHMCa54Urc0kdEVT3c4mCed1z7mwlzz3k9h09qalsVIKYrE4jH6MdUdSDOrRyIz2kYbXv93cfXGxnhq01Mg==
   dependencies:
-    "@traderjoe-xyz/core" "^2.3.0"
     big.js "^5.2.2"
     decimal.js-light "^2.5.0"
     ethers "^5.7.2"
