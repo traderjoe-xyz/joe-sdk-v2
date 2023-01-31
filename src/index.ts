@@ -11,6 +11,7 @@ export {
 } from './constants'
 
 export * from './abis/ts'
+export * as jsonAbis from './abis/json'
 
 export * from './v2entities'
 export * from './types'
