@@ -32,8 +32,8 @@ import {
   Quote
 } from '../types'
 
-import LBQuoterABI from '../abis/LBQuoter.json'
-import LBRouterABI from '../abis/LBRouter.json'
+import LBQuoterABI from '../abis/json/LBQuoter.json'
+import LBRouterABI from '../abis/json/LBRouter.json'
 
 /** Class representing a trade */
 export class TradeV2 {

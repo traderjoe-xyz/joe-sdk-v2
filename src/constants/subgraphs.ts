@@ -8,7 +8,9 @@ export const DEX_V2_SUBGRAPH: { [chainId in ChainId]: string } = {
   [ChainId.ARBITRUM_ONE]:
     'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/joe-v2-arbitrum',
   [ChainId.ARB_GOERLI]:
-    'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/joe-v2-arb-goerli'
+    'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/joe-v2-arb-goerli',
+  [ChainId.BNB_CHAIN]: '',
+  [ChainId.BNB_TESTNET]: ''
 }
 
 export const DEXCANDLES_SUBGRAPH_V2: { [chainId in ChainId]: string } = {
@@ -19,5 +21,7 @@ export const DEXCANDLES_SUBGRAPH_V2: { [chainId in ChainId]: string } = {
   [ChainId.ARBITRUM_ONE]:
     'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/dexcandles-v2-arbitrum',
   [ChainId.ARB_GOERLI]:
-    'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/dexcandles-v2-arb-goerli'
+    'https://api.thegraph.com/subgraphs/name/traderjoe-xyz/dexcandles-v2-arb-goerli',
+  [ChainId.BNB_CHAIN]: '',
+  [ChainId.BNB_TESTNET]: ''
 }
