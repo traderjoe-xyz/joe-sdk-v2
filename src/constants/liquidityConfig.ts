@@ -15,8 +15,8 @@ export const spotUniform = {
   ].map((el) => parseEther(el.toString()))
 }
 
-// 2) Active
-export const active = {
+// 2) Curve
+export const curve = {
   deltaIds: [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
   distributionX: [0, 0, 0, 0, 0, 0.18, 0.3, 0.24, 0.16, 0.08, 0.04].map((el) =>
     parseEther(el.toString())
