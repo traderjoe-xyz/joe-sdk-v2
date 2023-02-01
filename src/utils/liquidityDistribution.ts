@@ -1,7 +1,7 @@
 import { parseEther } from 'ethers/lib/utils'
 import { CurrencyAmount } from '@traderjoe-xyz/sdk'
 
-import { spotUniform, maxUniform, bidAsk, normal } from '../constants'
+import { spotUniform, active, bidAsk, wide } from '../constants'
 import {
   LiquidityDistribution,
   LiquidityDistributionParams
@@ -19,12 +19,12 @@ export const getLiquidityConfig = (
 ): LiquidityDistributionParams => {
   if (distribution === LiquidityDistribution.SPOT) {
     return spotUniform
-  } else if (distribution === LiquidityDistribution.MAX) {
-    return maxUniform
+  } else if (distribution === LiquidityDistribution.ACTIVE) {
+    return active
   } else if (distribution === LiquidityDistribution.BID_ASK) {
     return bidAsk
   } else {
-    return normal
+    return wide
   }
 }
 
