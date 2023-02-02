@@ -1,7 +1,7 @@
 {
   "name": "@traderjoe-xyz/sdk-v2",
   "license": "MIT",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
