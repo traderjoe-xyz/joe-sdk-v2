@@ -48,7 +48,7 @@ export const DEXLENS_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.BNB_TESTNET]: '0x0000000000000000000000000000000000000000'
 }
 
-export const REWARDER_ADDRESS: { [chainId in ChainId]: string } = {
+export const LB_REWARDER_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.FUJI]: '0x3e031f1486a27c997e85c5a2af2638ee3a4c28a1',
   [ChainId.AVALANCHE]: '0x0000000000000000000000000000000000000000',
   [ChainId.ARBITRUM_ONE]: '0x0000000000000000000000000000000000000000',

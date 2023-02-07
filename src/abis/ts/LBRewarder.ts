@@ -1,4 +1,4 @@
-export const RewarderABI = [
+export const LBRewarderABI = [
   { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
   {
     inputs: [

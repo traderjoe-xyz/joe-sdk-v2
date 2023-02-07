@@ -7,7 +7,8 @@ export {
   LB_FACTORY_ADDRESS,
   DEX_V2_SUBGRAPH,
   DEXCANDLES_SUBGRAPH_V2,
-  DEXLENS_ADDRESS
+  DEXLENS_ADDRESS,
+  LB_REWARDER_ADDRESS
 } from './constants'
 
 export * from './abis/ts'
