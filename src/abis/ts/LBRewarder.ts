@@ -876,4 +876,4 @@ export const LBRewarderABI = [
     type: 'function'
   },
   { stateMutability: 'payable', type: 'receive' }
-]
+] as const
