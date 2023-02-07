@@ -1,0 +1,1 @@
+import {LBRewarderABI} from './dist'
