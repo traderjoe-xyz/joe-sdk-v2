@@ -1,4 +1,4 @@
-export const RewarderABI = [
+export const LBRewarderABI = [
   { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
   {
     inputs: [
@@ -876,4 +876,4 @@ export const RewarderABI = [
     type: 'function'
   },
   { stateMutability: 'payable', type: 'receive' }
-]
+] as const
