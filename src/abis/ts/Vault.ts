@@ -18,6 +18,7 @@ export const VaultABI = [
   { inputs: [], name: 'BaseVault__NativeTransferFailed', type: 'error' },
   { inputs: [], name: 'BaseVault__NoNativeToken', type: 'error' },
   { inputs: [], name: 'BaseVault__OnlyFactory', type: 'error' },
+  { inputs: [], name: 'BaseVault__OnlyWNative', type: 'error' },
   { inputs: [], name: 'BaseVault__SameStrategy', type: 'error' },
   { inputs: [], name: 'BaseVault__ZeroAmount', type: 'error' },
   { inputs: [], name: 'BaseVault__ZeroShares', type: 'error' },
@@ -29,6 +30,8 @@ export const VaultABI = [
     name: 'Math512Bits__MulDivOverflow',
     type: 'error'
   },
+  { inputs: [], name: 'SimpleVault__AmountsOverflow', type: 'error' },
+  { inputs: [], name: 'SimpleVault__ZeroCross', type: 'error' },
   {
     anonymous: false,
     inputs: [
@@ -158,6 +161,7 @@ export const VaultABI = [
     name: 'Withdrawn',
     type: 'event'
   },
+  { stateMutability: 'payable', type: 'fallback' },
   {
     inputs: [
       { internalType: 'address', name: 'owner', type: 'address' },
@@ -452,5 +456,16 @@ export const VaultABI = [
     ],
     stateMutability: 'nonpayable',
     type: 'function'
-  }
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: 'shares', type: 'uint256' }],
+    name: 'withdrawNative',
+    outputs: [
+      { internalType: 'uint256', name: 'amountX', type: 'uint256' },
+      { internalType: 'uint256', name: 'amountY', type: 'uint256' }
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  { stateMutability: 'payable', type: 'receive' }
 ] as const

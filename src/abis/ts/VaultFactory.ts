@@ -1,0 +1,590 @@
+export const VaultFactoryABI = [
+  {
+    inputs: [{ internalType: 'address', name: 'wnative', type: 'address' }],
+    stateMutability: 'nonpayable',
+    type: 'constructor'
+  },
+  { inputs: [], name: 'CreateFail', type: 'error' },
+  { inputs: [], name: 'VaultFactory__InvalidVaultType', type: 'error' },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.StrategyType',
+        name: 'sType',
+        type: 'uint8'
+      }
+    ],
+    name: 'VaultFactory__StrategyImplementationNotSet',
+    type: 'error'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.VaultType',
+        name: 'vType',
+        type: 'uint8'
+      }
+    ],
+    name: 'VaultFactory__VaultImplementationNotSet',
+    type: 'error'
+  },
+  { inputs: [], name: 'VaultFactory__ZeroAddress', type: 'error' },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'sender',
+        type: 'address'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'defaultOperator',
+        type: 'address'
+      }
+    ],
+    name: 'DefaultOperatorSet',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'sender',
+        type: 'address'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'feeRecipient',
+        type: 'address'
+      }
+    ],
+    name: 'FeeRecipientSet',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint8',
+        name: 'version',
+        type: 'uint8'
+      }
+    ],
+    name: 'Initialized',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address'
+      }
+    ],
+    name: 'OwnershipTransferStarted',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address'
+      }
+    ],
+    name: 'OwnershipTransferred',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'enum IVaultFactory.StrategyType',
+        name: 'sType',
+        type: 'uint8'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'strategy',
+        type: 'address'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'vault',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'contract ILBPair',
+        name: 'lbPair',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'strategyIndex',
+        type: 'uint256'
+      }
+    ],
+    name: 'StrategyCreated',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'enum IVaultFactory.StrategyType',
+        name: 'sType',
+        type: 'uint8'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'strategyImplementation',
+        type: 'address'
+      }
+    ],
+    name: 'StrategyImplementationSet',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'enum IVaultFactory.VaultType',
+        name: 'vType',
+        type: 'uint8'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'vault',
+        type: 'address'
+      },
+      {
+        indexed: true,
+        internalType: 'contract ILBPair',
+        name: 'lbPair',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'vaultIndex',
+        type: 'uint256'
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'tokenX',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'tokenY',
+        type: 'address'
+      }
+    ],
+    name: 'VaultCreated',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'enum IVaultFactory.VaultType',
+        name: 'vType',
+        type: 'uint8'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'vaultImplementation',
+        type: 'address'
+      }
+    ],
+    name: 'VaultImplementationSet',
+    type: 'event'
+  },
+  {
+    inputs: [],
+    name: 'acceptOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'vault', type: 'address' }],
+    name: 'createDefaultStrategy',
+    outputs: [{ internalType: 'address', name: 'strategy', type: 'address' }],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract ILBPair',
+        name: 'lbPair',
+        type: 'address'
+      },
+      {
+        internalType: 'contract IAggregatorV3',
+        name: 'dataFeedX',
+        type: 'address'
+      },
+      {
+        internalType: 'contract IAggregatorV3',
+        name: 'dataFeedY',
+        type: 'address'
+      }
+    ],
+    name: 'createOracleVault',
+    outputs: [{ internalType: 'address', name: 'vault', type: 'address' }],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract ILBPair',
+        name: 'lbPair',
+        type: 'address'
+      },
+      {
+        internalType: 'contract IAggregatorV3',
+        name: 'dataFeedX',
+        type: 'address'
+      },
+      {
+        internalType: 'contract IAggregatorV3',
+        name: 'dataFeedY',
+        type: 'address'
+      }
+    ],
+    name: 'createOracleVaultAndDefaultStrategy',
+    outputs: [
+      { internalType: 'address', name: 'vault', type: 'address' },
+      { internalType: 'address', name: 'strategy', type: 'address' }
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract ILBPair',
+        name: 'lbPair',
+        type: 'address'
+      }
+    ],
+    name: 'createSimpleVault',
+    outputs: [{ internalType: 'address', name: 'vault', type: 'address' }],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract ILBPair',
+        name: 'lbPair',
+        type: 'address'
+      }
+    ],
+    name: 'createSimpleVaultAndDefaultStrategy',
+    outputs: [
+      { internalType: 'address', name: 'vault', type: 'address' },
+      { internalType: 'address', name: 'strategy', type: 'address' }
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'getDefaultOperator',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'getFeeRecipient',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.StrategyType',
+        name: 'sType',
+        type: 'uint8'
+      }
+    ],
+    name: 'getNumberOfStrategies',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.VaultType',
+        name: 'vType',
+        type: 'uint8'
+      }
+    ],
+    name: 'getNumberOfVaults',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.StrategyType',
+        name: 'sType',
+        type: 'uint8'
+      },
+      { internalType: 'uint256', name: 'index', type: 'uint256' }
+    ],
+    name: 'getStrategyAt',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.StrategyType',
+        name: 'sType',
+        type: 'uint8'
+      }
+    ],
+    name: 'getStrategyImplementation',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.VaultType',
+        name: 'vType',
+        type: 'uint8'
+      },
+      { internalType: 'uint256', name: 'index', type: 'uint256' }
+    ],
+    name: 'getVaultAt',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.VaultType',
+        name: 'vType',
+        type: 'uint8'
+      }
+    ],
+    name: 'getVaultImplementation',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'getWNative',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'owner', type: 'address' }],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'vault', type: 'address' },
+      { internalType: 'address', name: 'strategy', type: 'address' }
+    ],
+    name: 'linkVaultToStrategy',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'owner',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'vault', type: 'address' }],
+    name: 'pauseVault',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'pendingOwner',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract IBaseVault',
+        name: 'vault',
+        type: 'address'
+      },
+      {
+        internalType: 'contract IERC20Upgradeable',
+        name: 'token',
+        type: 'address'
+      },
+      { internalType: 'address', name: 'recipient', type: 'address' },
+      { internalType: 'uint256', name: 'amount', type: 'uint256' }
+    ],
+    name: 'recoverERC20',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'defaultOperator',
+        type: 'address'
+      }
+    ],
+    name: 'setDefaultOperator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'feeRecipient', type: 'address' }
+    ],
+    name: 'setFeeRecipient',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract IStrategy',
+        name: 'strategy',
+        type: 'address'
+      },
+      { internalType: 'address', name: 'operator', type: 'address' }
+    ],
+    name: 'setOperator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract IStrategy',
+        name: 'strategy',
+        type: 'address'
+      },
+      { internalType: 'uint256', name: 'strategistFee', type: 'uint256' }
+    ],
+    name: 'setStrategistFee',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.StrategyType',
+        name: 'sType',
+        type: 'uint8'
+      },
+      {
+        internalType: 'address',
+        name: 'strategyImplementation',
+        type: 'address'
+      }
+    ],
+    name: 'setStrategyImplementation',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      {
+        internalType: 'enum IVaultFactory.VaultType',
+        name: 'vType',
+        type: 'uint8'
+      },
+      {
+        internalType: 'address',
+        name: 'vaultImplementation',
+        type: 'address'
+      }
+    ],
+    name: 'setVaultImplementation',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  }
+] as const
