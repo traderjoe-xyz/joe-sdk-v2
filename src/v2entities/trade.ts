@@ -36,7 +36,7 @@ import {
 import LBQuoterABI from '../abis/json/LBQuoter.json'
 import LBRouterABI from '../abis/json/LBRouter.json'
 import MulticallABI from '../abis/json/Multicall.json'
-import { MulticallResult } from 'types/multicall'
+import { MulticallCall, MulticallResult } from 'types/multicall'
 
 /** Class representing a trade */
 export class TradeV2 {
@@ -370,11 +370,7 @@ export class TradeV2 {
     )
 
     try {
-      const calls: {
-        target: string
-        allowFailure: boolean
-        callData: string
-      }[] = routes.map((route) => {
+      const calls: MulticallCall[] = routes.map((route) => {
         const routeStrArr = route.pathToStrArr()
         const callData = quoterInterface.encodeFunctionData(
           'findBestPathFromAmountIn',
@@ -463,11 +459,7 @@ export class TradeV2 {
     )
 
     try {
-      const calls: {
-        target: string
-        allowFailure: boolean
-        callData: string
-      }[] = routes.map((route) => {
+      const calls: MulticallCall[] = routes.map((route) => {
         const routeStrArr = route.pathToStrArr()
         const callData = quoterInterface.encodeFunctionData(
           'findBestPathFromAmountOut',
