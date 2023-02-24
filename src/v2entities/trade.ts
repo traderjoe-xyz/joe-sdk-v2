@@ -19,6 +19,7 @@ import { RouteV2 } from './route'
 import {
   LB_QUOTER_ADDRESS,
   LB_ROUTER_ADDRESS,
+  MULTICALL_ADDRESS,
   ONE,
   ZERO,
   ZERO_HEX
@@ -34,6 +35,8 @@ import {
 
 import LBQuoterABI from '../abis/json/LBQuoter.json'
 import LBRouterABI from '../abis/json/LBRouter.json'
+import MulticallABI from '../abis/json/Multicall.json'
+import { MulticallResult } from 'types/multicall'
 
 /** Class representing a trade */
 export class TradeV2 {
@@ -355,42 +358,62 @@ export class TradeV2 {
     }
 
     const amountIn = tokenAmountIn.raw.toString()
+
+    const quoterAddress = LB_QUOTER_ADDRESS[chainId]
     const quoterInterface = new utils.Interface(LBQuoterABI)
-    const quoter = new Contract(
-      LB_QUOTER_ADDRESS[chainId],
-      quoterInterface,
+
+    const multicallInterface = new utils.Interface(MulticallABI)
+    const multicall = new Contract(
+      MULTICALL_ADDRESS[chainId],
+      multicallInterface,
       provider
     )
 
-    const trades: Array<TradeV2 | undefined> = await Promise.all(
-      routes.map(async (route) => {
-        try {
-          const routeStrArr = route.pathToStrArr()
-          const quote: Quote = await quoter.findBestPathFromAmountIn(
-            routeStrArr,
-            amountIn.toString()
-          )
-          const trade: TradeV2 = new TradeV2(
-            route,
-            tokenAmountIn.token,
-            tokenOut,
-            quote,
-            isExactIn,
-            isNativeIn,
-            isNativeOut
-          )
-          return trade
-        } catch (e) {
-          console.debug('Error fetching quote:', e)
-          return undefined
+    try {
+      const calls: {
+        target: string
+        allowFailure: boolean
+        callData: string
+      }[] = routes.map((route) => {
+        const routeStrArr = route.pathToStrArr()
+        const callData = quoterInterface.encodeFunctionData(
+          'findBestPathFromAmountIn',
+          [routeStrArr, amountIn]
+        )
+        return {
+          target: quoterAddress,
+          allowFailure: true,
+          callData
         }
       })
-    )
 
-    return trades.filter(
-      (trade) =>
-        !!trade && JSBI.greaterThan(trade.outputAmount.raw, JSBI.BigInt(0))
-    )
+      const reads: MulticallResult[] = await multicall.aggregate3(calls)
+
+      const trades = reads.map((read, i) => {
+        if (!read.success) return undefined
+        const quote: Quote = quoterInterface.decodeFunctionResult(
+          'findBestPathFromAmountIn',
+          read.returnData
+        )[0]
+        return new TradeV2(
+          routes[i],
+          tokenAmountIn.token,
+          tokenOut,
+          quote,
+          isExactIn,
+          isNativeIn,
+          isNativeOut
+        )
+      })
+
+      return trades.filter(
+        (trade) =>
+          !!trade && JSBI.greaterThan(trade.outputAmount.raw, JSBI.BigInt(0))
+      )
+    } catch (e) {
+      console.debug('Error fetching quotes:', e)
+      return []
+    }
   }
 
   /**
@@ -428,42 +451,62 @@ export class TradeV2 {
     }
 
     const amountOut = tokenAmountOut.raw.toString()
+
+    const quoterAddress = LB_QUOTER_ADDRESS[chainId]
     const quoterInterface = new utils.Interface(LBQuoterABI)
-    const quoter = new Contract(
-      LB_QUOTER_ADDRESS[chainId],
-      quoterInterface,
+
+    const multicallInterface = new utils.Interface(MulticallABI)
+    const multicall = new Contract(
+      MULTICALL_ADDRESS[chainId],
+      multicallInterface,
       provider
     )
 
-    const trades: Array<TradeV2 | undefined> = await Promise.all(
-      routes.map(async (route) => {
-        try {
-          const routeStrArr = route.pathToStrArr()
-          const quote: Quote = await quoter.findBestPathFromAmountOut(
-            routeStrArr,
-            amountOut
-          )
-          const trade: TradeV2 = new TradeV2(
-            route,
-            tokenIn,
-            tokenAmountOut.token,
-            quote,
-            isExactIn,
-            isNativeIn,
-            isNativeOut
-          )
-          return trade
-        } catch (e) {
-          console.debug('Error fetching quote:', e)
-          return undefined
+    try {
+      const calls: {
+        target: string
+        allowFailure: boolean
+        callData: string
+      }[] = routes.map((route) => {
+        const routeStrArr = route.pathToStrArr()
+        const callData = quoterInterface.encodeFunctionData(
+          'findBestPathFromAmountOut',
+          [routeStrArr, amountOut]
+        )
+        return {
+          target: quoterAddress,
+          allowFailure: true,
+          callData
         }
       })
-    )
 
-    return trades.filter(
-      (trade) =>
-        !!trade && JSBI.greaterThan(trade.inputAmount.raw, JSBI.BigInt(0))
-    )
+      const reads: MulticallResult[] = await multicall.aggregate3(calls)
+
+      const trades = reads.map((read, i) => {
+        if (!read.success) return undefined
+        const quote: Quote = quoterInterface.decodeFunctionResult(
+          'findBestPathFromAmountOut',
+          read.returnData
+        )[0]
+        return new TradeV2(
+          routes[i],
+          tokenIn,
+          tokenAmountOut.token,
+          quote,
+          isExactIn,
+          isNativeIn,
+          isNativeOut
+        )
+      })
+
+      return trades.filter(
+        (trade) =>
+          !!trade && JSBI.greaterThan(trade.inputAmount.raw, JSBI.BigInt(0))
+      )
+    } catch (e) {
+      console.debug('Error fetching quotes:', e)
+      return []
+    }
   }
 
   /**

@@ -16,7 +16,7 @@ export const MulticallABI = [
       { internalType: 'uint256', name: 'blockNumber', type: 'uint256' },
       { internalType: 'bytes[]', name: 'returnData', type: 'bytes[]' }
     ],
-    stateMutability: 'payable',
+    stateMutability: 'view',
     type: 'function'
   },
   {
@@ -44,7 +44,7 @@ export const MulticallABI = [
         type: 'tuple[]'
       }
     ],
-    stateMutability: 'payable',
+    stateMutability: 'view',
     type: 'function'
   },
   {
