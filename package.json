@@ -27,7 +27,7 @@
     ]
   },
   "dependencies": {
-    "@traderjoe-xyz/sdk": "3.1.1",
+    "@traderjoe-xyz/sdk": "^3.1.2",
     "ethers": "^5.7.2",
     "jsbi": "^3.1.1",
     "lodash.flatmap": "^4.5.0",

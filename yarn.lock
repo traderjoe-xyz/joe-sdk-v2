@@ -1458,10 +1458,10 @@
     estree-walker "^1.0.1"
     picomatch "^2.2.2"
 
-"@traderjoe-xyz/sdk@3.1.1":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-3.1.1.tgz#11f24def42199f984a5a78b32eddc5dad5a3be22"
-  integrity sha512-GQM8enpz5Ps3o9gkb2Ru5uhccy72H7DKlSj47iEfDNMeQpiBJuPILDsJ1ZM24aGF+LBWm+OtOCHPepLwo89UGw==
+"@traderjoe-xyz/sdk@^3.1.2":
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-3.1.2.tgz#807d72af42c13f2bd59e92fda000635397cc524b"
+  integrity sha512-HAtbnpPX34LM830dFo5uml75UNmx8oloqRIAKzuRpWrofgwdPH1FlXsUucjLq0bHuyi/94Rrorc055yxe4ra8Q==
   dependencies:
     big.js "^5.2.2"
     decimal.js-light "^2.5.0"
