@@ -1,4 +1,4 @@
-import { ethers } from 'ethers'
+import { Contract, ethers } from 'ethers'
 import {
   ChainId,
   WNATIVE as _WNATIVE,
@@ -11,6 +11,7 @@ import { parseUnits } from '@ethersproject/units'
 import { PairV2 } from './pair'
 import { RouteV2 } from './route'
 import { TradeV2 } from './trade'
+import { LBPairABI } from '../abis/json'
 
 describe('TradeV2 entity', () => {
   const FUJI_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
@@ -18,6 +19,8 @@ describe('TradeV2 entity', () => {
   const CHAIN_ID = ChainId.FUJI
 
   // init tokens and route bases
+  const lbPairAddress = '0x88F36a6B0e37E78d0Fb1d41B07A47BAD3D995453'
+  const lbPairContract = new Contract(lbPairAddress, LBPairABI, PROVIDER)
   const USDC = new Token(
     ChainId.FUJI,
     '0xB6076C93701D6a07266c31066B298AeC6dd65c2d',
@@ -103,6 +106,30 @@ describe('TradeV2 entity', () => {
       )
 
       expect(trades.length).toBeGreaterThan(0)
+    })
+
+    it('calculates price impact correctly', async () => {
+      const reserves = await lbPairContract.getReservesAndId()
+      const amountOut = new TokenAmount(
+        outputToken,
+        JSBI.BigInt(reserves.reserveX.toString())
+      )
+
+      const trades = await TradeV2.getTradesExactOut(
+        allRoutes,
+        amountOut,
+        inputToken,
+        false,
+        false,
+        PROVIDER,
+        CHAIN_ID
+      )
+
+      if (!trades[0]) {
+        throw new Error('No trades')
+      }
+
+      expect(Number(trades[0].priceImpact.toFixed(2))).toBeGreaterThan(5)
     })
   })
   describe('TradeV2.chooseBestTrade()', () => {
