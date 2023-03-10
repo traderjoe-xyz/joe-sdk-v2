@@ -84,15 +84,22 @@ export class TradeV2 {
     )
 
     // compute exactQuote and priceImpact
-    const exactQuoteStr =
-      quote.virtualAmountsWithoutSlippage[
-        quote.virtualAmountsWithoutSlippage.length - 1
-      ].toString()
-    this.exactQuote = new TokenAmount(tokenOut, JSBI.BigInt(exactQuoteStr))
-    const slippage = this.exactQuote
-      .subtract(outputAmount)
-      .divide(this.exactQuote)
-    this.priceImpact = new Percent(slippage.numerator, slippage.denominator)
+    if (isExactIn) {
+      const exactQuoteStr =
+        quote.virtualAmountsWithoutSlippage[
+          quote.virtualAmountsWithoutSlippage.length - 1
+        ].toString()
+      this.exactQuote = new TokenAmount(tokenOut, JSBI.BigInt(exactQuoteStr))
+      const slippage = this.exactQuote
+        .subtract(outputAmount)
+        .divide(this.exactQuote)
+      this.priceImpact = new Percent(slippage.numerator, slippage.denominator)
+    } else {
+      const exactQuoteStr = quote.virtualAmountsWithoutSlippage[0].toString()
+      this.exactQuote = new TokenAmount(tokenIn, JSBI.BigInt(exactQuoteStr))
+      const slippage = inputAmount.subtract(this.exactQuote).divide(inputAmount)
+      this.priceImpact = new Percent(slippage.numerator, slippage.denominator)
+    }
   }
 
   /**
