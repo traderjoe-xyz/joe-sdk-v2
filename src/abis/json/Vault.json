@@ -10,16 +10,37 @@
     "stateMutability": "nonpayable",
     "type": "constructor"
   },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "BaseVault__AlreadyWhitelisted",
+    "type": "error"
+  },
   { "inputs": [], "name": "BaseVault__BurnMinShares", "type": "error" },
+  { "inputs": [], "name": "BaseVault__DepositsPaused", "type": "error" },
   { "inputs": [], "name": "BaseVault__InvalidNativeAmount", "type": "error" },
+  { "inputs": [], "name": "BaseVault__InvalidRecipient", "type": "error" },
   { "inputs": [], "name": "BaseVault__InvalidShares", "type": "error" },
   { "inputs": [], "name": "BaseVault__InvalidStrategy", "type": "error" },
   { "inputs": [], "name": "BaseVault__InvalidToken", "type": "error" },
+  { "inputs": [], "name": "BaseVault__MaxSharesExceeded", "type": "error" },
   { "inputs": [], "name": "BaseVault__NativeTransferFailed", "type": "error" },
   { "inputs": [], "name": "BaseVault__NoNativeToken", "type": "error" },
+  { "inputs": [], "name": "BaseVault__NoQueuedWithdrawal", "type": "error" },
+  { "inputs": [], "name": "BaseVault__NotInEmergencyMode", "type": "error" },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "BaseVault__NotWhitelisted",
+    "type": "error"
+  },
   { "inputs": [], "name": "BaseVault__OnlyFactory", "type": "error" },
+  { "inputs": [], "name": "BaseVault__OnlyStrategy", "type": "error" },
   { "inputs": [], "name": "BaseVault__OnlyWNative", "type": "error" },
   { "inputs": [], "name": "BaseVault__SameStrategy", "type": "error" },
+  { "inputs": [], "name": "BaseVault__SameWhitelistState", "type": "error" },
   { "inputs": [], "name": "BaseVault__ZeroAmount", "type": "error" },
   { "inputs": [], "name": "BaseVault__ZeroShares", "type": "error" },
   {
@@ -28,6 +49,11 @@
       { "internalType": "uint256", "name": "denominator", "type": "uint256" }
     ],
     "name": "Math512Bits__MulDivOverflow",
+    "type": "error"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "x", "type": "uint256" }],
+    "name": "SafeCast__Exceeds128Bits",
     "type": "error"
   },
   { "inputs": [], "name": "SimpleVault__AmountsOverflow", "type": "error" },
@@ -103,6 +129,55 @@
   },
   {
     "anonymous": false,
+    "inputs": [],
+    "name": "DepositsPaused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "DepositsResumed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "EmergencyMode",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountX",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountY",
+        "type": "uint256"
+      }
+    ],
+    "name": "EmergencyWithdrawal",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
     "inputs": [
       {
         "indexed": false,
@@ -157,6 +232,107 @@
     "inputs": [
       {
         "indexed": false,
+        "internalType": "address[]",
+        "name": "addresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "WhitelistAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address[]",
+        "name": "addresses",
+        "type": "address[]"
+      }
+    ],
+    "name": "WhitelistRemoved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "state",
+        "type": "bool"
+      }
+    ],
+    "name": "WhitelistStateChanged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "round",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      }
+    ],
+    "name": "WithdrawalCancelled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "round",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalQueuedQhares",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountX",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amountY",
+        "type": "uint256"
+      }
+    ],
+    "name": "WithdrawalExecuted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
         "internalType": "uint256",
         "name": "fee",
         "type": "uint256"
@@ -171,8 +347,57 @@
       {
         "indexed": true,
         "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
         "name": "user",
         "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "round",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
+      }
+    ],
+    "name": "WithdrawalQueued",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "round",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "shares",
+        "type": "uint256"
       },
       {
         "indexed": false,
@@ -185,18 +410,21 @@
         "internalType": "uint256",
         "name": "amountY",
         "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "shares",
-        "type": "uint256"
       }
     ],
-    "name": "Withdrawn",
+    "name": "WithdrawalRedeemed",
     "type": "event"
   },
   { "stateMutability": "payable", "type": "fallback" },
+  {
+    "inputs": [
+      { "internalType": "address[]", "name": "addresses", "type": "address[]" }
+    ],
+    "name": "addToWhitelist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
   {
     "inputs": [
       { "internalType": "address", "name": "owner", "type": "address" },
@@ -224,6 +452,18 @@
     "name": "balanceOf",
     "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "shares", "type": "uint256" },
+      { "internalType": "address", "name": "recipient", "type": "address" }
+    ],
+    "name": "cancelQueuedWithdrawal",
+    "outputs": [
+      { "internalType": "uint256", "name": "round", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
     "type": "function"
   },
   {
@@ -277,10 +517,53 @@
   },
   {
     "inputs": [],
+    "name": "emergencyWithdraw",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "executeQueuedWithdrawals",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getAumAnnualFee",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "getBalances",
     "outputs": [
       { "internalType": "uint256", "name": "amountX", "type": "uint256" },
       { "internalType": "uint256", "name": "amountY", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getCurrentRound",
+    "outputs": [
+      { "internalType": "uint256", "name": "round", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getCurrentTotalQueuedWithdrawal",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalQueuedShares",
+        "type": "uint256"
+      }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -332,6 +615,18 @@
     "type": "function"
   },
   {
+    "inputs": [
+      { "internalType": "uint256", "name": "round", "type": "uint256" },
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "getQueuedWithdrawal",
+    "outputs": [
+      { "internalType": "uint256", "name": "shares", "type": "uint256" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "getRange",
     "outputs": [
@@ -342,10 +637,14 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "getStrategistFee",
+    "inputs": [
+      { "internalType": "uint256", "name": "round", "type": "uint256" },
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "getRedeemableAmounts",
     "outputs": [
-      { "internalType": "uint256", "name": "strategistFee", "type": "uint256" }
+      { "internalType": "uint256", "name": "amountX", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountY", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -387,6 +686,21 @@
   },
   {
     "inputs": [
+      { "internalType": "uint256", "name": "round", "type": "uint256" }
+    ],
+    "name": "getTotalQueuedWithdrawal",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalQueuedShares",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
       { "internalType": "address", "name": "spender", "type": "address" },
       { "internalType": "uint256", "name": "addedValue", "type": "uint256" }
     ],
@@ -407,6 +721,33 @@
   },
   {
     "inputs": [],
+    "name": "isDepositsPaused",
+    "outputs": [{ "internalType": "bool", "name": "paused", "type": "bool" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address", "name": "user", "type": "address" }
+    ],
+    "name": "isWhitelisted",
+    "outputs": [
+      { "internalType": "bool", "name": "whitelisted", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "isWhitelistedOnly",
+    "outputs": [
+      { "internalType": "bool", "name": "whitelist", "type": "bool" }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "name",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
@@ -414,7 +755,7 @@
   },
   {
     "inputs": [],
-    "name": "pauseVault",
+    "name": "pauseDeposits",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -447,6 +788,18 @@
   },
   {
     "inputs": [
+      { "internalType": "uint256", "name": "shares", "type": "uint256" },
+      { "internalType": "address", "name": "recipient", "type": "address" }
+    ],
+    "name": "queueWithdrawal",
+    "outputs": [
+      { "internalType": "uint256", "name": "round", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "contract IERC20Upgradeable",
         "name": "token",
@@ -462,6 +815,55 @@
   },
   {
     "inputs": [
+      { "internalType": "uint256", "name": "round", "type": "uint256" },
+      { "internalType": "address", "name": "recipient", "type": "address" }
+    ],
+    "name": "redeemQueuedWithdrawal",
+    "outputs": [
+      { "internalType": "uint256", "name": "amountX", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountY", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "round", "type": "uint256" },
+      { "internalType": "address", "name": "recipient", "type": "address" }
+    ],
+    "name": "redeemQueuedWithdrawalNative",
+    "outputs": [
+      { "internalType": "uint256", "name": "amountX", "type": "uint256" },
+      { "internalType": "uint256", "name": "amountY", "type": "uint256" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "address[]", "name": "addresses", "type": "address[]" }
+    ],
+    "name": "removeFromWhitelist",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "resumeDeposits",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "setEmergencyMode",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
       {
         "internalType": "contract IStrategy",
         "name": "newStrategy",
@@ -469,6 +871,13 @@
       }
     ],
     "name": "setStrategy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "bool", "name": "state", "type": "bool" }],
+    "name": "setWhitelistState",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -505,30 +914,6 @@
     ],
     "name": "transferFrom",
     "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "shares", "type": "uint256" }
-    ],
-    "name": "withdraw",
-    "outputs": [
-      { "internalType": "uint256", "name": "amountX", "type": "uint256" },
-      { "internalType": "uint256", "name": "amountY", "type": "uint256" }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      { "internalType": "uint256", "name": "shares", "type": "uint256" }
-    ],
-    "name": "withdrawNative",
-    "outputs": [
-      { "internalType": "uint256", "name": "amountX", "type": "uint256" },
-      { "internalType": "uint256", "name": "amountY", "type": "uint256" }
-    ],
     "stateMutability": "nonpayable",
     "type": "function"
   },

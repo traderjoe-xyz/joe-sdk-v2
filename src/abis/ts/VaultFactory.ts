@@ -5,6 +5,8 @@ export const VaultFactoryABI = [
     type: 'constructor'
   },
   { inputs: [], name: 'CreateFail', type: 'error' },
+  { inputs: [], name: 'VaultFactory__InvalidOraclePrice', type: 'error' },
+  { inputs: [], name: 'VaultFactory__InvalidStrategy', type: 'error' },
   { inputs: [], name: 'VaultFactory__InvalidVaultType', type: 'error' },
   {
     inputs: [
@@ -70,12 +72,7 @@ export const VaultFactoryABI = [
   {
     anonymous: false,
     inputs: [
-      {
-        indexed: false,
-        internalType: 'uint8',
-        name: 'version',
-        type: 'uint8'
-      }
+      { indexed: false, internalType: 'uint8', name: 'version', type: 'uint8' }
     ],
     name: 'Initialized',
     type: 'event'
@@ -244,7 +241,19 @@ export const VaultFactoryABI = [
     type: 'function'
   },
   {
-    inputs: [{ internalType: 'address', name: 'vault', type: 'address' }],
+    inputs: [
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' },
+      { internalType: 'address[]', name: 'addresses', type: 'address[]' }
+    ],
+    name: 'addToWhitelist',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' }
+    ],
     name: 'createDefaultStrategy',
     outputs: [{ internalType: 'address', name: 'strategy', type: 'address' }],
     stateMutability: 'nonpayable',
@@ -252,11 +261,7 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'contract ILBPair',
-        name: 'lbPair',
-        type: 'address'
-      },
+      { internalType: 'contract ILBPair', name: 'lbPair', type: 'address' },
       {
         internalType: 'contract IAggregatorV3',
         name: 'dataFeedX',
@@ -275,11 +280,7 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'contract ILBPair',
-        name: 'lbPair',
-        type: 'address'
-      },
+      { internalType: 'contract ILBPair', name: 'lbPair', type: 'address' },
       {
         internalType: 'contract IAggregatorV3',
         name: 'dataFeedX',
@@ -301,11 +302,7 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'contract ILBPair',
-        name: 'lbPair',
-        type: 'address'
-      }
+      { internalType: 'contract ILBPair', name: 'lbPair', type: 'address' }
     ],
     name: 'createSimpleVault',
     outputs: [{ internalType: 'address', name: 'vault', type: 'address' }],
@@ -314,11 +311,7 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'contract ILBPair',
-        name: 'lbPair',
-        type: 'address'
-      }
+      { internalType: 'contract ILBPair', name: 'lbPair', type: 'address' }
     ],
     name: 'createSimpleVaultAndDefaultStrategy',
     outputs: [
@@ -438,7 +431,7 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'vault', type: 'address' },
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' },
       { internalType: 'address', name: 'strategy', type: 'address' }
     ],
     name: 'linkVaultToStrategy',
@@ -454,8 +447,10 @@ export const VaultFactoryABI = [
     type: 'function'
   },
   {
-    inputs: [{ internalType: 'address', name: 'vault', type: 'address' }],
-    name: 'pauseVault',
+    inputs: [
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' }
+    ],
+    name: 'pauseDeposits',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
@@ -469,11 +464,7 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'contract IBaseVault',
-        name: 'vault',
-        type: 'address'
-      },
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' },
       {
         internalType: 'contract IERC20Upgradeable',
         name: 'token',
@@ -488,6 +479,16 @@ export const VaultFactoryABI = [
     type: 'function'
   },
   {
+    inputs: [
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' },
+      { internalType: 'address[]', name: 'addresses', type: 'address[]' }
+    ],
+    name: 'removeFromWhitelist',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
     inputs: [],
     name: 'renounceOwnership',
     outputs: [],
@@ -496,13 +497,36 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: 'defaultOperator',
-        type: 'address'
-      }
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' }
+    ],
+    name: 'resetPendingAumAnnualFee',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' }
+    ],
+    name: 'resumeDeposits',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'defaultOperator', type: 'address' }
     ],
     name: 'setDefaultOperator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' }
+    ],
+    name: 'setEmergencyMode',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
@@ -518,11 +542,7 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'contract IStrategy',
-        name: 'strategy',
-        type: 'address'
-      },
+      { internalType: 'contract IStrategy', name: 'strategy', type: 'address' },
       { internalType: 'address', name: 'operator', type: 'address' }
     ],
     name: 'setOperator',
@@ -532,14 +552,10 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'contract IStrategy',
-        name: 'strategy',
-        type: 'address'
-      },
-      { internalType: 'uint256', name: 'strategistFee', type: 'uint256' }
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' },
+      { internalType: 'uint16', name: 'pendingAumAnnualFee', type: 'uint16' }
     ],
-    name: 'setStrategistFee',
+    name: 'setPendingAumAnnualFee',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
@@ -569,13 +585,19 @@ export const VaultFactoryABI = [
         name: 'vType',
         type: 'uint8'
       },
-      {
-        internalType: 'address',
-        name: 'vaultImplementation',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'vaultImplementation', type: 'address' }
     ],
     name: 'setVaultImplementation',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'contract IBaseVault', name: 'vault', type: 'address' },
+      { internalType: 'bool', name: 'isWhitelisted', type: 'bool' }
+    ],
+    name: 'setWhitelistState',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
