@@ -34,7 +34,7 @@ export interface SwapParameters {
   // The method to call on LBRouter
   methodName: string
   // The arguments to pass to the method, all hex encoded.
-  args: (string | string[])[]
+  args: (string | string[] | string[][])[]
   // The amount of wei to send in hex.
   value: string
 }

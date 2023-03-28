@@ -170,7 +170,14 @@ export class TradeV2 {
     const binSteps: string[] = this.quote.binSteps.map((bin) =>
       bin.toHexString()
     )
-    const path: string[] = this.quote.route
+    const versions: string[] = this.quote.versions.map((version) =>
+      version.toHexString()
+    )
+    const paths: [string[], string[], string[]] = [
+      binSteps,
+      versions,
+      this.quote.route
+    ]
     const deadline =
       'ttl' in options
         ? `0x${(Math.floor(new Date().getTime() / 1000) + options.ttl).toString(
@@ -181,49 +188,43 @@ export class TradeV2 {
     const useFeeOnTransfer = Boolean(options.feeOnTransfer)
 
     let methodName: string
-    let args: (string | string[])[]
+    let args: (string | string[] | string[][])[]
     let value: string
     switch (this.tradeType) {
       case TradeType.EXACT_INPUT:
         if (nativeIn) {
           methodName = useFeeOnTransfer
-            ? 'swapExactAVAXForTokensSupportingFeeOnTransferTokens'
-            : 'swapExactAVAXForTokens'
-          // (uint amountOutMin, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
-          args = [amountOut, binSteps, path, to, deadline]
+            ? 'swapExactNATIVEForTokensSupportingFeeOnTransferTokens'
+            : 'swapExactNATIVEForTokens'
+          args = [amountOut, paths, to, deadline]
           value = amountIn
         } else if (nativeOut) {
           methodName = useFeeOnTransfer
-            ? 'swapExactTokensForAVAXSupportingFeeOnTransferTokens'
-            : 'swapExactTokensForAVAX'
-          // (uint amountIn, uint amountOutMinAVAX, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
-          args = [amountIn, amountOut, binSteps, path, to, deadline]
+            ? 'swapExactTokensForNATIVESupportingFeeOnTransferTokens'
+            : 'swapExactTokensForNATIVE'
+          args = [amountIn, amountOut, paths, to, deadline]
           value = ZERO_HEX
         } else {
           methodName = useFeeOnTransfer
             ? 'swapExactTokensForTokensSupportingFeeOnTransferTokens'
             : 'swapExactTokensForTokens'
-          // (uint amountIn, uint amountOutMin, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
-          args = [amountIn, amountOut, binSteps, path, to, deadline]
+          args = [amountIn, amountOut, paths, to, deadline]
           value = ZERO_HEX
         }
         break
       case TradeType.EXACT_OUTPUT:
         invariant(!useFeeOnTransfer, 'EXACT_OUT_FOT')
         if (nativeIn) {
-          methodName = 'swapAVAXForExactTokens'
-          // (uint amountOut, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
-          args = [amountOut, binSteps, path, to, deadline]
+          methodName = 'swapNATIVEForExactTokens'
+          args = [amountOut, paths, to, deadline]
           value = amountIn
         } else if (nativeOut) {
-          methodName = 'swapTokensForExactAVAX'
-          // (uint amountOut, uint amountInMax, uint[] pairVersions, address[] calldata path, address to, uint deadline)
-          args = [amountOut, amountIn, binSteps, path, to, deadline]
+          methodName = 'swapTokensForExactNATIVE'
+          args = [amountOut, amountIn, paths, to, deadline]
           value = ZERO_HEX
         } else {
           methodName = 'swapTokensForExactTokens'
-          // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-          args = [amountOut, amountIn, binSteps, path, to, deadline]
+          args = [amountOut, amountIn, paths, to, deadline]
           value = ZERO_HEX
         }
         break
