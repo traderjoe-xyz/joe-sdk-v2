@@ -24,7 +24,7 @@ import { getLiquidityConfig } from '../utils'
 
 import LBFactoryABI from '../abis/json/LBFactory.json'
 import LBPairABI from '../abis/json/LBPair.json'
-import { LBFactoryV21ABI } from 'abis/json'
+import LBFactoryV21ABI from '../abis/json/LBFactoryV21.json'
 
 /** Class representing a pair of tokens. */
 export class PairV2 {
