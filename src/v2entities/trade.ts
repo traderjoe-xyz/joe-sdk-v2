@@ -30,7 +30,8 @@ import {
   TradeOptionsDeadline,
   TradeFee,
   SwapParameters,
-  Quote
+  Quote,
+  RouterPathParameters
 } from '../types'
 
 import LBQuoterABI from '../abis/json/LBQuoter.json'
@@ -170,12 +171,9 @@ export class TradeV2 {
     const binSteps: string[] = this.quote.binSteps.map((bin) =>
       bin.toHexString()
     )
-    const versions: string[] = this.quote.versions.map((version) =>
-      version.toHexString()
-    )
-    const paths: [string[], string[], string[]] = [
+    const paths: RouterPathParameters = [
       binSteps,
-      versions,
+      this.quote.versions,
       this.quote.route
     ]
     const deadline =
@@ -188,7 +186,7 @@ export class TradeV2 {
     const useFeeOnTransfer = Boolean(options.feeOnTransfer)
 
     let methodName: string
-    let args: (string | string[] | string[][])[]
+    let args: (string | string[] | RouterPathParameters)[]
     let value: string
     switch (this.tradeType) {
       case TradeType.EXACT_INPUT:

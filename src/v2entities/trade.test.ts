@@ -237,7 +237,7 @@ describe('TradeV2 entity', () => {
     })
   })
   describe('TradeV2.swapCallParameters()', () => {
-    it('generates swapExactTokensForAVAX method', async () => {
+    it('generates swapExactTokensForNATIVE method', async () => {
       const isNativeOut = true
 
       const trades = await TradeV2.getTradesExactIn(
@@ -258,7 +258,7 @@ describe('TradeV2 entity', () => {
         recipient: '0x0000000000000000000000000000000000000000'
       }
       expect(bestTrade?.swapCallParameters(options)?.methodName).toBe(
-        'swapExactTokensForAVAX'
+        'swapExactTokensForNATIVE'
       )
     })
     it('generates swapExactTokensForTokens method', async () => {

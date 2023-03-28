@@ -6,7 +6,7 @@ export interface Quote {
   route: string[]
   pairs: string[]
   binSteps: BigNumber[]
-  versions: BigNumber[]
+  versions: number[]
   amounts: BigNumber[]
   virtualAmountsWithoutSlippage: BigNumber[]
   fees: BigNumber[]
@@ -29,12 +29,14 @@ export interface TradeOptionsDeadline extends Omit<TradeOptions, 'ttl'> {
   deadline: number
 }
 
+export type RouterPathParameters = [string[], number[], string[]]
+
 /** The parameters to use in the call to the DEX V2 Router to execute a trade. */
 export interface SwapParameters {
   // The method to call on LBRouter
   methodName: string
   // The arguments to pass to the method, all hex encoded.
-  args: (string | string[] | string[][])[]
+  args: (string | string[] | RouterPathParameters)[]
   // The amount of wei to send in hex.
   value: string
 }
