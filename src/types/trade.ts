@@ -6,6 +6,7 @@ export interface Quote {
   route: string[]
   pairs: string[]
   binSteps: BigNumber[]
+  versions: BigNumber[]
   amounts: BigNumber[]
   virtualAmountsWithoutSlippage: BigNumber[]
   fees: BigNumber[]
