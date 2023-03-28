@@ -18,12 +18,13 @@ import {
   LiquidityDistribution,
   BinReserves
 } from '../types'
-import { LB_FACTORY_ADDRESS, ONE } from '../constants'
+import { LB_FACTORY_ADDRESS, LB_FACTORY_V21_ADDRESS, ONE } from '../constants'
 import { Bin } from './bin'
 import { getLiquidityConfig } from '../utils'
 
 import LBFactoryABI from '../abis/json/LBFactory.json'
 import LBPairABI from '../abis/json/LBPair.json'
+import { LBFactoryV21ABI } from 'abis/json'
 
 /** Class representing a pair of tokens. */
 export class PairV2 {
@@ -43,17 +44,21 @@ export class PairV2 {
   /**
    * Returns all available LBPairs for this pair
    *
+   * @param {boolean} isV21
    * @param {Provider} provider
    * @param {ChainId} chainId
    * @returns {Promise<LBPair[]>}
    */
   public async fetchAvailableLBPairs(
+    isV21: boolean,
     provider: Provider,
     chainId: ChainId
   ): Promise<LBPair[]> {
-    const factoryInterface = new utils.Interface(LBFactoryABI)
+    const factoryInterface = new utils.Interface(
+      isV21 ? LBFactoryV21ABI : LBFactoryABI
+    )
     const factory = new Contract(
-      LB_FACTORY_ADDRESS[chainId],
+      isV21 ? LB_FACTORY_V21_ADDRESS[chainId] : LB_FACTORY_ADDRESS[chainId],
       factoryInterface,
       provider
     )
@@ -68,18 +73,22 @@ export class PairV2 {
    * Fetches LBPair for token0, token1, and given binStep
    *
    * @param {number} binStep
+   * @param {boolean} isV21
    * @param {Provider} provider
    * @param {ChainId} chainId
    * @returns {Promise<LBPair>}
    */
   public async fetchLBPair(
     binStep: number,
+    isV21: boolean,
     provider: Provider,
     chainId: ChainId
   ): Promise<LBPair> {
-    const factoryInterface = new utils.Interface(LBFactoryABI)
+    const factoryInterface = new utils.Interface(
+      isV21 ? LBFactoryV21ABI : LBFactoryABI
+    )
     const factory = new Contract(
-      LB_FACTORY_ADDRESS[chainId],
+      isV21 ? LB_FACTORY_V21_ADDRESS[chainId] : LB_FACTORY_ADDRESS[chainId],
       factoryInterface,
       provider
     )
