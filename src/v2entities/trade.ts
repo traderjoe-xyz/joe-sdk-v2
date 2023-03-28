@@ -171,11 +171,11 @@ export class TradeV2 {
     const binSteps: string[] = this.quote.binSteps.map((bin) =>
       bin.toHexString()
     )
-    const paths: RouterPathParameters = [
-      binSteps,
-      this.quote.versions,
-      this.quote.route
-    ]
+    const paths: RouterPathParameters = {
+      pairBinSteps: binSteps,
+      versions: this.quote.versions,
+      tokenPath: this.quote.route
+    }
     const deadline =
       'ttl' in options
         ? `0x${(Math.floor(new Date().getTime() / 1000) + options.ttl).toString(
@@ -640,6 +640,7 @@ export class TradeV2 {
         route: this.quote.route.join(', '),
         pairs: this.quote.pairs.join(', '),
         binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
+        versions: this.quote.versions.join(', '),
         amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
         fees: this.quote.fees.map((el) => el.toString()).join(', '),
         virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage

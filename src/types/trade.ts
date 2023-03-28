@@ -29,7 +29,11 @@ export interface TradeOptionsDeadline extends Omit<TradeOptions, 'ttl'> {
   deadline: number
 }
 
-export type RouterPathParameters = [string[], number[], string[]]
+export interface RouterPathParameters {
+  pairBinSteps: string[]
+  versions: number[]
+  tokenPath: string[]
+}
 
 /** The parameters to use in the call to the DEX V2 Router to execute a trade. */
 export interface SwapParameters {
