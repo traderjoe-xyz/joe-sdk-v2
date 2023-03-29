@@ -171,7 +171,7 @@ export class TradeV2 {
     const binSteps: string[] = this.quote.binSteps.map((bin) =>
       bin.toHexString()
     )
-    const paths: RouterPathParameters = {
+    const path: RouterPathParameters = {
       pairBinSteps: binSteps,
       versions: this.quote.versions,
       tokenPath: this.quote.route
@@ -194,19 +194,19 @@ export class TradeV2 {
           methodName = useFeeOnTransfer
             ? 'swapExactNATIVEForTokensSupportingFeeOnTransferTokens'
             : 'swapExactNATIVEForTokens'
-          args = [amountOut, paths, to, deadline]
+          args = [amountOut, path, to, deadline]
           value = amountIn
         } else if (nativeOut) {
           methodName = useFeeOnTransfer
             ? 'swapExactTokensForNATIVESupportingFeeOnTransferTokens'
             : 'swapExactTokensForNATIVE'
-          args = [amountIn, amountOut, paths, to, deadline]
+          args = [amountIn, amountOut, path, to, deadline]
           value = ZERO_HEX
         } else {
           methodName = useFeeOnTransfer
             ? 'swapExactTokensForTokensSupportingFeeOnTransferTokens'
             : 'swapExactTokensForTokens'
-          args = [amountIn, amountOut, paths, to, deadline]
+          args = [amountIn, amountOut, path, to, deadline]
           value = ZERO_HEX
         }
         break
@@ -214,15 +214,15 @@ export class TradeV2 {
         invariant(!useFeeOnTransfer, 'EXACT_OUT_FOT')
         if (nativeIn) {
           methodName = 'swapNATIVEForExactTokens'
-          args = [amountOut, paths, to, deadline]
+          args = [amountOut, path, to, deadline]
           value = amountIn
         } else if (nativeOut) {
           methodName = 'swapTokensForExactNATIVE'
-          args = [amountOut, amountIn, paths, to, deadline]
+          args = [amountOut, amountIn, path, to, deadline]
           value = ZERO_HEX
         } else {
           methodName = 'swapTokensForExactTokens'
-          args = [amountOut, amountIn, paths, to, deadline]
+          args = [amountOut, amountIn, path, to, deadline]
           value = ZERO_HEX
         }
         break
