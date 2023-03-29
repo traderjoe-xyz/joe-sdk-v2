@@ -1,12 +1,18 @@
 import { Percent, TokenAmount } from '@traderjoe-xyz/sdk'
 import { BigNumber } from 'ethers'
 
+export enum PoolVersion {
+  V1 = 0,
+  V2 = 1,
+  V2_1 = 2
+}
+
 /** Interface representing a quote */
 export interface Quote {
   route: string[]
   pairs: string[]
   binSteps: BigNumber[]
-  versions: number[]
+  versions: PoolVersion[]
   amounts: BigNumber[]
   virtualAmountsWithoutSlippage: BigNumber[]
   fees: BigNumber[]
