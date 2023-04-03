@@ -192,50 +192,50 @@ describe('TradeV2 entity', () => {
       ).toBe(true)
     })
   })
-  // describe('TradeV2.getTradesExactIn() and TradeV2.getTradesExactIn()', () => {
-  //   it('generates the same route for the same inputToken / outputToken', async () => {
-  //     const tradesExactIn = await TradeV2.getTradesExactIn(
-  //       allRoutes,
-  //       amountIn,
-  //       outputToken,
-  //       false,
-  //       false,
-  //       PROVIDER,
-  //       CHAIN_ID
-  //     )
+  describe('TradeV2.getTradesExactIn() and TradeV2.getTradesExactIn()', () => {
+    it('generates the same route for the same inputToken / outputToken', async () => {
+      const tradesExactIn = await TradeV2.getTradesExactIn(
+        allRoutes,
+        amountIn,
+        outputToken,
+        false,
+        false,
+        PROVIDER,
+        CHAIN_ID
+      )
 
-  //     const tradesExactOut = await TradeV2.getTradesExactOut(
-  //       allRoutes,
-  //       amountOut,
-  //       inputToken,
-  //       false,
-  //       false,
-  //       PROVIDER,
-  //       CHAIN_ID
-  //     )
+      const tradesExactOut = await TradeV2.getTradesExactOut(
+        allRoutes,
+        amountOut,
+        inputToken,
+        false,
+        false,
+        PROVIDER,
+        CHAIN_ID
+      )
 
-  //     const isExactIn = true
-  //     const bestTradeExactIn = TradeV2.chooseBestTrade(
-  //       tradesExactIn as TradeV2[],
-  //       isExactIn
-  //     )
-  //     const bestTradeExactOut = TradeV2.chooseBestTrade(
-  //       tradesExactOut as TradeV2[],
-  //       !isExactIn
-  //     )
+      const isExactIn = true
+      const bestTradeExactIn = TradeV2.chooseBestTrade(
+        tradesExactIn as TradeV2[],
+        isExactIn
+      )
+      const bestTradeExactOut = TradeV2.chooseBestTrade(
+        tradesExactOut as TradeV2[],
+        !isExactIn
+      )
 
-  //     expect((bestTradeExactIn as TradeV2).route.path.length).toBe(
-  //       (bestTradeExactOut as TradeV2).route.path.length
-  //     )
+      expect((bestTradeExactIn as TradeV2).route.path.length).toBe(
+        (bestTradeExactOut as TradeV2).route.path.length
+      )
 
-  //     if (bestTradeExactIn && bestTradeExactOut) {
-  //       bestTradeExactIn.route.path.forEach((token, i) => {
-  //         const otherRouteToken = bestTradeExactOut.route.path[i]
-  //         expect(token.address).toBe(otherRouteToken.address)
-  //       })
-  //     }
-  //   })
-  // })
+      if (bestTradeExactIn && bestTradeExactOut) {
+        bestTradeExactIn.route.path.forEach((token, i) => {
+          const otherRouteToken = bestTradeExactOut.route.path[i]
+          expect(token.address).toBe(otherRouteToken.address)
+        })
+      }
+    })
+  })
   describe('TradeV2.swapCallParameters()', () => {
     it('generates swapExactTokensForNATIVE method', async () => {
       const isNativeOut = true
