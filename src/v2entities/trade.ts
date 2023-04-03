@@ -17,8 +17,8 @@ import invariant from 'tiny-invariant'
 
 import { RouteV2 } from './route'
 import {
-  LB_QUOTER_ADDRESS,
-  LB_ROUTER_ADDRESS,
+  LB_QUOTER_V21_ADDRESS,
+  LB_ROUTER_V21_ADDRESS,
   MULTICALL_ADDRESS,
   ONE,
   ZERO,
@@ -34,8 +34,8 @@ import {
   RouterPathParameters
 } from '../types'
 
-import LBQuoterABI from '../abis/json/LBQuoter.json'
-import LBRouterABI from '../abis/json/LBRouter.json'
+import LBQuoterV21ABI from '../abis/json/LBQuoterV21.json'
+import LBRouterV21ABI from '../abis/json/LBRouterV21.json'
 import MulticallABI from '../abis/json/Multicall.json'
 import { MulticallCall, MulticallResult } from 'types/multicall'
 
@@ -301,9 +301,9 @@ export class TradeV2 {
     chainId: ChainId,
     slippageTolerance: Percent
   ): Promise<BigNumber> {
-    const routerInterface = new utils.Interface(LBRouterABI)
+    const routerInterface = new utils.Interface(LBRouterV21ABI)
     const router = new Contract(
-      LB_ROUTER_ADDRESS[chainId],
+      LB_ROUTER_V21_ADDRESS[chainId],
       routerInterface,
       signer
     )
@@ -365,8 +365,8 @@ export class TradeV2 {
 
     const amountIn = tokenAmountIn.raw.toString()
 
-    const quoterAddress = LB_QUOTER_ADDRESS[chainId]
-    const quoterInterface = new utils.Interface(LBQuoterABI)
+    const quoterAddress = LB_QUOTER_V21_ADDRESS[chainId]
+    const quoterInterface = new utils.Interface(LBQuoterV21ABI)
 
     const multicallInterface = new utils.Interface(MulticallABI)
     const multicall = new Contract(
@@ -454,8 +454,8 @@ export class TradeV2 {
 
     const amountOut = tokenAmountOut.raw.toString()
 
-    const quoterAddress = LB_QUOTER_ADDRESS[chainId]
-    const quoterInterface = new utils.Interface(LBQuoterABI)
+    const quoterAddress = LB_QUOTER_V21_ADDRESS[chainId]
+    const quoterInterface = new utils.Interface(LBQuoterV21ABI)
 
     const multicallInterface = new utils.Interface(MulticallABI)
     const multicall = new Contract(
