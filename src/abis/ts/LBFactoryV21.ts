@@ -28,14 +28,6 @@ export const LBFactoryV21ABI = [
   },
   {
     inputs: [
-      { internalType: 'address', name: 'user', type: 'address' },
-      { internalType: 'uint256', name: 'binStep', type: 'uint256' }
-    ],
-    name: 'LBFactory__FunctionIsLockedForUsers',
-    type: 'error'
-  },
-  {
-    inputs: [
       { internalType: 'contract IERC20', name: 'token', type: 'address' }
     ],
     name: 'LBFactory__IdenticalAddresses',
@@ -76,13 +68,17 @@ export const LBFactoryV21ABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: 'LBPairImplementation',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'LBPairImplementation', type: 'address' }
     ],
     name: 'LBFactory__LBPairSafetyCheckFailed',
+    type: 'error'
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'user', type: 'address' },
+      { internalType: 'uint256', name: 'binStep', type: 'uint256' }
+    ],
+    name: 'LBFactory__PresetIsLockedForUsers',
     type: 'error'
   },
   {
@@ -120,11 +116,7 @@ export const LBFactoryV21ABI = [
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: 'LBPairImplementation',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'LBPairImplementation', type: 'address' }
     ],
     name: 'LBFactory__SameImplementation',
     type: 'error'
@@ -474,7 +466,7 @@ export const LBFactoryV21ABI = [
     inputs: [],
     name: 'getFlashLoanFee',
     outputs: [
-      { internalType: 'uint256', name: 'flashloanFee', type: 'uint256' }
+      { internalType: 'uint256', name: 'flashLoanFee', type: 'uint256' }
     ],
     stateMutability: 'view',
     type: 'function'
@@ -492,11 +484,7 @@ export const LBFactoryV21ABI = [
     inputs: [],
     name: 'getLBPairImplementation',
     outputs: [
-      {
-        internalType: 'address',
-        name: 'lbPairImplementation',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'lbPairImplementation', type: 'address' }
     ],
     stateMutability: 'view',
     type: 'function'
@@ -552,6 +540,15 @@ export const LBFactoryV21ABI = [
     name: 'getNumberOfQuoteAssets',
     outputs: [
       { internalType: 'uint256', name: 'numberOfQuoteAssets', type: 'uint256' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'getOpenBinSteps',
+    outputs: [
+      { internalType: 'uint256[]', name: 'openBinStep', type: 'uint256[]' }
     ],
     stateMutability: 'view',
     type: 'function'
