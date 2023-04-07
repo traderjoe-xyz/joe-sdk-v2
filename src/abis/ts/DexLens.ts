@@ -2,204 +2,124 @@ export const DexLensABI = [
   {
     inputs: [
       {
-        internalType: 'contract ILBRouter',
-        name: '_routerV2',
+        internalType: 'contract ILBFactory',
+        name: 'lbFactory',
+        type: 'address'
+      },
+      {
+        internalType: 'contract ILBLegacyFactory',
+        name: 'lbLegacyFactory',
         type: 'address'
       },
       {
         internalType: 'contract IJoeFactory',
-        name: '_factoryV1',
+        name: 'joeFactory',
         type: 'address'
       },
-      {
-        internalType: 'address',
-        name: '_wNative',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '_usdc',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'wnative', type: 'address' }
     ],
     stateMutability: 'nonpayable',
     type: 'constructor'
   },
+  { inputs: [], name: 'JoeDexLens__AlreadyInitialized', type: 'error' },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: 'pair',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: 'collateral',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'pair', type: 'address' },
+      { internalType: 'address', name: 'collateral', type: 'address' }
     ],
     name: 'JoeDexLens__CollateralNotInPair',
     type: 'error'
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: 'colateral',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: 'token',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: 'dataFeed',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'token', type: 'address' },
+      { internalType: 'address', name: 'dataFeed', type: 'address' }
     ],
     name: 'JoeDexLens__DataFeedAlreadyAdded',
     type: 'error'
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: 'colateral',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: 'token',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: 'dataFeed',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'token', type: 'address' },
+      { internalType: 'address', name: 'dataFeed', type: 'address' }
     ],
     name: 'JoeDexLens__DataFeedNotInSet',
     type: 'error'
   },
-  {
-    inputs: [],
-    name: 'JoeDexLens__InvalidChainLinkPrice',
-    type: 'error'
-  },
-  {
-    inputs: [],
-    name: 'JoeDexLens__LengthsMismatch',
-    type: 'error'
-  },
-  {
-    inputs: [],
-    name: 'JoeDexLens__NotEnoughLiquidity',
-    type: 'error'
-  },
-  {
-    inputs: [],
-    name: 'JoeDexLens__NullWeight',
-    type: 'error'
-  },
-  {
-    inputs: [],
-    name: 'JoeDexLens__PairsNotCreated',
-    type: 'error'
-  },
-  {
-    inputs: [],
-    name: 'JoeDexLens__SameTokens',
-    type: 'error'
-  },
+  { inputs: [], name: 'JoeDexLens__InvalidChainLinkPrice', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__InvalidDataFeed', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__LengthsMismatch', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__NativeToken', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__NullWeight', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__SameDataFeed', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__SameTokens', type: 'error' },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: 'pair',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: 'token',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'pair', type: 'address' },
+      { internalType: 'address', name: 'token', type: 'address' }
     ],
     name: 'JoeDexLens__TokenNotInPair',
     type: 'error'
   },
+  { inputs: [], name: 'JoeDexLens__UnknownDataFeedType', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__V1ContractNotSet', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__V2ContractNotSet', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__V2_1ContractNotSet', type: 'error' },
+  { inputs: [], name: 'JoeDexLens__ZeroAddress', type: 'error' },
   {
-    inputs: [],
-    name: 'JoeDexLens__UnknownDataFeedType',
-    type: 'error'
-  },
-  {
-    inputs: [],
-    name: 'JoeDexLens__WrongPair',
+    inputs: [
+      { internalType: 'address', name: 'account', type: 'address' },
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' }
+    ],
+    name: 'SafeAccessControlEnumerable__AccountAlreadyHasRole',
     type: 'error'
   },
   {
     inputs: [
-      {
-        internalType: 'uint256',
-        name: 'prod1',
-        type: 'uint256'
-      },
-      {
-        internalType: 'uint256',
-        name: 'offset',
-        type: 'uint256'
-      }
+      { internalType: 'address', name: 'account', type: 'address' },
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' }
     ],
-    name: 'Math512Bits__MulShiftOverflow',
+    name: 'SafeAccessControlEnumerable__AccountDoesNotHaveRole',
     type: 'error'
   },
   {
     inputs: [
-      {
-        internalType: 'uint256',
-        name: 'offset',
-        type: 'uint256'
-      }
+      { internalType: 'address', name: 'account', type: 'address' },
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' }
     ],
-    name: 'Math512Bits__OffsetOverflows',
+    name: 'SafeAccessControlEnumerable__OnlyOwnerOrRole',
     type: 'error'
   },
   {
-    inputs: [],
-    name: 'PendingOwnable__AddressZero',
+    inputs: [
+      { internalType: 'address', name: 'account', type: 'address' },
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' }
+    ],
+    name: 'SafeAccessControlEnumerable__OnlyRole',
     type: 'error'
   },
   {
-    inputs: [],
-    name: 'PendingOwnable__NoPendingOwner',
+    inputs: [
+      { internalType: 'address', name: 'account', type: 'address' },
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' }
+    ],
+    name: 'SafeAccessControlEnumerable__RoleAlreadyGranted',
     type: 'error'
   },
+  { inputs: [], name: 'SafeOwnable__OnlyOwner', type: 'error' },
+  { inputs: [], name: 'SafeOwnable__OnlyPendingOwner', type: 'error' },
   {
-    inputs: [],
-    name: 'PendingOwnable__NotOwner',
+    inputs: [
+      { internalType: 'uint256', name: 'x', type: 'uint256' },
+      { internalType: 'int256', name: 'y', type: 'int256' }
+    ],
+    name: 'Uint128x128Math__PowUnderflow',
     type: 'error'
   },
-  {
-    inputs: [],
-    name: 'PendingOwnable__NotPendingOwner',
-    type: 'error'
-  },
-  {
-    inputs: [],
-    name: 'PendingOwnable__PendingOwnerAlreadySet',
-    type: 'error'
-  },
+  { inputs: [], name: 'Uint256x256Math__MulShiftOverflow', type: 'error' },
   {
     anonymous: false,
     inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'collateral',
-        type: 'address'
-      },
       {
         indexed: false,
         internalType: 'address',
@@ -210,16 +130,13 @@ export const DexLensABI = [
         components: [
           {
             internalType: 'address',
-            name: 'dfAddress',
+            name: 'collateralAddress',
             type: 'address'
           },
+          { internalType: 'address', name: 'dfAddress', type: 'address' },
+          { internalType: 'uint88', name: 'dfWeight', type: 'uint88' },
           {
-            internalType: 'uint88',
-            name: 'dfWeight',
-            type: 'uint88'
-          },
-          {
-            internalType: 'enum IJoeDexLens.dfType',
+            internalType: 'enum IJoeDexLens.DataFeedType',
             name: 'dfType',
             type: 'uint8'
           }
@@ -236,12 +153,6 @@ export const DexLensABI = [
   {
     anonymous: false,
     inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'collateral',
-        type: 'address'
-      },
       {
         indexed: false,
         internalType: 'address',
@@ -264,12 +175,6 @@ export const DexLensABI = [
       {
         indexed: false,
         internalType: 'address',
-        name: 'collateral',
-        type: 'address'
-      },
-      {
-        indexed: false,
-        internalType: 'address',
         name: 'token',
         type: 'address'
       },
@@ -287,6 +192,19 @@ export const DexLensABI = [
       }
     ],
     name: 'DataFeedsWeightSet',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'dfAddress',
+        type: 'address'
+      }
+    ],
+    name: 'NativeDataFeedSet',
     type: 'event'
   },
   {
@@ -314,6 +232,12 @@ export const DexLensABI = [
       {
         indexed: true,
         internalType: 'address',
+        name: 'owner',
+        type: 'address'
+      },
+      {
+        indexed: true,
+        internalType: 'address',
         name: 'pendingOwner',
         type: 'address'
       }
@@ -322,141 +246,131 @@ export const DexLensABI = [
     type: 'event'
   },
   {
+    anonymous: false,
     inputs: [
       {
+        indexed: true,
         internalType: 'address',
-        name: '_token',
+        name: 'sender',
         type: 'address'
       },
+      { indexed: true, internalType: 'bytes32', name: 'role', type: 'bytes32' },
+      {
+        indexed: true,
+        internalType: 'bytes32',
+        name: 'adminRole',
+        type: 'bytes32'
+      }
+    ],
+    name: 'RoleAdminSet',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'sender',
+        type: 'address'
+      },
+      { indexed: true, internalType: 'bytes32', name: 'role', type: 'bytes32' },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'account',
+        type: 'address'
+      }
+    ],
+    name: 'RoleGranted',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'sender',
+        type: 'address'
+      },
+      { indexed: true, internalType: 'bytes32', name: 'role', type: 'bytes32' },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'account',
+        type: 'address'
+      }
+    ],
+    name: 'RoleRevoked',
+    type: 'event'
+  },
+  {
+    inputs: [],
+    name: 'DATA_FEED_MANAGER_ROLE',
+    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'DEFAULT_ADMIN_ROLE',
+    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'token', type: 'address' },
       {
         components: [
           {
             internalType: 'address',
-            name: 'dfAddress',
+            name: 'collateralAddress',
             type: 'address'
           },
+          { internalType: 'address', name: 'dfAddress', type: 'address' },
+          { internalType: 'uint88', name: 'dfWeight', type: 'uint88' },
           {
-            internalType: 'uint88',
-            name: 'dfWeight',
-            type: 'uint88'
-          },
-          {
-            internalType: 'enum IJoeDexLens.dfType',
+            internalType: 'enum IJoeDexLens.DataFeedType',
             name: 'dfType',
             type: 'uint8'
           }
         ],
         internalType: 'struct IJoeDexLens.DataFeed',
-        name: '_dataFeed',
+        name: 'dataFeed',
         type: 'tuple'
       }
     ],
-    name: 'addNativeDataFeed',
+    name: 'addDataFeed',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
   },
   {
     inputs: [
-      {
-        internalType: 'address[]',
-        name: '_tokens',
-        type: 'address[]'
-      },
+      { internalType: 'address[]', name: 'tokens', type: 'address[]' },
       {
         components: [
           {
             internalType: 'address',
-            name: 'dfAddress',
+            name: 'collateralAddress',
             type: 'address'
           },
+          { internalType: 'address', name: 'dfAddress', type: 'address' },
+          { internalType: 'uint88', name: 'dfWeight', type: 'uint88' },
           {
-            internalType: 'uint88',
-            name: 'dfWeight',
-            type: 'uint88'
-          },
-          {
-            internalType: 'enum IJoeDexLens.dfType',
+            internalType: 'enum IJoeDexLens.DataFeedType',
             name: 'dfType',
             type: 'uint8'
           }
         ],
         internalType: 'struct IJoeDexLens.DataFeed[]',
-        name: '_dataFeeds',
+        name: 'dataFeeds',
         type: 'tuple[]'
       }
     ],
-    name: 'addNativeDataFeeds',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_token',
-        type: 'address'
-      },
-      {
-        components: [
-          {
-            internalType: 'address',
-            name: 'dfAddress',
-            type: 'address'
-          },
-          {
-            internalType: 'uint88',
-            name: 'dfWeight',
-            type: 'uint88'
-          },
-          {
-            internalType: 'enum IJoeDexLens.dfType',
-            name: 'dfType',
-            type: 'uint8'
-          }
-        ],
-        internalType: 'struct IJoeDexLens.DataFeed',
-        name: '_dataFeed',
-        type: 'tuple'
-      }
-    ],
-    name: 'addUSDDataFeed',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address[]',
-        name: '_tokens',
-        type: 'address[]'
-      },
-      {
-        components: [
-          {
-            internalType: 'address',
-            name: 'dfAddress',
-            type: 'address'
-          },
-          {
-            internalType: 'uint88',
-            name: 'dfWeight',
-            type: 'uint88'
-          },
-          {
-            internalType: 'enum IJoeDexLens.dfType',
-            name: 'dfType',
-            type: 'uint8'
-          }
-        ],
-        internalType: 'struct IJoeDexLens.DataFeed[]',
-        name: '_dataFeeds',
-        type: 'tuple[]'
-      }
-    ],
-    name: 'addUSDDataFeeds',
+    name: 'addDataFeeds',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
@@ -466,6 +380,33 @@ export const DexLensABI = [
     name: 'becomeOwner',
     outputs: [],
     stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
+    name: 'getDataFeeds',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'address',
+            name: 'collateralAddress',
+            type: 'address'
+          },
+          { internalType: 'address', name: 'dfAddress', type: 'address' },
+          { internalType: 'uint88', name: 'dfWeight', type: 'uint88' },
+          {
+            internalType: 'enum IJoeDexLens.DataFeedType',
+            name: 'dfType',
+            type: 'uint8'
+          }
+        ],
+        internalType: 'struct IJoeDexLens.DataFeed[]',
+        name: 'dataFeeds',
+        type: 'tuple[]'
+      }
+    ],
+    stateMutability: 'view',
     type: 'function'
   },
   {
@@ -482,36 +423,13 @@ export const DexLensABI = [
     type: 'function'
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_token',
-        type: 'address'
-      }
-    ],
-    name: 'getNativeDataFeeds',
+    inputs: [],
+    name: 'getFactoryV2_1',
     outputs: [
       {
-        components: [
-          {
-            internalType: 'address',
-            name: 'dfAddress',
-            type: 'address'
-          },
-          {
-            internalType: 'uint88',
-            name: 'dfWeight',
-            type: 'uint88'
-          },
-          {
-            internalType: 'enum IJoeDexLens.dfType',
-            name: 'dfType',
-            type: 'uint8'
-          }
-        ],
-        internalType: 'struct IJoeDexLens.DataFeed[]',
-        name: 'dataFeeds',
-        type: 'tuple[]'
+        internalType: 'contract ILBFactory',
+        name: 'factoryV2',
+        type: 'address'
       }
     ],
     stateMutability: 'view',
@@ -519,11 +437,11 @@ export const DexLensABI = [
   },
   {
     inputs: [],
-    name: 'getRouterV2',
+    name: 'getLegacyFactoryV2',
     outputs: [
       {
-        internalType: 'contract ILBRouter',
-        name: 'routerV2',
+        internalType: 'contract ILBLegacyFactory',
+        name: 'legacyFactoryV2',
         type: 'address'
       }
     ],
@@ -531,330 +449,174 @@ export const DexLensABI = [
     type: 'function'
   },
   {
+    inputs: [{ internalType: 'bytes32', name: 'role', type: 'bytes32' }],
+    name: 'getRoleAdmin',
+    outputs: [{ internalType: 'bytes32', name: '', type: 'bytes32' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
     inputs: [
-      {
-        internalType: 'address',
-        name: '_token',
-        type: 'address'
-      }
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+      { internalType: 'uint256', name: 'index', type: 'uint256' }
     ],
+    name: 'getRoleMemberAt',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'bytes32', name: 'role', type: 'bytes32' }],
+    name: 'getRoleMemberCount',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
     name: 'getTokenPriceNative',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: 'price',
-        type: 'uint256'
-      }
-    ],
+    outputs: [{ internalType: 'uint256', name: 'price', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function'
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_token',
-        type: 'address'
-      }
-    ],
+    inputs: [{ internalType: 'address', name: 'token', type: 'address' }],
     name: 'getTokenPriceUSD',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: 'price',
-        type: 'uint256'
-      }
-    ],
+    outputs: [{ internalType: 'uint256', name: 'price', type: 'uint256' }],
     stateMutability: 'view',
     type: 'function'
   },
   {
-    inputs: [
-      {
-        internalType: 'address[]',
-        name: '_tokens',
-        type: 'address[]'
-      }
-    ],
+    inputs: [{ internalType: 'address[]', name: 'tokens', type: 'address[]' }],
     name: 'getTokensPricesNative',
-    outputs: [
-      {
-        internalType: 'uint256[]',
-        name: 'prices',
-        type: 'uint256[]'
-      }
-    ],
+    outputs: [{ internalType: 'uint256[]', name: 'prices', type: 'uint256[]' }],
     stateMutability: 'view',
     type: 'function'
   },
   {
-    inputs: [
-      {
-        internalType: 'address[]',
-        name: '_tokens',
-        type: 'address[]'
-      }
-    ],
+    inputs: [{ internalType: 'address[]', name: 'tokens', type: 'address[]' }],
     name: 'getTokensPricesUSD',
-    outputs: [
-      {
-        internalType: 'uint256[]',
-        name: 'prices',
-        type: 'uint256[]'
-      }
-    ],
+    outputs: [{ internalType: 'uint256[]', name: 'prices', type: 'uint256[]' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [],
+    name: 'getWNative',
+    outputs: [{ internalType: 'address', name: 'wNative', type: 'address' }],
     stateMutability: 'view',
     type: 'function'
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: '_token',
-        type: 'address'
-      }
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+      { internalType: 'address', name: 'account', type: 'address' }
     ],
-    name: 'getUSDDataFeeds',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'address',
-            name: 'dfAddress',
-            type: 'address'
-          },
-          {
-            internalType: 'uint88',
-            name: 'dfWeight',
-            type: 'uint88'
-          },
-          {
-            internalType: 'enum IJoeDexLens.dfType',
-            name: 'dfType',
-            type: 'uint8'
-          }
-        ],
-        internalType: 'struct IJoeDexLens.DataFeed[]',
-        name: 'dataFeeds',
-        type: 'tuple[]'
-      }
+    name: 'grantRole',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+      { internalType: 'address', name: 'account', type: 'address' }
     ],
+    name: 'hasRole',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
     stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'aggregator', type: 'address' }],
+    name: 'initialize',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function'
   },
   {
     inputs: [],
     name: 'owner',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address'
-      }
-    ],
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function'
   },
   {
     inputs: [],
     name: 'pendingOwner',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address'
-      }
-    ],
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
     stateMutability: 'view',
     type: 'function'
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: '_token',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '_dfAddress',
-        type: 'address'
-      }
+      { internalType: 'address', name: 'token', type: 'address' },
+      { internalType: 'address', name: 'dfAddress', type: 'address' }
     ],
-    name: 'removeNativeDataFeed',
+    name: 'removeDataFeed',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
   },
   {
     inputs: [
-      {
-        internalType: 'address[]',
-        name: '_tokens',
-        type: 'address[]'
-      },
-      {
-        internalType: 'address[]',
-        name: '_dfAddresses',
-        type: 'address[]'
-      }
+      { internalType: 'address[]', name: 'tokens', type: 'address[]' },
+      { internalType: 'address[]', name: 'dfAddresses', type: 'address[]' }
     ],
-    name: 'removeNativeDataFeeds',
+    name: 'removeDataFeeds',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'bytes32', name: 'role', type: 'bytes32' }],
+    name: 'renounceRole',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: '_token',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '_dfAddress',
-        type: 'address'
-      }
+      { internalType: 'bytes32', name: 'role', type: 'bytes32' },
+      { internalType: 'address', name: 'account', type: 'address' }
     ],
-    name: 'removeUSDDataFeed',
+    name: 'revokeRole',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
   },
   {
     inputs: [
-      {
-        internalType: 'address[]',
-        name: '_tokens',
-        type: 'address[]'
-      },
-      {
-        internalType: 'address[]',
-        name: '_dfAddresses',
-        type: 'address[]'
-      }
+      { internalType: 'address', name: 'token', type: 'address' },
+      { internalType: 'address', name: 'dfAddress', type: 'address' },
+      { internalType: 'uint88', name: 'newWeight', type: 'uint88' }
     ],
-    name: 'removeUSDDataFeeds',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'renounceOwnership',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'revokePendingOwner',
+    name: 'setDataFeedWeight',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
   },
   {
     inputs: [
-      {
-        internalType: 'address',
-        name: '_token',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '_dfAddress',
-        type: 'address'
-      },
-      {
-        internalType: 'uint88',
-        name: '_newWeight',
-        type: 'uint88'
-      }
+      { internalType: 'address[]', name: 'tokens', type: 'address[]' },
+      { internalType: 'address[]', name: 'dfAddresses', type: 'address[]' },
+      { internalType: 'uint88[]', name: 'newWeights', type: 'uint88[]' }
     ],
-    name: 'setNativeDataFeedWeight',
+    name: 'setDataFeedsWeights',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
   },
   {
-    inputs: [
-      {
-        internalType: 'address[]',
-        name: '_tokens',
-        type: 'address[]'
-      },
-      {
-        internalType: 'address[]',
-        name: '_dfAddresses',
-        type: 'address[]'
-      },
-      {
-        internalType: 'uint88[]',
-        name: '_newWeights',
-        type: 'uint88[]'
-      }
-    ],
-    name: 'setNativeDataFeedsWeights',
+    inputs: [{ internalType: 'address', name: 'aggregator', type: 'address' }],
+    name: 'setNativeDataFeed',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'
   },
   {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'pendingOwner_',
-        type: 'address'
-      }
-    ],
+    inputs: [{ internalType: 'address', name: 'newOwner', type: 'address' }],
     name: 'setPendingOwner',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '_token',
-        type: 'address'
-      },
-      {
-        internalType: 'address',
-        name: '_dfAddress',
-        type: 'address'
-      },
-      {
-        internalType: 'uint88',
-        name: '_newWeight',
-        type: 'uint88'
-      }
-    ],
-    name: 'setUSDDataFeedWeight',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address[]',
-        name: '_tokens',
-        type: 'address[]'
-      },
-      {
-        internalType: 'address[]',
-        name: '_dfAddresses',
-        type: 'address[]'
-      },
-      {
-        internalType: 'uint88[]',
-        name: '_newWeights',
-        type: 'uint88[]'
-      }
-    ],
-    name: 'setUSDDataFeedsWeights',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function'

@@ -59,7 +59,7 @@ describe('TradeV2 entity', () => {
   )
 
   // user input for exactIn trade
-  const typedValueIn = '20'
+  const typedValueIn = '4'
   const typedValueInParsed = parseUnits(
     typedValueIn,
     inputToken.decimals
@@ -68,7 +68,7 @@ describe('TradeV2 entity', () => {
   const amountIn = new TokenAmount(inputToken, JSBI.BigInt(typedValueInParsed))
 
   // user input for exactOut trade
-  const typedValueOut = '1'
+  const typedValueOut = '0.2'
   const typedValueOutParsed = parseUnits(
     typedValueOut,
     outputToken.decimals
@@ -237,7 +237,7 @@ describe('TradeV2 entity', () => {
     })
   })
   describe('TradeV2.swapCallParameters()', () => {
-    it('generates swapExactTokensForAVAX method', async () => {
+    it('generates swapExactTokensForNATIVE method', async () => {
       const isNativeOut = true
 
       const trades = await TradeV2.getTradesExactIn(
@@ -258,7 +258,7 @@ describe('TradeV2 entity', () => {
         recipient: '0x0000000000000000000000000000000000000000'
       }
       expect(bestTrade?.swapCallParameters(options)?.methodName).toBe(
-        'swapExactTokensForAVAX'
+        'swapExactTokensForNATIVE'
       )
     })
     it('generates swapExactTokensForTokens method', async () => {

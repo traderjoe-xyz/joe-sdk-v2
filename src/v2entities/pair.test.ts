@@ -34,14 +34,26 @@ describe('PairV2 entity', () => {
     expect(pair1.equals(pair2)).toEqual(true)
   })
 
-  it('can fetch all available LBPairs ', async () => {
-    const LBPairs = await pair1.fetchAvailableLBPairs(PROVIDER, CHAIN_ID)
+  it('can fetch all available v2 LBPairs', async () => {
+    const LBPairs = await pair1.fetchAvailableLBPairs(false, PROVIDER, CHAIN_ID)
     expect(LBPairs.length).toBeGreaterThan(0)
   })
 
-  it('can fetch single LBPair given the bin step', async () => {
+  it('can fetch single v2 LBPair given the bin step', async () => {
     const binStep = 10
-    const LBPair = await pair1.fetchLBPair(binStep, PROVIDER, CHAIN_ID)
+    const LBPair = await pair1.fetchLBPair(binStep, false, PROVIDER, CHAIN_ID)
+    expect(LBPair.binStep).toEqual(binStep)
+    expect(LBPair.LBPair).not.toBeUndefined()
+  })
+
+  it('can fetch all available v2.1 LBPairs', async () => {
+    const LBPairs = await pair1.fetchAvailableLBPairs(true, PROVIDER, CHAIN_ID)
+    expect(LBPairs.length).toBeGreaterThan(0)
+  })
+
+  it('can fetch single v2.1 LBPair given the bin step', async () => {
+    const binStep = 10
+    const LBPair = await pair1.fetchLBPair(binStep, false, PROVIDER, CHAIN_ID)
     expect(LBPair.binStep).toEqual(binStep)
     expect(LBPair.LBPair).not.toBeUndefined()
   })
@@ -84,7 +96,7 @@ describe('PairV2 entity', () => {
   describe('PairV2.getLBPairReservesAndId()', () => {
     it('can fetch LBPair reserves and activeId', async () => {
       const binStep = 10
-      const LBPair = await pair1.fetchLBPair(binStep, PROVIDER, CHAIN_ID)
+      const LBPair = await pair1.fetchLBPair(binStep, false, PROVIDER, CHAIN_ID)
 
       const lbPairData = await PairV2.getLBPairReservesAndId(
         LBPair.LBPair,
@@ -100,7 +112,7 @@ describe('PairV2 entity', () => {
   describe('PairV2.getFeeParameters()', () => {
     it('can fetch LBPair fee parameters', async () => {
       const binStep = 10
-      const LBPair = await pair1.fetchLBPair(binStep, PROVIDER, CHAIN_ID)
+      const LBPair = await pair1.fetchLBPair(binStep, false, PROVIDER, CHAIN_ID)
 
       const lbPairFeeParams = await PairV2.getFeeParameters(
         LBPair.LBPair,

@@ -1,11 +1,18 @@
 import { Percent, TokenAmount } from '@traderjoe-xyz/sdk'
 import { BigNumber } from 'ethers'
 
+export enum PoolVersion {
+  V1 = 0,
+  V2 = 1,
+  V2_1 = 2
+}
+
 /** Interface representing a quote */
 export interface Quote {
   route: string[]
   pairs: string[]
   binSteps: BigNumber[]
+  versions: PoolVersion[]
   amounts: BigNumber[]
   virtualAmountsWithoutSlippage: BigNumber[]
   fees: BigNumber[]
@@ -28,12 +35,18 @@ export interface TradeOptionsDeadline extends Omit<TradeOptions, 'ttl'> {
   deadline: number
 }
 
+export interface RouterPathParameters {
+  pairBinSteps: string[]
+  versions: number[]
+  tokenPath: string[]
+}
+
 /** The parameters to use in the call to the DEX V2 Router to execute a trade. */
 export interface SwapParameters {
   // The method to call on LBRouter
   methodName: string
   // The arguments to pass to the method, all hex encoded.
-  args: (string | string[])[]
+  args: (string | string[] | RouterPathParameters)[]
   // The amount of wei to send in hex.
   value: string
 }

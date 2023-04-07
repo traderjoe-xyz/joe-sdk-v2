@@ -17,8 +17,8 @@ import invariant from 'tiny-invariant'
 
 import { RouteV2 } from './route'
 import {
-  LB_QUOTER_ADDRESS,
-  LB_ROUTER_ADDRESS,
+  LB_QUOTER_V21_ADDRESS,
+  LB_ROUTER_V21_ADDRESS,
   MULTICALL_ADDRESS,
   ONE,
   ZERO,
@@ -30,11 +30,12 @@ import {
   TradeOptionsDeadline,
   TradeFee,
   SwapParameters,
-  Quote
+  Quote,
+  RouterPathParameters
 } from '../types'
 
-import LBQuoterABI from '../abis/json/LBQuoter.json'
-import LBRouterABI from '../abis/json/LBRouter.json'
+import LBQuoterV21ABI from '../abis/json/LBQuoterV21.json'
+import LBRouterV21ABI from '../abis/json/LBRouterV21.json'
 import MulticallABI from '../abis/json/Multicall.json'
 import { MulticallCall, MulticallResult } from 'types/multicall'
 
@@ -170,7 +171,11 @@ export class TradeV2 {
     const binSteps: string[] = this.quote.binSteps.map((bin) =>
       bin.toHexString()
     )
-    const path: string[] = this.quote.route
+    const path: RouterPathParameters = {
+      pairBinSteps: binSteps,
+      versions: this.quote.versions,
+      tokenPath: this.quote.route
+    }
     const deadline =
       'ttl' in options
         ? `0x${(Math.floor(new Date().getTime() / 1000) + options.ttl).toString(
@@ -181,49 +186,43 @@ export class TradeV2 {
     const useFeeOnTransfer = Boolean(options.feeOnTransfer)
 
     let methodName: string
-    let args: (string | string[])[]
+    let args: (string | string[] | RouterPathParameters)[]
     let value: string
     switch (this.tradeType) {
       case TradeType.EXACT_INPUT:
         if (nativeIn) {
           methodName = useFeeOnTransfer
-            ? 'swapExactAVAXForTokensSupportingFeeOnTransferTokens'
-            : 'swapExactAVAXForTokens'
-          // (uint amountOutMin, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
-          args = [amountOut, binSteps, path, to, deadline]
+            ? 'swapExactNATIVEForTokensSupportingFeeOnTransferTokens'
+            : 'swapExactNATIVEForTokens'
+          args = [amountOut, path, to, deadline]
           value = amountIn
         } else if (nativeOut) {
           methodName = useFeeOnTransfer
-            ? 'swapExactTokensForAVAXSupportingFeeOnTransferTokens'
-            : 'swapExactTokensForAVAX'
-          // (uint amountIn, uint amountOutMinAVAX, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
-          args = [amountIn, amountOut, binSteps, path, to, deadline]
+            ? 'swapExactTokensForNATIVESupportingFeeOnTransferTokens'
+            : 'swapExactTokensForNATIVE'
+          args = [amountIn, amountOut, path, to, deadline]
           value = ZERO_HEX
         } else {
           methodName = useFeeOnTransfer
             ? 'swapExactTokensForTokensSupportingFeeOnTransferTokens'
             : 'swapExactTokensForTokens'
-          // (uint amountIn, uint amountOutMin, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
-          args = [amountIn, amountOut, binSteps, path, to, deadline]
+          args = [amountIn, amountOut, path, to, deadline]
           value = ZERO_HEX
         }
         break
       case TradeType.EXACT_OUTPUT:
         invariant(!useFeeOnTransfer, 'EXACT_OUT_FOT')
         if (nativeIn) {
-          methodName = 'swapAVAXForExactTokens'
-          // (uint amountOut, uint[] pairVersions, address[] tokenPath, address to, uint deadline)
-          args = [amountOut, binSteps, path, to, deadline]
+          methodName = 'swapNATIVEForExactTokens'
+          args = [amountOut, path, to, deadline]
           value = amountIn
         } else if (nativeOut) {
-          methodName = 'swapTokensForExactAVAX'
-          // (uint amountOut, uint amountInMax, uint[] pairVersions, address[] calldata path, address to, uint deadline)
-          args = [amountOut, amountIn, binSteps, path, to, deadline]
+          methodName = 'swapTokensForExactNATIVE'
+          args = [amountOut, amountIn, path, to, deadline]
           value = ZERO_HEX
         } else {
           methodName = 'swapTokensForExactTokens'
-          // (uint amountOut, uint amountInMax, address[] calldata path, address to, uint deadline)
-          args = [amountOut, amountIn, binSteps, path, to, deadline]
+          args = [amountOut, amountIn, path, to, deadline]
           value = ZERO_HEX
         }
         break
@@ -302,9 +301,9 @@ export class TradeV2 {
     chainId: ChainId,
     slippageTolerance: Percent
   ): Promise<BigNumber> {
-    const routerInterface = new utils.Interface(LBRouterABI)
+    const routerInterface = new utils.Interface(LBRouterV21ABI)
     const router = new Contract(
-      LB_ROUTER_ADDRESS[chainId],
+      LB_ROUTER_V21_ADDRESS[chainId],
       routerInterface,
       signer
     )
@@ -366,8 +365,8 @@ export class TradeV2 {
 
     const amountIn = tokenAmountIn.raw.toString()
 
-    const quoterAddress = LB_QUOTER_ADDRESS[chainId]
-    const quoterInterface = new utils.Interface(LBQuoterABI)
+    const quoterAddress = LB_QUOTER_V21_ADDRESS[chainId]
+    const quoterInterface = new utils.Interface(LBQuoterV21ABI)
 
     const multicallInterface = new utils.Interface(MulticallABI)
     const multicall = new Contract(
@@ -455,8 +454,8 @@ export class TradeV2 {
 
     const amountOut = tokenAmountOut.raw.toString()
 
-    const quoterAddress = LB_QUOTER_ADDRESS[chainId]
-    const quoterInterface = new utils.Interface(LBQuoterABI)
+    const quoterAddress = LB_QUOTER_V21_ADDRESS[chainId]
+    const quoterInterface = new utils.Interface(LBQuoterV21ABI)
 
     const multicallInterface = new utils.Interface(MulticallABI)
     const multicall = new Contract(
@@ -641,6 +640,7 @@ export class TradeV2 {
         route: this.quote.route.join(', '),
         pairs: this.quote.pairs.join(', '),
         binSteps: this.quote.binSteps.map((el) => el.toString()).join(', '),
+        versions: this.quote.versions.join(', '),
         amounts: this.quote.amounts.map((el) => el.toString()).join(', '),
         fees: this.quote.fees.map((el) => el.toString()).join(', '),
         virtualAmountsWithoutSlippage: this.quote.virtualAmountsWithoutSlippage
