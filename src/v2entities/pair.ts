@@ -24,6 +24,7 @@ import { getLiquidityConfig } from '../utils'
 
 import LBFactoryABI from '../abis/json/LBFactory.json'
 import LBPairABI from '../abis/json/LBPair.json'
+import LBPairV21ABI from '../abis/json/LBPairV21.json'
 import LBFactoryV21ABI from '../abis/json/LBFactoryV21.json'
 
 /** Class representing a pair of tokens. */
@@ -178,13 +179,29 @@ export class PairV2 {
    * Fetches the reserves active bin id for the LBPair
    *
    * @param {string} LBPairAddr
+   * @param {boolean} isV21
    * @param {Provider} provider
    * @returns {Promise<LBPairReservesAndId>}
    */
   public static async getLBPairReservesAndId(
     LBPairAddr: string,
+    isV21: boolean,
     provider: Provider
   ): Promise<LBPairReservesAndId> {
+    if (isV21) {
+      const LBPairInterface = new utils.Interface(LBPairV21ABI)
+      const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
+
+      const [reserveX, reserveY] = await pairContract.getReserves()
+      const activeId = await pairContract.getActiveId()
+
+      return {
+        reserveX: reserveX,
+        reserveY: reserveY,
+        activeId: activeId
+      }
+    }
+
     const LBPairInterface = new utils.Interface(LBPairABI)
     const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
 
