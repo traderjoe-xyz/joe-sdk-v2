@@ -94,12 +94,30 @@ describe('PairV2 entity', () => {
   })
 
   describe('PairV2.getLBPairReservesAndId()', () => {
-    it('can fetch LBPair reserves and activeId', async () => {
+    it('can fetch LBPair v2 reserves and activeId', async () => {
       const binStep = 10
-      const LBPair = await pair1.fetchLBPair(binStep, false, PROVIDER, CHAIN_ID)
+      const isV21 = false
+      const LBPair = await pair1.fetchLBPair(binStep, isV21, PROVIDER, CHAIN_ID)
 
       const lbPairData = await PairV2.getLBPairReservesAndId(
         LBPair.LBPair,
+        isV21,
+        PROVIDER
+      )
+
+      expect(lbPairData.activeId).not.toBeUndefined()
+      expect(lbPairData.reserveX).not.toBeUndefined()
+      expect(lbPairData.reserveY).not.toBeUndefined()
+    })
+
+    it('can fetch LBPair v2.1 reserves and activeId', async () => {
+      const binStep = 20
+      const isV21 = true
+      const LBPair = await pair1.fetchLBPair(binStep, isV21, PROVIDER, CHAIN_ID)
+
+      const lbPairData = await PairV2.getLBPairReservesAndId(
+        LBPair.LBPair,
+        isV21,
         PROVIDER
       )
 
