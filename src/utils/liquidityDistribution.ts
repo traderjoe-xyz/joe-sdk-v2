@@ -216,7 +216,7 @@ export const getBidAskDistributionFromBinRange = (
       ...positiveDeltaIds.map((i) => i / rSquare)
     ]
     _distributionY = [
-      ...negativeDeltaIds.map((i) => i / rSquare)),
+      ...negativeDeltaIds.map((i) => i / rSquare),
       0,
       ...Array(posDelta).fill(0)
     ]
@@ -244,6 +244,7 @@ export const getCurveDistributionFromBinRange = (
   parsedAmounts: CurrencyAmount[]
 ): LiquidityDistributionParams => {
   // TODO
+  console.log('[sdk:curve] ' + { activeId, binRange, parsedAmounts })
   return {
     deltaIds: [],
     distributionX: [],
