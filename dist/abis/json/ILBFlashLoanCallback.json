@@ -1,0 +1,479 @@
+{
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IERC20",
+          "name": "tokenX",
+          "type": "address"
+        },
+        {
+          "internalType": "contract IERC20",
+          "name": "tokenY",
+          "type": "address"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "amounts",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes32",
+          "name": "totalFees",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "LBFlashLoanCallback",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "LBFlashLoanCallback(address,address,address,bytes32,bytes32,bytes)": "1faa6b87"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.10+commit.fc410830\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"tokenX\",\"type\":\"address\"},{\"internalType\":\"contract IERC20\",\"name\":\"tokenY\",\"type\":\"address\"},{\"internalType\":\"bytes32\",\"name\":\"amounts\",\"type\":\"bytes32\"},{\"internalType\":\"bytes32\",\"name\":\"totalFees\",\"type\":\"bytes32\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"LBFlashLoanCallback\",\"outputs\":[{\"internalType\":\"bytes32\",\"name\":\"\",\"type\":\"bytes32\"}],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Trader Joe\",\"kind\":\"dev\",\"methods\":{},\"title\":\"Liquidity Book Flashloan Callback Interface\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"notice\":\"Required interface to interact with LB flash loans\",\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/interfaces/ILBFlashLoanCallback.sol\":\"ILBFlashLoanCallback\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":800},\"remappings\":[\":ds-test/=lib/forge-std/lib/ds-test/src/\",\":erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/\",\":forge-std/=lib/forge-std/src/\",\":openzeppelin-contracts/=lib/openzeppelin-contracts/\",\":openzeppelin/=lib/openzeppelin-contracts/contracts/\"]},\"sources\":{\"lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0x00c839ff53d07d19db2e7cfa1e5133f9ee90a8d64b0e2e57f50446a2d1a3a0e0\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://3dac621d015a68a5251b1e5d41dda0faf252699bf6e8bcf46a958b29964d9dd1\",\"dweb:/ipfs/QmP9axjgZv4cezAhALoTemM62sdLtMDJ9MGTxECnNwHgSJ\"]},\"src/interfaces/ILBFlashLoanCallback.sol\":{\"keccak256\":\"0x51243a2c2531b32bceb387bba6920719d6d5a4c15765aa9369d17b521ad3aa6c\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://4ed162630b88b727964f1cf95d6fb8e8ddbfb70fc657afbbeadbebd85c096fc5\",\"dweb:/ipfs/QmdTquhAr3pVyGcusEETJrw9DoR3CzmsVjqcFimcJyfxS9\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.10+commit.fc410830"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IERC20",
+              "name": "tokenX",
+              "type": "address"
+            },
+            {
+              "internalType": "contract IERC20",
+              "name": "tokenY",
+              "type": "address"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "amounts",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes32",
+              "name": "totalFees",
+              "type": "bytes32"
+            },
+            {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "LBFlashLoanCallback",
+          "outputs": [
+            {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+            }
+          ]
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {},
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":ds-test/=lib/forge-std/lib/ds-test/src/",
+        ":erc4626-tests/=lib/openzeppelin-contracts/lib/erc4626-tests/",
+        ":forge-std/=lib/forge-std/src/",
+        ":openzeppelin-contracts/=lib/openzeppelin-contracts/",
+        ":openzeppelin/=lib/openzeppelin-contracts/contracts/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 800
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "src/interfaces/ILBFlashLoanCallback.sol": "ILBFlashLoanCallback"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol": {
+        "keccak256": "0x00c839ff53d07d19db2e7cfa1e5133f9ee90a8d64b0e2e57f50446a2d1a3a0e0",
+        "urls": [
+          "bzz-raw://3dac621d015a68a5251b1e5d41dda0faf252699bf6e8bcf46a958b29964d9dd1",
+          "dweb:/ipfs/QmP9axjgZv4cezAhALoTemM62sdLtMDJ9MGTxECnNwHgSJ"
+        ],
+        "license": "MIT"
+      },
+      "src/interfaces/ILBFlashLoanCallback.sol": {
+        "keccak256": "0x51243a2c2531b32bceb387bba6920719d6d5a4c15765aa9369d17b521ad3aa6c",
+        "urls": [
+          "bzz-raw://4ed162630b88b727964f1cf95d6fb8e8ddbfb70fc657afbbeadbebd85c096fc5",
+          "dweb:/ipfs/QmdTquhAr3pVyGcusEETJrw9DoR3CzmsVjqcFimcJyfxS9"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "src/interfaces/ILBFlashLoanCallback.sol",
+    "id": 40793,
+    "exportedSymbols": {
+      "IERC20": [
+        27284
+      ],
+      "ILBFlashLoanCallback": [
+        40792
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "33:480:37",
+    "nodes": [
+      {
+        "id": 40769,
+        "nodeType": "PragmaDirective",
+        "src": "33:23:37",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".10"
+        ]
+      },
+      {
+        "id": 40771,
+        "nodeType": "ImportDirective",
+        "src": "58:59:37",
+        "nodes": [],
+        "absolutePath": "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol",
+        "file": "openzeppelin/token/ERC20/IERC20.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 40793,
+        "sourceUnit": 27285,
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 40770,
+              "name": "IERC20",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "src": "66:6:37",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 40792,
+        "nodeType": "ContractDefinition",
+        "src": "260:252:37",
+        "nodes": [
+          {
+            "id": 40791,
+            "nodeType": "FunctionDefinition",
+            "src": "297:213:37",
+            "nodes": [],
+            "functionSelector": "1faa6b87",
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "LBFlashLoanCallback",
+            "nameLocation": "306:19:37",
+            "parameters": {
+              "id": 40787,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 40774,
+                  "mutability": "mutable",
+                  "name": "sender",
+                  "nameLocation": "343:6:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 40791,
+                  "src": "335:14:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 40773,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "335:7:37",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 40777,
+                  "mutability": "mutable",
+                  "name": "tokenX",
+                  "nameLocation": "366:6:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 40791,
+                  "src": "359:13:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IERC20_$27284",
+                    "typeString": "contract IERC20"
+                  },
+                  "typeName": {
+                    "id": 40776,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 40775,
+                      "name": "IERC20",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 27284,
+                      "src": "359:6:37"
+                    },
+                    "referencedDeclaration": 27284,
+                    "src": "359:6:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IERC20_$27284",
+                      "typeString": "contract IERC20"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 40780,
+                  "mutability": "mutable",
+                  "name": "tokenY",
+                  "nameLocation": "389:6:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 40791,
+                  "src": "382:13:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IERC20_$27284",
+                    "typeString": "contract IERC20"
+                  },
+                  "typeName": {
+                    "id": 40779,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 40778,
+                      "name": "IERC20",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 27284,
+                      "src": "382:6:37"
+                    },
+                    "referencedDeclaration": 27284,
+                    "src": "382:6:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IERC20_$27284",
+                      "typeString": "contract IERC20"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 40782,
+                  "mutability": "mutable",
+                  "name": "amounts",
+                  "nameLocation": "413:7:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 40791,
+                  "src": "405:15:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 40781,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "405:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 40784,
+                  "mutability": "mutable",
+                  "name": "totalFees",
+                  "nameLocation": "438:9:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 40791,
+                  "src": "430:17:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 40783,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "430:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 40786,
+                  "mutability": "mutable",
+                  "name": "data",
+                  "nameLocation": "472:4:37",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 40791,
+                  "src": "457:19:37",
+                  "stateVariable": false,
+                  "storageLocation": "calldata",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_calldata_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 40785,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "457:5:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "325:157:37"
+            },
+            "returnParameters": {
+              "id": 40790,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 40789,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nameLocation": "-1:-1:-1",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 40791,
+                  "src": "501:7:37",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes32",
+                    "typeString": "bytes32"
+                  },
+                  "typeName": {
+                    "id": 40788,
+                    "name": "bytes32",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "501:7:37",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes32",
+                      "typeString": "bytes32"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "500:9:37"
+            },
+            "scope": 40792,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "ILBFlashLoanCallback",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": {
+          "id": 40772,
+          "nodeType": "StructuredDocumentation",
+          "src": "119:141:37",
+          "text": "@title Liquidity Book Flashloan Callback Interface\n @author Trader Joe\n @notice Required interface to interact with LB flash loans"
+        },
+        "fullyImplemented": false,
+        "linearizedBaseContracts": [
+          40792
+        ],
+        "name": "ILBFlashLoanCallback",
+        "nameLocation": "270:20:37",
+        "scope": 40793,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 37
+}
