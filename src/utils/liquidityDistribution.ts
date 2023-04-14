@@ -250,6 +250,25 @@ export const getCurveDistributionFromBinRange = (
     _distributionX: number[] = [],
     _distributionY: number[] = []
 
+  // get sigma based on radius R
+  const getSigma = (_R: number) => {
+    const factor =
+      _R >= 20
+        ? 2
+        : _R >= 15
+        ? 1.8
+        : _R >= 10
+        ? 1.7
+        : _R >= 8
+        ? 1.6
+        : _R >= 6
+        ? 1.5
+        : _R >= 5
+        ? 1.4
+        : 1.0
+    return _R / factor
+  }
+
   // range only includes B tokens (Y tokens)
   if (binRange[1] <= activeId && parsedAmountA.raw.toString() === '0') {
     const negDelta = binRange[1] - binRange[0] + 1
@@ -265,12 +284,8 @@ export const getCurveDistributionFromBinRange = (
 
     _distributionX = [...Array(deltaIds.length).fill(0)]
 
-    // sigma = R / factor
-    const _R = deltaIds[0]
-    const factor = _R > 20 ? 2 : 1.5
-    const sigma = _R / factor
-
     // A = 1 / (sigma  * sqrt(2 * pi)) = (2 * pi)^-0.5 / sigma
+    const sigma = getSigma(deltaIds[0])
     const k = Math.pow(Math.PI * 2, -0.5)
     const A = k / sigma
 
@@ -294,12 +309,8 @@ export const getCurveDistributionFromBinRange = (
       deltaIds.unshift(0)
     }
 
-    // sigma = R / factor
-    const _R = deltaIds[deltaIds.length - 1]
-    const factor = _R > 20 ? 2 : 1.5
-    const sigma = _R / factor
-
     // A = 1 / (sigma  * sqrt(2 * pi)) = (2 * pi)^-0.5 / sigma
+    const sigma = getSigma(deltaIds[deltaIds.length - 1])
     const k = Math.pow(Math.PI * 2, -0.5)
     const A = k / sigma
 
@@ -322,12 +333,8 @@ export const getCurveDistributionFromBinRange = (
     )
     deltaIds = [...negativeDeltaIds, 0, ...positiveDeltaIds]
 
-    // sigma = R / factor
-    const _R = deltaIds[0]
-    const factor = _R > 20 ? 2 : 1.5
-    const sigma = _R / factor
-
     // A = 1 / (sigma  * sqrt(2 * pi)) = (2 * pi)^-0.5 / sigma
+    const sigma = getSigma(deltaIds[0])
     const k = Math.pow(Math.PI * 2, -0.5)
     const A = k / sigma
 
