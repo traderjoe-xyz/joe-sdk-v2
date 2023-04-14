@@ -270,8 +270,8 @@ export const getCurveDistributionFromBinRange = (
     const factor = _R > 20 ? 2 : 1.5
     const sigma = _R / factor
 
-    // A = 1 / (sigma  * sqrt(2 * pi))
-    const k = Math.pow(Math.PI * 2, -2)
+    // A = 1 / (sigma  * sqrt(2 * pi)) = (2 * pi)^-0.5 / sigma
+    const k = Math.pow(Math.PI * 2, -0.5)
     const A = k / sigma
 
     // dist = A * exp(-0.5 * (r /sigma) ^ 2)
@@ -295,12 +295,12 @@ export const getCurveDistributionFromBinRange = (
     }
 
     // sigma = R / factor
-    const _R = deltaIds[0]
+    const _R = deltaIds[deltaIds.length - 1]
     const factor = _R > 20 ? 2 : 1.5
     const sigma = _R / factor
 
-    // A = 1 / (sigma  * sqrt(2 * pi))
-    const k = Math.pow(Math.PI * 2, -2)
+    // A = 1 / (sigma  * sqrt(2 * pi)) = (2 * pi)^-0.5 / sigma
+    const k = Math.pow(Math.PI * 2, -0.5)
     const A = k / sigma
 
     // dist = A * exp(-0.5 * (r /sigma) ^ 2)
@@ -327,8 +327,8 @@ export const getCurveDistributionFromBinRange = (
     const factor = _R > 20 ? 2 : 1.5
     const sigma = _R / factor
 
-    // A = 1 / (sigma  * sqrt(2 * pi))
-    const k = Math.pow(Math.PI * 2, -2)
+    // A = 1 / (sigma  * sqrt(2 * pi)) = (2 * pi)^-0.5 / sigma
+    const k = Math.pow(Math.PI * 2, -0.5)
     const A = k / sigma
 
     _distributionX = [
