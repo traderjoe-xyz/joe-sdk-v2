@@ -345,7 +345,7 @@ export const getCurveDistributionFromBinRange = (
     deltaIds = [...negativeDeltaIds, 0, ...positiveDeltaIds]
 
     // radius is num of bins
-    const RX = positiveDeltaIds.length - 1
+    const RX = positiveDeltaIds.length
     const sigmaX = getSigma(RX)
 
     // A = 1 / (sigma  * sqrt(2 * pi))
@@ -357,12 +357,12 @@ export const getCurveDistributionFromBinRange = (
       ...Array(negDelta).fill(0),
       AX / 2,
       ...positiveDeltaIds.map(
-        (_, ind) => AX * Math.exp(-0.5 * Math.pow(ind / sigmaX, 2))
+        (_, ind) => AX * Math.exp(-0.5 * Math.pow((ind + 1) / sigmaX, 2))
       )
     ]
 
     // radius is num of bins
-    const RY = negativeDeltaIds.length - 1
+    const RY = negativeDeltaIds.length
     const sigmaY = getSigma(RY)
 
     // A = 1 / (sigma  * sqrt(2 * pi))
