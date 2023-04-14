@@ -4,8 +4,7 @@ import { CurrencyAmount } from '@traderjoe-xyz/sdk'
 import { spotUniform, curve, bidAsk, wide } from '../constants'
 import {
   LiquidityDistribution,
-  LiquidityDistributionParams,
-  CurveLiquidityDistributionParams
+  LiquidityDistributionParams
 } from '../types/pair'
 
 /**
@@ -210,14 +209,15 @@ export const getBidAskDistributionFromBinRange = (
     deltaIds = [...negativeDeltaIds, 0, ...positiveDeltaIds]
 
     // dist = 1/R^2 * i
-    const rSquare = Math.pow(deltaIds[0], 2)
     _distributionX = [
       ...Array(negDelta).fill(0),
       0,
-      ...positiveDeltaIds.map((i) => i / rSquare)
+      ...positiveDeltaIds.map((i) => i / Math.pow(deltaIds[0], 2))
     ]
     _distributionY = [
-      ...negativeDeltaIds.map((i) => (-1 * i) / rSquare),
+      ...negativeDeltaIds.map(
+        (i) => (-1 * i) / Math.pow(deltaIds[deltaIds.length - 1], 2)
+      ),
       0,
       ...Array(posDelta).fill(0)
     ]
@@ -243,15 +243,13 @@ export const getCurveDistributionFromBinRange = (
   activeId: number,
   binRange: number[],
   parsedAmounts: CurrencyAmount[]
-): CurveLiquidityDistributionParams => {
+): LiquidityDistributionParams => {
   const [parsedAmountA, parsedAmountB] = parsedAmounts
 
   // init return values
   let deltaIds: number[] = [],
     _distributionX: number[] = [],
-    _distributionY: number[] = [],
-    A: number = 0,
-    sigma: number = 0
+    _distributionY: number[] = []
 
   // get sigma based on radius R
   const getSigma = (_R: number) => {
@@ -287,9 +285,9 @@ export const getCurveDistributionFromBinRange = (
 
     _distributionX = [...Array(deltaIds.length).fill(0)]
 
-    // A = 1 / (sigma  * sqrt(2 * pi)) = (2 * pi)^-0.5 / sigma
-    const sigma = getSigma(deltaIds[0])
-    const A = Math.pow(Math.PI * 2, -0.5) / sigma
+    // A = 1 / (sigma  * sqrt(2 * pi))
+    const sigma = getSigma(Math.floor(deltaIds.length / 2))
+    const A = 1 / (Math.sqrt(Math.PI * 2) * sigma)
 
     // dist = A * exp(-0.5 * (r /sigma) ^ 2)
     _distributionY = deltaIds.map(
@@ -311,9 +309,9 @@ export const getCurveDistributionFromBinRange = (
       deltaIds.unshift(0)
     }
 
-    // A = 1 / (sigma  * sqrt(2 * pi)) = (2 * pi)^-0.5 / sigma
-    sigma = getSigma(deltaIds[deltaIds.length - 1])
-    A = Math.pow(Math.PI * 2, -0.5) / sigma
+    // A = 1 / (sigma  * sqrt(2 * pi))
+    const sigma = getSigma(Math.floor(deltaIds.length / 2))
+    const A = 1 / (Math.sqrt(Math.PI * 2) * sigma)
 
     // dist = A * exp(-0.5 * (r /sigma) ^ 2)
     _distributionX = deltaIds.map(
@@ -334,9 +332,9 @@ export const getCurveDistributionFromBinRange = (
     )
     deltaIds = [...negativeDeltaIds, 0, ...positiveDeltaIds]
 
-    // A = 1 / (sigma  * sqrt(2 * pi)) = (2 * pi)^-0.5 / sigma
-    sigma = getSigma(deltaIds[0])
-    A = Math.pow(Math.PI * 2, -0.5) / sigma
+    // A = 1 / (sigma  * sqrt(2 * pi))
+    const sigma = getSigma(Math.floor(deltaIds.length / 2))
+    const A = 1 / (Math.sqrt(Math.PI * 2) * sigma)
 
     _distributionX = [
       ...Array(negDelta).fill(0),
@@ -358,8 +356,6 @@ export const getCurveDistributionFromBinRange = (
   return {
     deltaIds,
     distributionX: _distributionX.map((el) => parseEther(el.toString())),
-    distributionY: _distributionY.map((el) => parseEther(el.toString())),
-    A,
-    sigma
+    distributionY: _distributionY.map((el) => parseEther(el.toString()))
   }
 }

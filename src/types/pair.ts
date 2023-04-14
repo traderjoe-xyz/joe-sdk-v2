@@ -68,9 +68,3 @@ export interface LiquidityDistributionParams {
   distributionX: BigNumber[]
   distributionY: BigNumber[]
 }
-
-export interface CurveLiquidityDistributionParams
-  extends LiquidityDistributionParams {
-  A: number
-  sigma: number
-}
