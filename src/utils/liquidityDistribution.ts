@@ -345,36 +345,36 @@ export const getCurveDistributionFromBinRange = (
     deltaIds = [...negativeDeltaIds, 0, ...positiveDeltaIds]
 
     // radius is num of bins
-    const RX = positiveDeltaIds.length
+    const rangeX = [0, ...positiveDeltaIds]
+    const RX = rangeX.length - 1
     const sigmaX = getSigma(RX)
 
     // A = 1 / (sigma  * sqrt(2 * pi))
-    const AX = 1 / (Math.sqrt(Math.PI * 2) * sigmaX)
+    const AX = (1 / (Math.sqrt(Math.PI * 2) * sigmaX)) * 0.5
 
     // dist = A * exp(-0.5 * (r /sigma) ^ 2)
     // r is distance from 0 (note 0 is not in positiveDeltaIds)
     _distributionX = [
       ...Array(negDelta).fill(0),
-      AX / 2,
-      ...positiveDeltaIds.map(
+      ...rangeX.map(
         (_, ind) => AX * Math.exp(-0.5 * Math.pow(ind + 1 / sigmaX, 2))
       )
     ]
 
     // radius is num of bins
-    const RY = negativeDeltaIds.length
+    const rangeY = [...negativeDeltaIds, 0]
+    const RY = rangeY.length - 1
     const sigmaY = getSigma(RY)
 
     // A = 1 / (sigma  * sqrt(2 * pi))
-    const AY = 1 / (Math.sqrt(Math.PI * 2) * sigmaY)
+    const AY = (1 / (Math.sqrt(Math.PI * 2) * sigmaY)) * 0.5
 
     // dist = A * exp(-0.5 * (r /sigma) ^ 2)
     // r is distance from 0 (note 0 is not in negativeDeltaIds)
     _distributionY = [
-      ...negativeDeltaIds.map(
+      ...rangeY.map(
         (_, ind) => AY * Math.exp(-0.5 * Math.pow(RY - ind / sigmaY, 2))
       ),
-      AY / 2,
       ...Array(posDelta).fill(0)
     ]
   }
