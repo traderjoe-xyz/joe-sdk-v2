@@ -257,7 +257,7 @@ export const getCurveDistributionFromBinRange = (
   const getSigma = (_R: number) => {
     const factor =
       _R >= 20
-        ? 2
+        ? 2.0
         : _R >= 15
         ? 1.8
         : _R >= 10
