@@ -209,15 +209,17 @@ export const getBidAskDistributionFromBinRange = (
     deltaIds = [...negativeDeltaIds, 0, ...positiveDeltaIds]
 
     // dist = 1/R^2 * i
+    const rSquareX = Math.pow(positiveDeltaIds[positiveDeltaIds.length - 1], 2)
     _distributionX = [
       ...Array(negDelta).fill(0),
       0,
-      ...positiveDeltaIds.map((i) => i / Math.pow(deltaIds[0], 2))
+      ...positiveDeltaIds.map((i) => i / rSquareX)
     ]
+
+    // dist = 1/R^2 * i
+    const rSquareY = Math.pow(negativeDeltaIds[0], 2)
     _distributionY = [
-      ...negativeDeltaIds.map(
-        (i) => (-1 * i) / Math.pow(deltaIds[deltaIds.length - 1], 2)
-      ),
+      ...negativeDeltaIds.map((i) => (-1 * i) / rSquareY),
       0,
       ...Array(posDelta).fill(0)
     ]
@@ -286,7 +288,7 @@ export const getCurveDistributionFromBinRange = (
     _distributionX = [...Array(deltaIds.length).fill(0)]
 
     // A = 1 / (sigma  * sqrt(2 * pi))
-    const sigma = getSigma(Math.floor(deltaIds.length / 2))
+    const sigma = getSigma(deltaIds[0] * -1)
     const A = 1 / (Math.sqrt(Math.PI * 2) * sigma)
 
     // dist = A * exp(-0.5 * (r /sigma) ^ 2)
@@ -310,7 +312,7 @@ export const getCurveDistributionFromBinRange = (
     }
 
     // A = 1 / (sigma  * sqrt(2 * pi))
-    const sigma = getSigma(Math.floor(deltaIds.length / 2))
+    const sigma = getSigma(deltaIds[deltaIds.length - 1])
     const A = 1 / (Math.sqrt(Math.PI * 2) * sigma)
 
     // dist = A * exp(-0.5 * (r /sigma) ^ 2)
@@ -333,21 +335,25 @@ export const getCurveDistributionFromBinRange = (
     deltaIds = [...negativeDeltaIds, 0, ...positiveDeltaIds]
 
     // A = 1 / (sigma  * sqrt(2 * pi))
-    const sigma = getSigma(Math.floor(deltaIds.length / 2))
-    const A = 1 / (Math.sqrt(Math.PI * 2) * sigma)
+    const sigmaX = getSigma(positiveDeltaIds[positiveDeltaIds.length - 1])
+    const AX = 1 / (Math.sqrt(Math.PI * 2) * sigmaX)
 
     _distributionX = [
       ...Array(negDelta).fill(0),
-      A / 2,
+      AX / 2,
       ...positiveDeltaIds.map(
-        (i) => A * Math.exp(-0.5 * Math.pow(i / sigma, 2))
+        (i) => AX * Math.exp(-0.5 * Math.pow(i / sigmaX, 2))
       )
     ]
+
+    // A = 1 / (sigma  * sqrt(2 * pi))
+    const sigmaY = getSigma(negativeDeltaIds[0] * -1)
+    const AY = 1 / (Math.sqrt(Math.PI * 2) * sigmaY)
     _distributionY = [
       ...negativeDeltaIds.map(
-        (i) => A * Math.exp(-0.5 * Math.pow(i / sigma, 2))
+        (i) => AY * Math.exp(-0.5 * Math.pow(i / sigmaY, 2))
       ),
-      A / 2,
+      AY / 2,
       ...Array(posDelta).fill(0)
     ]
   }
