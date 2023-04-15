@@ -173,7 +173,7 @@ export const getBidAskDistributionFromBinRange = (
 
     // dist = 2/R^2 * r
     const rSquare = Math.pow(deltaIds[0], 2)
-    _distributionY = deltaIds.map((i) => ((i + 1) * -2) / rSquare)
+    _distributionY = deltaIds.map((i) => ((i - 1) * -2) / rSquare)
   }
 
   // range only includes A tokens (X tokens)
@@ -219,7 +219,7 @@ export const getBidAskDistributionFromBinRange = (
     // dist = 1/R^2 * i
     const rSquareY = Math.pow(negativeDeltaIds[0], 2)
     _distributionY = [
-      ...negativeDeltaIds.map((i) => (-1 * (i + 1)) / rSquareY),
+      ...negativeDeltaIds.map((i) => (-1 * (i - 1)) / rSquareY),
       1 / rSquareY,
       ...Array(posDelta).fill(0)
     ]
