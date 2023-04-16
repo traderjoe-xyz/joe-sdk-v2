@@ -59,8 +59,7 @@ export interface BinReserves {
 export enum LiquidityDistribution {
   SPOT,
   CURVE,
-  BID_ASK,
-  WIDE
+  BID_ASK
 }
 
 export interface LiquidityDistributionParams {

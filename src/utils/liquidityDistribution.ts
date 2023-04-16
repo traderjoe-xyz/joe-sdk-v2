@@ -131,8 +131,12 @@ export const getUniformDistributionFromBinRange = (
   // return
   return {
     deltaIds,
-    distributionX: _distributionX.map((el) => parseEther(el.toString())),
-    distributionY: _distributionY.map((el) => parseEther(el.toString()))
+    distributionX: _distributionX.map((el) =>
+      parseEther(el.toFixed(parsedAmountA.currency.decimals))
+    ),
+    distributionY: _distributionY.map((el) =>
+      parseEther(el.toFixed(parsedAmountB.currency.decimals))
+    )
   }
 }
 
@@ -171,9 +175,9 @@ export const getBidAskDistributionFromBinRange = (
 
     _distributionX = [...Array(deltaIds.length).fill(0)]
 
-    // dist = 2/R^2 * i
+    // dist = 2/R^2 * r
     const rSquare = Math.pow(deltaIds[0], 2)
-    _distributionY = deltaIds.map((i) => (i * -2) / rSquare)
+    _distributionY = deltaIds.map((i) => ((i - 1) * -2) / rSquare)
   }
 
   // range only includes A tokens (X tokens)
@@ -191,7 +195,7 @@ export const getBidAskDistributionFromBinRange = (
     }
     // dist = 2/R^2 * i
     const rSquare = Math.pow(deltaIds[deltaIds.length - 1], 2)
-    _distributionX = deltaIds.map((i) => (i * 2) / rSquare)
+    _distributionX = deltaIds.map((i) => ((i + 1) * 2) / rSquare)
     _distributionY = [...Array(deltaIds.length).fill(0)]
   }
 
@@ -212,15 +216,15 @@ export const getBidAskDistributionFromBinRange = (
     const rSquareX = Math.pow(positiveDeltaIds[positiveDeltaIds.length - 1], 2)
     _distributionX = [
       ...Array(negDelta).fill(0),
-      0,
-      ...positiveDeltaIds.map((i) => i / rSquareX)
+      1 / rSquareX,
+      ...positiveDeltaIds.map((i) => (i + 1) / rSquareX)
     ]
 
     // dist = 1/R^2 * i
     const rSquareY = Math.pow(negativeDeltaIds[0], 2)
     _distributionY = [
-      ...negativeDeltaIds.map((i) => (-1 * i) / rSquareY),
-      0,
+      ...negativeDeltaIds.map((i) => (-1 * (i - 1)) / rSquareY),
+      1 / rSquareY,
       ...Array(posDelta).fill(0)
     ]
   }
@@ -228,8 +232,12 @@ export const getBidAskDistributionFromBinRange = (
   // return
   return {
     deltaIds,
-    distributionX: _distributionX.map((el) => parseEther(el.toString())),
-    distributionY: _distributionY.map((el) => parseEther(el.toString()))
+    distributionX: _distributionX.map((el) =>
+      parseEther(el.toFixed(parsedAmountA.currency.decimals))
+    ),
+    distributionY: _distributionY.map((el) =>
+      parseEther(el.toFixed(parsedAmountB.currency.decimals))
+    )
   }
 }
 
@@ -382,7 +390,11 @@ export const getCurveDistributionFromBinRange = (
   // return
   return {
     deltaIds,
-    distributionX: _distributionX.map((el) => parseEther(el.toString())),
-    distributionY: _distributionY.map((el) => parseEther(el.toString()))
+    distributionX: _distributionX.map((el) =>
+      parseEther(el.toFixed(parsedAmountA.currency.decimals))
+    ),
+    distributionY: _distributionY.map((el) =>
+      parseEther(el.toFixed(parsedAmountB.currency.decimals))
+    )
   }
 }
