@@ -131,8 +131,12 @@ export const getUniformDistributionFromBinRange = (
   // return
   return {
     deltaIds,
-    distributionX: _distributionX.map((el) => parseEther(el.toString())),
-    distributionY: _distributionY.map((el) => parseEther(el.toString()))
+    distributionX: _distributionX.map((el) =>
+      parseEther(el.toFixed(parsedAmountA.currency.decimals))
+    ),
+    distributionY: _distributionY.map((el) =>
+      parseEther(el.toFixed(parsedAmountB.currency.decimals))
+    )
   }
 }
 
@@ -228,8 +232,12 @@ export const getBidAskDistributionFromBinRange = (
   // return
   return {
     deltaIds,
-    distributionX: _distributionX.map((el) => parseEther(el.toString())),
-    distributionY: _distributionY.map((el) => parseEther(el.toString()))
+    distributionX: _distributionX.map((el) =>
+      parseEther(el.toFixed(parsedAmountA.currency.decimals))
+    ),
+    distributionY: _distributionY.map((el) =>
+      parseEther(el.toFixed(parsedAmountB.currency.decimals))
+    )
   }
 }
 
@@ -382,7 +390,11 @@ export const getCurveDistributionFromBinRange = (
   // return
   return {
     deltaIds,
-    distributionX: _distributionX.map((el) => parseEther(el.toString())),
-    distributionY: _distributionY.map((el) => parseEther(el.toString()))
+    distributionX: _distributionX.map((el) =>
+      parseEther(el.toFixed(parsedAmountA.currency.decimals))
+    ),
+    distributionY: _distributionY.map((el) =>
+      parseEther(el.toFixed(parsedAmountB.currency.decimals))
+    )
   }
 }
