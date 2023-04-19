@@ -6,6 +6,7 @@ import {
   LiquidityDistribution,
   LiquidityDistributionParams
 } from '../types/pair'
+import { BigNumber } from 'ethers'
 
 /**
  * Returns distribution params for on-chain addLiquidity() call
@@ -44,6 +45,24 @@ export const getDistributionFromTargetBin = (
       targetBin >= activeId ? [parseEther('1')] : [parseEther('0')],
     distributionY: targetBin <= activeId ? [parseEther('1')] : [parseEther('0')]
   }
+}
+
+/**
+ * Returns normalized array, e.g. normalize so array sums to 1e18 within 1e5 precision
+ * @param dist
+ * @param sumTo
+ * @param precision
+ * @returns
+ */
+export const normalizeDist = (
+  dist: BigNumber[],
+  sumTo: BigNumber,
+  precision: BigNumber
+): BigNumber[] => {
+  const sumDist = dist.reduce((sum, cur) => sum.add(cur), BigNumber.from(0))
+  const factor = sumDist.mul(precision).div(sumTo)
+  const normalized = dist.map((d) => d.mul(precision).div(factor))
+  return normalized
 }
 
 /**
@@ -302,10 +321,10 @@ export const getCurveDistributionFromBinRange = (
     // A = 1 / (sigma  * sqrt(2 * pi))
     const A = 1 / (Math.sqrt(Math.PI * 2) * sigma)
 
-    // dist = A * exp(-0.5 * (r /sigma) ^ 2)
+    // dist = 2 * A * exp(-0.5 * (r /sigma) ^ 2)
     // r is distance from right-most bin
     _distributionY = deltaIds.map(
-      (_, ind) => A * Math.exp(-0.5 * Math.pow((R - ind) / sigma, 2))
+      (_, ind) => 2 * A * Math.exp(-0.5 * Math.pow((R - ind) / sigma, 2))
     )
   }
 
@@ -332,10 +351,10 @@ export const getCurveDistributionFromBinRange = (
     // A = 1 / (sigma  * sqrt(2 * pi))
     const A = 1 / (Math.sqrt(Math.PI * 2) * sigma)
 
-    // dist = A * exp(-0.5 * (r /sigma) ^ 2)
+    // dist = 2 * A * exp(-0.5 * (r /sigma) ^ 2)
     // r is distance from left-most bin
     _distributionX = deltaIds.map(
-      (_, ind) => A * Math.exp(-0.5 * Math.pow(ind / sigma, 2))
+      (_, ind) => 2 * A * Math.exp(-0.5 * Math.pow(ind / sigma, 2))
     )
   }
 
@@ -359,13 +378,13 @@ export const getCurveDistributionFromBinRange = (
     // A = 1 / (sigma  * sqrt(2 * pi))
     const AX = 1 / (Math.sqrt(Math.PI * 2) * sigmaX)
 
-    // dist = A * exp(-0.5 * (r /sigma) ^ 2)
+    // dist = 2 * A * exp(-0.5 * (r /sigma) ^ 2)
     // r is distance from 0
     _distributionX = [
       ...Array(negDelta).fill(0),
-      AX / 2,
+      AX,
       ...positiveDeltaIds.map(
-        (_, ind) => AX * Math.exp(-0.5 * Math.pow((ind + 1) / sigmaX, 2))
+        (_, ind) => 2 * AX * Math.exp(-0.5 * Math.pow((ind + 1) / sigmaX, 2))
       )
     ]
 
@@ -374,15 +393,15 @@ export const getCurveDistributionFromBinRange = (
     const sigmaY = getSigma(RY)
 
     // A = 1 / (sigma  * sqrt(2 * pi))
-    const AY = (1 / (Math.sqrt(Math.PI * 2) * sigmaY)) * 0.5
+    const AY = 1 / (Math.sqrt(Math.PI * 2) * sigmaY)
 
-    // dist = A * exp(-0.5 * (r /sigma) ^ 2)
+    // dist = 2 * A * exp(-0.5 * (r /sigma) ^ 2)
     // r is distance from 0
     _distributionY = [
       ...negativeDeltaIds.map(
-        (_, ind) => AY * Math.exp(-0.5 * Math.pow((RY - ind) / sigmaY, 2))
+        (_, ind) => 2 * AY * Math.exp(-0.5 * Math.pow((RY - ind) / sigmaY, 2))
       ),
-      AY / 2,
+      AY,
       ...Array(posDelta).fill(0)
     ]
   }
