@@ -6,6 +6,7 @@ import {
   LiquidityDistribution,
   LiquidityDistributionParams
 } from '../types/pair'
+import { BigNumber } from 'ethers'
 
 /**
  * Returns distribution params for on-chain addLiquidity() call
@@ -44,6 +45,24 @@ export const getDistributionFromTargetBin = (
       targetBin >= activeId ? [parseEther('1')] : [parseEther('0')],
     distributionY: targetBin <= activeId ? [parseEther('1')] : [parseEther('0')]
   }
+}
+
+/**
+ * Returns normalized array, e.g. normalize so array sums to 1e18 within 1e5 precision
+ * @param dist
+ * @param sumTo
+ * @param precision
+ * @returns
+ */
+export const normalizeDist = (
+  dist: BigNumber[],
+  sumTo: BigNumber,
+  precision: BigNumber
+): BigNumber[] => {
+  const sumDist = dist.reduce((sum, cur) => sum.add(cur), BigNumber.from(0))
+  const factor = sumDist.mul(precision).div(sumTo)
+  const normalized = dist.map((d) => d.mul(precision).div(factor))
+  return normalized
 }
 
 /**
