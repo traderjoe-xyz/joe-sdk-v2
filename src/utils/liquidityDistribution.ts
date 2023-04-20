@@ -60,6 +60,9 @@ export const normalizeDist = (
   precision: BigNumber
 ): BigNumber[] => {
   const sumDist = dist.reduce((sum, cur) => sum.add(cur), BigNumber.from(0))
+  if (sumDist.eq(0)) {
+    return dist
+  }
   const factor = sumDist.mul(precision).div(sumTo)
   const normalized = dist.map((d) => d.mul(precision).div(factor))
   return normalized
