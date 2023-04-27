@@ -1,0 +1,99 @@
+export const LiquidityAmountsHelperABI = [
+  { inputs: [], name: 'LiquidityAmounts__LengthMismatch', type: 'error' },
+  { inputs: [], name: 'SafeCast__Exceeds24Bits', type: 'error' },
+  {
+    inputs: [
+      { internalType: 'uint256', name: 'x', type: 'uint256' },
+      { internalType: 'int256', name: 'y', type: 'int256' }
+    ],
+    name: 'Uint128x128Math__PowUnderflow',
+    type: 'error'
+  },
+  { inputs: [], name: 'Uint256x256Math__MulDivOverflow', type: 'error' },
+  { inputs: [], name: 'Uint256x256Math__MulShiftOverflow', type: 'error' },
+  {
+    inputs: [
+      { internalType: 'address', name: 'user', type: 'address' },
+      { internalType: 'uint256[]', name: 'ids', type: 'uint256[]' },
+      { internalType: 'address', name: 'LBPair', type: 'address' }
+    ],
+    name: 'getAmountsAndLiquiditiesOf',
+    outputs: [
+      { internalType: 'uint256[]', name: 'amountsX', type: 'uint256[]' },
+      { internalType: 'uint256[]', name: 'amountsY', type: 'uint256[]' },
+      { internalType: 'uint256[]', name: 'liquidities', type: 'uint256[]' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'uint256[]', name: 'liquidities', type: 'uint256[]' },
+      { internalType: 'uint256[]', name: 'totalSupplies', type: 'uint256[]' },
+      { internalType: 'uint112[]', name: 'binReservesX', type: 'uint112[]' },
+      { internalType: 'uint112[]', name: 'binReservesY', type: 'uint112[]' }
+    ],
+    name: 'getAmountsForLiquidities',
+    outputs: [
+      { internalType: 'uint256', name: 'amountX', type: 'uint256' },
+      { internalType: 'uint256', name: 'amountY', type: 'uint256' }
+    ],
+    stateMutability: 'pure',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'user', type: 'address' },
+      { internalType: 'uint256[]', name: 'ids', type: 'uint256[]' },
+      { internalType: 'address', name: 'LBPair', type: 'address' }
+    ],
+    name: 'getAmountsOf',
+    outputs: [
+      { internalType: 'uint256[]', name: 'amountsX', type: 'uint256[]' },
+      { internalType: 'uint256[]', name: 'amountsY', type: 'uint256[]' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'user', type: 'address' },
+      { internalType: 'uint256[]', name: 'ids', type: 'uint256[]' },
+      { internalType: 'address', name: 'LBPair', type: 'address' }
+    ],
+    name: 'getBalanceOf',
+    outputs: [
+      { internalType: 'uint256[]', name: 'balances', type: 'uint256[]' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'uint256[]', name: 'ids', type: 'uint256[]' },
+      { internalType: 'uint16', name: 'binStep', type: 'uint16' },
+      { internalType: 'uint112', name: 'amountX', type: 'uint112' },
+      { internalType: 'uint112', name: 'amountY', type: 'uint112' }
+    ],
+    name: 'getLiquiditiesForAmounts',
+    outputs: [
+      { internalType: 'uint256[]', name: 'liquidities', type: 'uint256[]' }
+    ],
+    stateMutability: 'pure',
+    type: 'function'
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'user', type: 'address' },
+      { internalType: 'uint256[]', name: 'ids', type: 'uint256[]' },
+      { internalType: 'address', name: 'LBPair', type: 'address' }
+    ],
+    name: 'getTotalAmountsOf',
+    outputs: [
+      { internalType: 'uint256', name: 'totalAmountX', type: 'uint256' },
+      { internalType: 'uint256', name: 'totalAmountY', type: 'uint256' }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  }
+] as const
