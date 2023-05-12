@@ -18,14 +18,13 @@ import { BigNumber } from 'ethers'
 export const getLiquidityConfig = (
   distribution: LiquidityDistribution
 ): LiquidityDistributionParams => {
-  if (distribution === LiquidityDistribution.SPOT) {
-    return spotUniform
-  } else if (distribution === LiquidityDistribution.CURVE) {
-    return curve
-  } else if (distribution === LiquidityDistribution.BID_ASK) {
-    return bidAsk
-  } else {
-    return wide
+  switch (distribution) {
+    case LiquidityDistribution.SPOT:
+      return spotUniform
+    case LiquidityDistribution.CURVE:
+      return curve
+    case LiquidityDistribution.BID_ASK:
+      return bidAsk
   }
 }
 
