@@ -80,10 +80,9 @@ export class TradeV2 {
 
     // compute exactQuote and priceImpact
     if (isExactIn) {
-      const exactQuoteStr =
-        quote.virtualAmountsWithoutSlippage[
-          quote.virtualAmountsWithoutSlippage.length - 1
-        ].toString()
+      const exactQuoteStr = quote.virtualAmountsWithoutSlippage[
+        quote.virtualAmountsWithoutSlippage.length - 1
+      ].toString()
       this.exactQuote = new TokenAmount(tokenOut, JSBI.BigInt(exactQuoteStr))
       const slippage = this.exactQuote
         .subtract(outputAmount)
@@ -306,8 +305,9 @@ export class TradeV2 {
       deadline: Number(currentBlockTimestamp) + 120
     }
 
-    const { methodName, args, value }: SwapParameters =
-      this.swapCallParameters(options)
+    const { methodName, args, value }: SwapParameters = this.swapCallParameters(
+      options
+    )
 
     const gasEstimate = await publicClient.estimateGas({
       blockTag: 'latest',

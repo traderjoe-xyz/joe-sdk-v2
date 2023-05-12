@@ -1,4 +1,6 @@
 import JSBI from 'jsbi'
+
+import * as jsonAbis from './abis/json'
 export { JSBI }
 
 export {
@@ -18,7 +20,7 @@ export {
 } from './constants'
 
 export * from './abis/ts'
-export * as jsonAbis from './abis/json'
+export { jsonAbis }
 
 export * from './v2entities'
 export * from './types'
