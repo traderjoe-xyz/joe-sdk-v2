@@ -27,13 +27,13 @@
     ]
   },
   "dependencies": {
-    "@traderjoe-xyz/sdk": "^3.2.1",
+    "@traderjoe-xyz/sdk": "^4.0.0",
     "jsbi": "^3.1.1",
     "lodash.flatmap": "^4.5.0",
     "tiny-invariant": "^1.1.0",
     "tiny-warning": "^1.0.3",
     "toformat": "^2.0.0",
-    "viem": "^0.3.21"
+    "viem": "^0.3.22"
   },
   "devDependencies": {
     "@types/big.js": "^4.0.5",
