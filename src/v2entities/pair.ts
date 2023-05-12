@@ -1,6 +1,3 @@
-import { BigNumber, Contract, utils } from 'ethers'
-import { Provider } from '@ethersproject/abstract-provider'
-import { Web3Provider } from '@ethersproject/providers'
 import flatMap from 'lodash.flatmap'
 import JSBI from 'jsbi'
 import {
@@ -22,10 +19,13 @@ import { LB_FACTORY_ADDRESS, LB_FACTORY_V21_ADDRESS, ONE } from '../constants'
 import { Bin } from './bin'
 import { getLiquidityConfig } from '../utils'
 
-import LBFactoryABI from '../abis/json/LBFactory.json'
-import LBPairABI from '../abis/json/LBPair.json'
-import LBPairV21ABI from '../abis/json/LBPairV21.json'
-import LBFactoryV21ABI from '../abis/json/LBFactoryV21.json'
+import {
+  LBFactoryABI,
+  LBFactoryV21ABI,
+  LBPairABI,
+  LBPairV21ABI
+} from '../abis/ts'
+import { Hex, PublicClient, getAddress } from 'viem'
 
 /** Class representing a pair of tokens. */
 export class PairV2 {
@@ -46,28 +46,33 @@ export class PairV2 {
    * Returns all available LBPairs for this pair
    *
    * @param {boolean} isV21
-   * @param {Provider} provider
+   * @param {PublicClient} publicClient
    * @param {ChainId} chainId
    * @returns {Promise<LBPair[]>}
    */
   public async fetchAvailableLBPairs(
     isV21: boolean,
-    provider: Provider,
+    publicClient: PublicClient,
     chainId: ChainId
-  ): Promise<LBPair[]> {
-    const factoryInterface = new utils.Interface(
-      isV21 ? LBFactoryV21ABI : LBFactoryABI
-    )
-    const factory = new Contract(
-      isV21 ? LB_FACTORY_V21_ADDRESS[chainId] : LB_FACTORY_ADDRESS[chainId],
-      factoryInterface,
-      provider
-    )
-    const LBPairs: LBPair[] = await factory.getAllLBPairs(
-      this.token0.address,
-      this.token1.address
-    )
-    return LBPairs
+  ): Promise<readonly LBPair[]> {
+    const args = [
+      getAddress(this.token0.address),
+      getAddress(this.token1.address)
+    ] as const
+
+    return isV21
+      ? await publicClient.readContract({
+          abi: LBFactoryV21ABI,
+          address: LB_FACTORY_V21_ADDRESS[chainId],
+          functionName: 'getAllLBPairs',
+          args
+        })
+      : await publicClient.readContract({
+          abi: LBFactoryABI,
+          address: LB_FACTORY_ADDRESS[chainId],
+          functionName: 'getAllLBPairs',
+          args
+        })
   }
 
   /**
@@ -75,30 +80,40 @@ export class PairV2 {
    *
    * @param {number} binStep
    * @param {boolean} isV21
-   * @param {Provider} provider
+   * @param {PublicClient} publicClient
    * @param {ChainId} chainId
    * @returns {Promise<LBPair>}
    */
   public async fetchLBPair(
     binStep: number,
     isV21: boolean,
-    provider: Provider,
+    publicClient: PublicClient,
     chainId: ChainId
   ): Promise<LBPair> {
-    const factoryInterface = new utils.Interface(
-      isV21 ? LBFactoryV21ABI : LBFactoryABI
-    )
-    const factory = new Contract(
-      isV21 ? LB_FACTORY_V21_ADDRESS[chainId] : LB_FACTORY_ADDRESS[chainId],
-      factoryInterface,
-      provider
-    )
-    const LBPair: LBPair = await factory.getLBPairInformation(
-      this.token0.address,
-      this.token1.address,
-      binStep
-    )
-    return LBPair
+    const args = [
+      getAddress(this.token0.address),
+      getAddress(this.token1.address),
+      BigInt(binStep)
+    ] as const
+
+    let lbPair: LBPair
+    if (isV21) {
+      lbPair = await publicClient.readContract({
+        abi: LBFactoryV21ABI,
+        address: LB_FACTORY_V21_ADDRESS[chainId],
+        functionName: 'getLBPairInformation',
+        args
+      })
+    } else {
+      lbPair = await publicClient.readContract({
+        abi: LBFactoryABI,
+        address: LB_FACTORY_ADDRESS[chainId],
+        functionName: 'getLBPairInformation',
+        args
+      })
+    }
+
+    return lbPair
   }
 
   /**
@@ -178,56 +193,64 @@ export class PairV2 {
   /**
    * Fetches the reserves active bin id for the LBPair
    *
-   * @param {string} LBPairAddr
+   * @param {Hex} LBPairAddr
    * @param {boolean} isV21
-   * @param {Provider} provider
+   * @param {PublicClient} publicClient
    * @returns {Promise<LBPairReservesAndId>}
    */
   public static async getLBPairReservesAndId(
-    LBPairAddr: string,
+    LBPairAddr: Hex,
     isV21: boolean,
-    provider: Provider
+    publicClient: PublicClient
   ): Promise<LBPairReservesAndId> {
     if (isV21) {
-      const LBPairInterface = new utils.Interface(LBPairV21ABI)
-      const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
-
-      const [reserveX, reserveY] = await pairContract.getReserves()
-      const activeId = await pairContract.getActiveId()
+      const [reserveX, reserveY] = await publicClient.readContract({
+        abi: LBPairV21ABI,
+        address: LBPairAddr,
+        functionName: 'getReserves'
+      })
+      const activeId = await publicClient.readContract({
+        abi: LBPairV21ABI,
+        address: LBPairAddr,
+        functionName: 'getActiveId'
+      })
 
       return {
-        reserveX: reserveX,
-        reserveY: reserveY,
-        activeId: activeId
+        reserveX,
+        reserveY,
+        activeId
       }
     }
 
-    const LBPairInterface = new utils.Interface(LBPairABI)
-    const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
+    const [reserveX, reserveY, activeId] = await publicClient.readContract({
+      abi: LBPairABI,
+      address: LBPairAddr,
+      functionName: 'getReservesAndId'
+    })
 
-    const pairData: LBPairReservesAndId = await pairContract.getReservesAndId()
-
-    return pairData
+    return {
+      reserveX,
+      reserveY,
+      activeId: Number(activeId)
+    }
   }
 
   /**
    * Fetches the fee parameters for the LBPair
    *
-   * @param {string} LBPairAddr
-   * @param {Provider} provider
+   * @param {Hex} LBPairAddr
+   * @param {PublicClient} publicClient
    * @returns {Promise<LBPairFeeParameters>}
    */
   public static async getFeeParameters(
-    LBPairAddr: string,
-    provider: Provider | Web3Provider | any
+    LBPairAddr: Hex,
+    publicClient: PublicClient
   ): Promise<LBPairFeeParameters> {
-    const LBPairInterface = new utils.Interface(LBPairABI)
-    const pairContract = new Contract(LBPairAddr, LBPairInterface, provider)
-
-    const feeParametersData: LBPairFeeParameters =
-      await pairContract.feeParameters()
-
-    return feeParametersData
+    return publicClient.readContract({
+      abi: LBPairABI,
+      address: LBPairAddr,
+      functionName: 'feeParameters'
+    })
   }
 
   /**
@@ -236,7 +259,7 @@ export class PairV2 {
    * @param {number[]} binIds
    * @param {number[]} activeBin
    * @param {BinReserves[]} bins
-   * @param {BigNumber[]} totalSupplies
+   * @param {bigint[]} totalSupplies
    * @param {string[]} liquidity
    * @returns
    */
@@ -244,7 +267,7 @@ export class PairV2 {
     binIds: number[],
     activeBin: number,
     bins: BinReserves[],
-    totalSupplies: BigNumber[],
+    totalSupplies: bigint[],
     liquidity: string[]
   ): {
     amountX: JSBI
@@ -313,8 +336,8 @@ export class PairV2 {
     amountYMin: string
     idSlippage: number
     deltaIds: number[]
-    distributionX: BigNumber[]
-    distributionY: BigNumber[]
+    distributionX: bigint[]
+    distributionY: bigint[]
   } {
     const token0isX = token0Amount.token.sortsBefore(token1Amount.token)
     const tokenX = token0isX ? token0Amount.token : token1Amount.token
@@ -374,7 +397,7 @@ export class PairV2 {
     userPositionIds: number[],
     activeBin: number,
     bins: BinReserves[],
-    totalSupplies: BigNumber[],
+    totalSupplies: bigint[],
     amountsToRemove: string[],
     amountSlippage: Percent
   ): {

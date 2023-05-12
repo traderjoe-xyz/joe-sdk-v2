@@ -1,6 +1,3 @@
-import { Contract, utils, Signer, Wallet, BigNumber } from 'ethers'
-import { Provider } from '@ethersproject/abstract-provider'
-import { Web3Provider } from '@ethersproject/providers'
 import {
   Token,
   TokenAmount,
@@ -19,7 +16,6 @@ import { RouteV2 } from './route'
 import {
   LB_QUOTER_V21_ADDRESS,
   LB_ROUTER_V21_ADDRESS,
-  MULTICALL_ADDRESS,
   ONE,
   ZERO,
   ZERO_HEX
@@ -34,10 +30,8 @@ import {
   RouterPathParameters
 } from '../types'
 
-import LBQuoterV21ABI from '../abis/json/LBQuoterV21.json'
-import LBRouterV21ABI from '../abis/json/LBRouterV21.json'
-import MulticallABI from '../abis/json/Multicall.json'
-import { MulticallCall, MulticallResult } from 'types/multicall'
+import { LBQuoterV21ABI, LBRouterV21ABI } from '../abis/ts'
+import { Hex, PublicClient, encodeFunctionData } from 'viem'
 
 /** Class representing a trade */
 export class TradeV2 {
@@ -168,8 +162,8 @@ export class TradeV2 {
     const amountOut: string = toHex(
       this.minimumAmountOut(options.allowedSlippage)
     )
-    const binSteps: string[] = this.quote.binSteps.map((bin) =>
-      bin.toHexString()
+    const binSteps: string[] = this.quote.binSteps.map(
+      (bin) => '0x' + bin.toString(16)
     )
     const path: RouterPathParameters = {
       pairBinSteps: binSteps,
@@ -291,43 +285,43 @@ export class TradeV2 {
   /**
    * Returns an estimate of the gas cost for the trade
    *
-   * @param {Signer} signer - The signer such as the wallet
+   * @param {PublicClient} publicClient - The public client
    * @param {ChainId} chainId - The network chain id
    * @param {Percent} slippageTolerance - The slippage tolerance
    * @returns {Promise<BigNumber>}
    */
   public async estimateGas(
-    signer: Signer,
+    publicClient: PublicClient,
+    account: Hex,
     chainId: ChainId,
     slippageTolerance: Percent
-  ): Promise<BigNumber> {
-    const routerInterface = new utils.Interface(LBRouterV21ABI)
-    const router = new Contract(
-      LB_ROUTER_V21_ADDRESS[chainId],
-      routerInterface,
-      signer
-    )
-
+  ): Promise<bigint> {
     const currentBlockTimestamp = (
-      await (signer as Wallet).provider.getBlock('latest')
+      await publicClient.getBlock({ blockTag: 'latest' })
     ).timestamp
-    const userAddr = await signer.getAddress()
 
     const options: TradeOptionsDeadline = {
       allowedSlippage: slippageTolerance,
-      recipient: userAddr,
-      deadline: currentBlockTimestamp + 120
+      recipient: account,
+      deadline: Number(currentBlockTimestamp) + 120
     }
 
     const { methodName, args, value }: SwapParameters =
       this.swapCallParameters(options)
-    const msgOptions = !value || isZero(value) ? {} : { value }
 
-    const gasPrice = await signer.getGasPrice()
+    const gasEstimate = await publicClient.estimateGas({
+      blockTag: 'latest',
+      account,
+      to: LB_ROUTER_V21_ADDRESS[chainId],
+      data: encodeFunctionData({
+        abi: LBRouterV21ABI,
+        functionName: methodName as any,
+        args: args as any
+      }),
+      value: value && !isZero(value) ? BigInt(value) : undefined
+    })
 
-    const response = await router.estimateGas[methodName](...args, msgOptions)
-
-    return response.mul(gasPrice)
+    return gasEstimate
   }
 
   /**
@@ -339,7 +333,7 @@ export class TradeV2 {
    * @param {Token} tokenOut
    * @param {boolean} isNativeIn
    * @param {boolean} isNativeOut
-   * @param {Provider | Web3Provider | any} provider
+   * @param {PublicClient} publicClient
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
    */
@@ -349,7 +343,7 @@ export class TradeV2 {
     tokenOut: Token,
     isNativeIn: boolean,
     isNativeOut: boolean,
-    provider: Provider | Web3Provider | any,
+    publicClient: PublicClient,
     chainId: ChainId
   ): Promise<Array<TradeV2 | undefined>> {
     const isExactIn = true
@@ -363,45 +357,30 @@ export class TradeV2 {
       return []
     }
 
-    const amountIn = tokenAmountIn.raw.toString()
-
-    const quoterAddress = LB_QUOTER_V21_ADDRESS[chainId]
-    const quoterInterface = new utils.Interface(LBQuoterV21ABI)
-
-    const multicallInterface = new utils.Interface(MulticallABI)
-    const multicall = new Contract(
-      MULTICALL_ADDRESS[chainId],
-      multicallInterface,
-      provider
-    )
+    const amountIn = BigInt(tokenAmountIn.raw.toString())
 
     try {
-      const calls: MulticallCall[] = routes.map((route) => {
-        const routeStrArr = route.pathToStrArr()
-        const callData = quoterInterface.encodeFunctionData(
-          'findBestPathFromAmountIn',
-          [routeStrArr, amountIn]
-        )
+      const calls = routes.map((route) => {
         return {
-          target: quoterAddress,
-          allowFailure: true,
-          callData
-        }
+          abi: LBQuoterV21ABI,
+          address: LB_QUOTER_V21_ADDRESS[chainId],
+          functionName: 'findBestPathFromAmountIn',
+          args: [route.pathToStrArr(), amountIn]
+        } as const
       })
 
-      const reads: MulticallResult[] = await multicall.aggregate3(calls)
+      const reads = await publicClient.multicall({
+        contracts: calls,
+        allowFailure: true
+      })
 
       const trades = reads.map((read, i) => {
-        if (!read.success) return undefined
-        const quote: Quote = quoterInterface.decodeFunctionResult(
-          'findBestPathFromAmountIn',
-          read.returnData
-        )[0]
+        if (read.status !== 'success') return undefined
         return new TradeV2(
           routes[i],
           tokenAmountIn.token,
           tokenOut,
-          quote,
+          read.result,
           isExactIn,
           isNativeIn,
           isNativeOut
@@ -427,7 +406,7 @@ export class TradeV2 {
    * @param {Token} tokenIn
    * @param {boolean} isNativeIn
    * @param {boolean} isNativeOut
-   * @param {Provider | Web3Provider | any} provider
+   * @param {PublicClient} publicClient
    * @param {ChainId} chainId
    * @returns {TradeV2[]}
    */
@@ -437,7 +416,7 @@ export class TradeV2 {
     tokenIn: Token,
     isNativeIn: boolean,
     isNativeOut: boolean,
-    provider: Provider | Web3Provider | any,
+    publicClient: PublicClient,
     chainId: ChainId
   ): Promise<Array<TradeV2 | undefined>> {
     const isExactIn = false
@@ -452,45 +431,30 @@ export class TradeV2 {
       return []
     }
 
-    const amountOut = tokenAmountOut.raw.toString()
-
-    const quoterAddress = LB_QUOTER_V21_ADDRESS[chainId]
-    const quoterInterface = new utils.Interface(LBQuoterV21ABI)
-
-    const multicallInterface = new utils.Interface(MulticallABI)
-    const multicall = new Contract(
-      MULTICALL_ADDRESS[chainId],
-      multicallInterface,
-      provider
-    )
+    const amountOut = BigInt(tokenAmountOut.raw.toString())
 
     try {
-      const calls: MulticallCall[] = routes.map((route) => {
-        const routeStrArr = route.pathToStrArr()
-        const callData = quoterInterface.encodeFunctionData(
-          'findBestPathFromAmountOut',
-          [routeStrArr, amountOut]
-        )
+      const calls = routes.map((route) => {
         return {
-          target: quoterAddress,
-          allowFailure: true,
-          callData
-        }
+          abi: LBQuoterV21ABI,
+          address: LB_QUOTER_V21_ADDRESS[chainId],
+          functionName: 'findBestPathFromAmountOut',
+          args: [route.pathToStrArr(), amountOut]
+        } as const
       })
 
-      const reads: MulticallResult[] = await multicall.aggregate3(calls)
+      const reads = await publicClient.multicall({
+        contracts: calls,
+        allowFailure: true
+      })
 
       const trades = reads.map((read, i) => {
-        if (!read.success) return undefined
-        const quote: Quote = quoterInterface.decodeFunctionResult(
-          'findBestPathFromAmountOut',
-          read.returnData
-        )[0]
+        if (read.status !== 'success') return undefined
         return new TradeV2(
           routes[i],
           tokenIn,
           tokenAmountOut.token,
-          quote,
+          read.result,
           isExactIn,
           isNativeIn,
           isNativeOut
@@ -548,20 +512,20 @@ export class TradeV2 {
    * Selects the best trade given trades and gas
    *
    * @param {TradeV2[]} trades
-   * @param {BigNumber[]} estimatedGas
-   * @returns {bestTrade: TradeV2, estimatedGas: BigNumber}
+   * @param {bigint[]} estimatedGas
+   * @returns {bestTrade: TradeV2, estimatedGas: bigint}
    */
   public static chooseBestTradeWithGas(
     trades: TradeV2[],
-    estimatedGas: BigNumber[]
+    estimatedGas: bigint[]
   ): {
     bestTrade: TradeV2
-    estimatedGas: BigNumber
+    estimatedGas: bigint
   } {
     const tradeType = trades[0].tradeType
     // The biggest tradeValueAVAX will be the most accurate
     // If we haven't found any equivalent of the trade in AVAX, we won't take gas cost into account
-    const tradeValueAVAX = BigNumber.from(0)
+    const tradeValueAVAX = BigInt(0)
 
     const tradesWithGas = trades.map((trade, index) => {
       return {
@@ -573,22 +537,22 @@ export class TradeV2 {
                 trade.outputAmount.numerator,
                 trade.outputAmount.denominator
               ).subtract(
-                tradeValueAVAX.eq(0)
+                tradeValueAVAX === BigInt(0)
                   ? BigInt(0)
                   : // Cross product to get the gas price against the output token
                     trade.outputAmount
                       .multiply(estimatedGas[index].toString())
-                      .divide(tradeValueAVAX.toBigInt())
+                      .divide(tradeValueAVAX)
               )
             : new Fraction(
                 trade.inputAmount.numerator,
                 trade.inputAmount.denominator
               ).add(
-                tradeValueAVAX.eq(0)
+                tradeValueAVAX === BigInt(0)
                   ? BigInt(0)
                   : trade.inputAmount
                       .multiply(estimatedGas[index].toString())
-                      .divide(tradeValueAVAX.toBigInt())
+                      .divide(tradeValueAVAX)
               )
       }
     })

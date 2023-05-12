@@ -1,17 +1,17 @@
 import { Percent } from '@traderjoe-xyz/sdk'
-import { BigNumber, BigNumberish } from 'ethers'
+import { Hex } from 'viem'
 
 export interface LBPair {
-  binStep: BigNumberish
-  LBPair: string
+  binStep: number
+  LBPair: Hex
   createdByOwner: boolean
-  isBlacklisted: boolean
+  ignoredForRouting: boolean
 }
 
 export interface LBPairReservesAndId {
-  reserveX: BigNumberish
-  reserveY: BigNumberish
-  activeId: BigNumberish
+  reserveX: bigint
+  reserveY: bigint
+  activeId: number
 }
 
 export interface LBPairFeeParameters {
@@ -37,23 +37,23 @@ export interface LBPairFeePercent {
 export interface LiquidityParametersStruct {
   tokenX: string
   tokenY: string
-  binStep: BigNumberish
-  amountX: BigNumberish
-  amountY: BigNumberish
-  amountXMin: BigNumberish
-  amountYMin: BigNumberish
-  activeIdDesired: BigNumberish
-  idSlippage: BigNumberish
-  deltaIds: BigNumberish[]
-  distributionX: BigNumberish[]
-  distributionY: BigNumberish[]
+  binStep: bigint
+  amountX: bigint
+  amountY: bigint
+  amountXMin: bigint
+  amountYMin: bigint
+  activeIdDesired: bigint
+  idSlippage: bigint
+  deltaIds: bigint[]
+  distributionX: bigint[]
+  distributionY: bigint[]
   to: string
-  deadline: BigNumberish
+  deadline: bigint
 }
 
 export interface BinReserves {
-  reserveX: BigNumber
-  reserveY: BigNumber
+  reserveX: bigint
+  reserveY: bigint
 }
 
 export enum LiquidityDistribution {
@@ -64,6 +64,6 @@ export enum LiquidityDistribution {
 
 export interface LiquidityDistributionParams {
   deltaIds: number[]
-  distributionX: BigNumber[]
-  distributionY: BigNumber[]
+  distributionX: bigint[]
+  distributionY: bigint[]
 }

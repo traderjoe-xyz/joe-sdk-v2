@@ -1,5 +1,5 @@
 import { Percent, TokenAmount } from '@traderjoe-xyz/sdk'
-import { BigNumber } from 'ethers'
+import { Hex } from 'viem'
 
 export enum PoolVersion {
   V1 = 0,
@@ -9,13 +9,13 @@ export enum PoolVersion {
 
 /** Interface representing a quote */
 export interface Quote {
-  route: string[]
-  pairs: string[]
-  binSteps: BigNumber[]
-  versions: PoolVersion[]
-  amounts: BigNumber[]
-  virtualAmountsWithoutSlippage: BigNumber[]
-  fees: BigNumber[]
+  route: readonly Hex[]
+  pairs: readonly Hex[]
+  binSteps: readonly bigint[]
+  versions: readonly PoolVersion[]
+  amounts: readonly bigint[]
+  virtualAmountsWithoutSlippage: readonly bigint[]
+  fees: readonly bigint[]
 }
 
 /** Options for producing the arguments to send call to the router. */
@@ -37,8 +37,8 @@ export interface TradeOptionsDeadline extends Omit<TradeOptions, 'ttl'> {
 
 export interface RouterPathParameters {
   pairBinSteps: string[]
-  versions: number[]
-  tokenPath: string[]
+  versions: readonly number[]
+  tokenPath: readonly string[]
 }
 
 /** The parameters to use in the call to the DEX V2 Router to execute a trade. */

@@ -1,3 +1,4 @@
+import { Hex, getAddress } from 'viem'
 import { PairV2 } from './pair'
 import { Token } from '@traderjoe-xyz/sdk'
 
@@ -28,10 +29,10 @@ export class RouteV2 {
   /**
    * Returns the list of token addresses for this route
    *
-   * @returns {string[]}
+   * @returns {Hex[]}
    */
-  public pathToStrArr(): string[] {
-    return this.path.map((token: Token) => token.address)
+  public pathToStrArr(): Hex[] {
+    return this.path.map((token: Token) => getAddress(token.address))
   }
 
   /**
