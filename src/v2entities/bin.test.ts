@@ -1,4 +1,5 @@
 import { Bin } from './bin'
+import { describe, it, expect } from 'vitest'
 
 describe('Bin', () => {
   describe('Bin.getIdFromPrice()', () => {

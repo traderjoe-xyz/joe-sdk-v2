@@ -12,6 +12,7 @@ import { TradeV2 } from './trade'
 import { LBPairABI } from '../abis/ts'
 import { createPublicClient, http, parseUnits } from 'viem'
 import { avalancheFuji } from '@wagmi/chains'
+import { describe, it, expect } from 'vitest'
 
 describe('TradeV2 entity', () => {
   const CLIENT = createPublicClient({
@@ -90,7 +91,6 @@ describe('TradeV2 entity', () => {
         CLIENT,
         CHAIN_ID
       )
-
       expect(trades.length).toBeGreaterThan(0)
     })
   })

@@ -2,6 +2,7 @@ import { ChainId, WAVAX, Token } from '@traderjoe-xyz/sdk'
 import { PairV2 } from './pair'
 import { createPublicClient, http } from 'viem'
 import { avalancheFuji } from '@wagmi/chains'
+import { describe, it, expect } from 'vitest'
 
 describe('PairV2 entity', () => {
   const CLIENT = createPublicClient({
