@@ -1,12 +1,11 @@
-import { parseEther } from 'ethers/lib/utils'
 import { CurrencyAmount } from '@traderjoe-xyz/sdk'
 
-import { spotUniform, curve, bidAsk, wide } from '../constants'
+import { spotUniform, curve, bidAsk } from '../constants'
 import {
   LiquidityDistribution,
   LiquidityDistributionParams
 } from '../types/pair'
-import { BigNumber } from 'ethers'
+import { parseEther } from 'viem'
 
 /**
  * Returns distribution params for on-chain addLiquidity() call
@@ -18,14 +17,13 @@ import { BigNumber } from 'ethers'
 export const getLiquidityConfig = (
   distribution: LiquidityDistribution
 ): LiquidityDistributionParams => {
-  if (distribution === LiquidityDistribution.SPOT) {
-    return spotUniform
-  } else if (distribution === LiquidityDistribution.CURVE) {
-    return curve
-  } else if (distribution === LiquidityDistribution.BID_ASK) {
-    return bidAsk
-  } else {
-    return wide
+  switch (distribution) {
+    case LiquidityDistribution.SPOT:
+      return spotUniform
+    case LiquidityDistribution.CURVE:
+      return curve
+    case LiquidityDistribution.BID_ASK:
+      return bidAsk
   }
 }
 
@@ -55,16 +53,16 @@ export const getDistributionFromTargetBin = (
  * @returns
  */
 export const normalizeDist = (
-  dist: BigNumber[],
-  sumTo: BigNumber,
-  precision: BigNumber
-): BigNumber[] => {
-  const sumDist = dist.reduce((sum, cur) => sum.add(cur), BigNumber.from(0))
-  if (sumDist.eq(0)) {
+  dist: bigint[],
+  sumTo: bigint,
+  precision: bigint
+): bigint[] => {
+  const sumDist = dist.reduce((sum, cur) => sum + cur, BigInt(0))
+  if (sumDist === BigInt(0)) {
     return dist
   }
-  const factor = sumDist.mul(precision).div(sumTo)
-  const normalized = dist.map((d) => d.mul(precision).div(factor))
+  const factor = (sumDist * precision) / sumTo
+  const normalized = dist.map((d) => (d * precision) / factor)
   return normalized
 }
 
@@ -154,10 +152,10 @@ export const getUniformDistributionFromBinRange = (
   return {
     deltaIds,
     distributionX: _distributionX.map((el) =>
-      parseEther(el.toFixed(parsedAmountA.currency.decimals))
+      parseDistributionValue(el, parsedAmountA.currency.decimals)
     ),
     distributionY: _distributionY.map((el) =>
-      parseEther(el.toFixed(parsedAmountB.currency.decimals))
+      parseDistributionValue(el, parsedAmountB.currency.decimals)
     )
   }
 }
@@ -255,10 +253,10 @@ export const getBidAskDistributionFromBinRange = (
   return {
     deltaIds,
     distributionX: _distributionX.map((el) =>
-      parseEther(el.toFixed(parsedAmountA.currency.decimals))
+      parseDistributionValue(el, parsedAmountA.currency.decimals)
     ),
     distributionY: _distributionY.map((el) =>
-      parseEther(el.toFixed(parsedAmountB.currency.decimals))
+      parseDistributionValue(el, parsedAmountB.currency.decimals)
     )
   }
 }
@@ -413,10 +411,14 @@ export const getCurveDistributionFromBinRange = (
   return {
     deltaIds,
     distributionX: _distributionX.map((el) =>
-      parseEther(el.toFixed(parsedAmountA.currency.decimals))
+      parseDistributionValue(el, parsedAmountA.currency.decimals)
     ),
     distributionY: _distributionY.map((el) =>
-      parseEther(el.toFixed(parsedAmountB.currency.decimals))
+      parseDistributionValue(el, parsedAmountB.currency.decimals)
     )
   }
+}
+
+const parseDistributionValue = (value: number, decimals: number) => {
+  return parseEther(`${parseFloat(value.toFixed(decimals))}`)
 }

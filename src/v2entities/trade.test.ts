@@ -1,4 +1,3 @@
-import { Contract, ethers } from 'ethers'
 import {
   ChainId,
   WNATIVE as _WNATIVE,
@@ -7,20 +6,23 @@ import {
   JSBI,
   Percent
 } from '@traderjoe-xyz/sdk'
-import { parseUnits } from '@ethersproject/units'
 import { PairV2 } from './pair'
 import { RouteV2 } from './route'
 import { TradeV2 } from './trade'
-import { LBPairABI } from '../abis/json'
+import { LBPairABI } from '../abis/ts'
+import { createPublicClient, http, parseUnits } from 'viem'
+import { avalancheFuji } from '@wagmi/chains'
+import { describe, it, expect } from 'vitest'
 
 describe('TradeV2 entity', () => {
-  const FUJI_URL = 'https://api.avax-test.network/ext/bc/C/rpc'
-  const PROVIDER = new ethers.providers.JsonRpcProvider(FUJI_URL)
+  const CLIENT = createPublicClient({
+    chain: avalancheFuji,
+    transport: http()
+  })
   const CHAIN_ID = ChainId.FUJI
 
   // init tokens and route bases
   const lbPairAddress = '0x88F36a6B0e37E78d0Fb1d41B07A47BAD3D995453'
-  const lbPairContract = new Contract(lbPairAddress, LBPairABI, PROVIDER)
   const USDC = new Token(
     ChainId.FUJI,
     '0xB6076C93701D6a07266c31066B298AeC6dd65c2d',
@@ -86,10 +88,9 @@ describe('TradeV2 entity', () => {
         outputToken,
         false,
         false,
-        PROVIDER,
+        CLIENT,
         CHAIN_ID
       )
-
       expect(trades.length).toBeGreaterThan(0)
     })
   })
@@ -101,7 +102,7 @@ describe('TradeV2 entity', () => {
         inputToken,
         false,
         false,
-        PROVIDER,
+        CLIENT,
         CHAIN_ID
       )
 
@@ -109,11 +110,12 @@ describe('TradeV2 entity', () => {
     })
 
     it('calculates price impact correctly', async () => {
-      const reserves = await lbPairContract.getReservesAndId()
-      const amountOut = new TokenAmount(
-        outputToken,
-        JSBI.BigInt(reserves.reserveX.toString())
-      )
+      const [reserveX] = await CLIENT.readContract({
+        abi: LBPairABI,
+        address: lbPairAddress,
+        functionName: 'getReservesAndId'
+      })
+      const amountOut = new TokenAmount(outputToken, reserveX)
 
       const trades = await TradeV2.getTradesExactOut(
         allRoutes,
@@ -121,7 +123,7 @@ describe('TradeV2 entity', () => {
         inputToken,
         false,
         false,
-        PROVIDER,
+        CLIENT,
         CHAIN_ID
       )
 
@@ -140,7 +142,7 @@ describe('TradeV2 entity', () => {
         outputToken,
         false,
         false,
-        PROVIDER,
+        CLIENT,
         CHAIN_ID
       )
 
@@ -169,7 +171,7 @@ describe('TradeV2 entity', () => {
         inputToken,
         false,
         false,
-        PROVIDER,
+        CLIENT,
         CHAIN_ID
       )
 
@@ -200,7 +202,7 @@ describe('TradeV2 entity', () => {
         outputToken,
         false,
         false,
-        PROVIDER,
+        CLIENT,
         CHAIN_ID
       )
 
@@ -210,7 +212,7 @@ describe('TradeV2 entity', () => {
         inputToken,
         false,
         false,
-        PROVIDER,
+        CLIENT,
         CHAIN_ID
       )
 
@@ -246,7 +248,7 @@ describe('TradeV2 entity', () => {
         outputToken,
         false,
         isNativeOut,
-        PROVIDER,
+        CLIENT,
         CHAIN_ID
       )
 
@@ -270,7 +272,7 @@ describe('TradeV2 entity', () => {
         outputToken,
         false,
         isNativeOut,
-        PROVIDER,
+        CLIENT,
         CHAIN_ID
       )
 
