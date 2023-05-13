@@ -1,7 +1,7 @@
 {
   "name": "@traderjoe-xyz/sdk-v2",
   "license": "MIT",
-  "version": "1.4.9",
+  "version": "2.0.0",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "files": [
@@ -28,12 +28,12 @@
   },
   "dependencies": {
     "@traderjoe-xyz/sdk": "^4.0.0",
+    "@wagmi/chains": "^0.2.23",
     "jsbi": "^3.1.1",
+    "lodash.flatmap": "^4.5.0",
     "tiny-invariant": "^1.1.0",
     "tiny-warning": "^1.0.3",
     "toformat": "^2.0.0",
-    "lodash.flatmap": "^4.5.0",
-    "@wagmi/chains": "^0.2.23",
     "viem": "^0.3.22"
   },
   "devDependencies": {
