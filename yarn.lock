@@ -1454,10 +1454,10 @@
   dependencies:
     type-detect "4.0.8"
 
-"@traderjoe-xyz/sdk@^4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-4.0.0.tgz#ec4cedeb6fe2f4f6d07b8c1c135af2b5e4c40fbd"
-  integrity sha512-TY38/DR2FWymsWQLXEBz8QBW47xzml5pwN2YQI083FwZSTtM26/jqC9z/fgcAdo3yvAwFu2atnlH9akwRH4/oA==
+"@traderjoe-xyz/sdk@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-4.0.2.tgz#1dcd557d089faf75e067f55e49d98f43a6af493a"
+  integrity sha512-uCYJfdGoo1fFFHhKaU7QFSZ24pim23S4JIIml2ZpKUbLUYz754VfYI9COgOR+kT89XHNNgHn4mKY78AvJHcmuQ==
   dependencies:
     "@wagmi/chains" "^0.2.22"
     big.js "^5.2.2"
