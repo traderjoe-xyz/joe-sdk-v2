@@ -27,14 +27,15 @@
     ]
   },
   "dependencies": {
-    "@traderjoe-xyz/sdk": "^4.0.2",
-    "@wagmi/chains": "^0.2.23",
+    "@traderjoe-xyz/sdk": "^4.0.5",
     "jsbi": "^3.1.1",
     "lodash.flatmap": "^4.5.0",
     "tiny-invariant": "^1.1.0",
     "tiny-warning": "^1.0.3",
-    "toformat": "^2.0.0",
-    "viem": "^0.3.22"
+    "toformat": "^2.0.0"
+  },
+  "peerDependencies": {
+    "viem": "^0.3.x"
   },
   "devDependencies": {
     "@types/big.js": "^4.0.5",
@@ -45,6 +46,7 @@
     "lint-staged": "^13.0.0",
     "node-fetch": "^3.3.1",
     "tsdx": "^0.14.1",
+    "viem": "^0.3.31",
     "vitest": "^0.31.0"
   },
   "resolutions": {

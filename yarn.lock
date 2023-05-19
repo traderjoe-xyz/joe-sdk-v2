@@ -1454,19 +1454,17 @@
   dependencies:
     type-detect "4.0.8"
 
-"@traderjoe-xyz/sdk@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-4.0.2.tgz#1dcd557d089faf75e067f55e49d98f43a6af493a"
-  integrity sha512-uCYJfdGoo1fFFHhKaU7QFSZ24pim23S4JIIml2ZpKUbLUYz754VfYI9COgOR+kT89XHNNgHn4mKY78AvJHcmuQ==
+"@traderjoe-xyz/sdk@^4.0.5":
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/@traderjoe-xyz/sdk/-/sdk-4.0.5.tgz#f06f3ac6592dcfa4f4c16f6e4a324805319a8f7c"
+  integrity sha512-gz5ZsAk8fIenHpFSeZhVZQcZF5sKPG0Dgm6zHFjBpZTDRZ0ifgsjV+G9KH0w41B9toYpS8iF/hXodnf4/i5fTQ==
   dependencies:
-    "@wagmi/chains" "^0.2.22"
     big.js "^5.2.2"
     decimal.js-light "^2.5.0"
     jsbi "^3.1.1"
     tiny-invariant "^1.1.0"
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
-    viem "^0.3.21"
 
 "@types/babel__core@^7.1.7":
   version "7.20.0"
@@ -1779,11 +1777,6 @@
   version "0.2.16"
   resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-0.2.16.tgz#a726716e4619ec1c192b312e23f9c38407617aa0"
   integrity sha512-rkWaI2PxCnbD8G07ZZff5QXftnSkYL0h5f4DkHCG3fGYYr/ZDvmCL4bMae7j7A9sAif1csPPBmbCzHp3R5ogCQ==
-
-"@wagmi/chains@^0.2.22", "@wagmi/chains@^0.2.23":
-  version "0.2.23"
-  resolved "https://registry.yarnpkg.com/@wagmi/chains/-/chains-0.2.23.tgz#d751cb06a385c4d2e23ca8df77d016c55956908b"
-  integrity sha512-oIc4ZpUL6bH/HdS7ROPWlFnP5U3XBujO/OiX4csRIezyLjMQ9FNXQRZShhi5ddL0Kj1RDbyVLe9K/QotEm1vig==
 
 abab@^2.0.0:
   version "2.0.5"
@@ -7119,10 +7112,10 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
-viem@^0.3.21, viem@^0.3.22:
-  version "0.3.22"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-0.3.22.tgz#9ccda9e614b53a42f845c02fb4f17368561fff05"
-  integrity sha512-nnueiZTcUz1aHrUiVkRiLNT1+h2HAt1eGlKJQ8faDuvUn1mA0f8Cax1Z1CxhwkAhVZ8HqrebZifdJobPuLPZ0A==
+viem@^0.3.31:
+  version "0.3.31"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-0.3.31.tgz#8a53da23f3cdfb6c7bbe8f3ecf6f73e8b81e0894"
+  integrity sha512-4B7oUQkYCGmnd/W+T/miFudx/pZ3V3mRdv3nl1tPy60W5Zlt2lIH+XN9Q0pkHe+5n2Eto/aFZYwRdqGsj6MHmA==
   dependencies:
     "@adraffy/ens-normalize" "1.9.0"
     "@noble/curves" "1.0.0"
