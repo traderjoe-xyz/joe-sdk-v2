@@ -11,7 +11,7 @@ import { RouteV2 } from './route'
 import { TradeV2 } from './trade'
 import { LBPairABI } from '../abis/ts'
 import { createPublicClient, http, parseUnits } from 'viem'
-import { avalancheFuji } from '@wagmi/chains'
+import { avalancheFuji } from 'viem/chains'
 import { describe, it, expect } from 'vitest'
 
 describe('TradeV2 entity', () => {
