@@ -4,10 +4,13 @@ export const VaultFactoryABI = [
     stateMutability: 'nonpayable',
     type: 'constructor'
   },
-  { inputs: [], name: 'CreateFail', type: 'error' },
+  { inputs: [], name: 'VaultFactory__InvalidDecimals', type: 'error' },
+  { inputs: [], name: 'VaultFactory__InvalidFeeRecipient', type: 'error' },
+  { inputs: [], name: 'VaultFactory__InvalidLength', type: 'error' },
   { inputs: [], name: 'VaultFactory__InvalidOraclePrice', type: 'error' },
+  { inputs: [], name: 'VaultFactory__InvalidOwner', type: 'error' },
   { inputs: [], name: 'VaultFactory__InvalidStrategy', type: 'error' },
-  { inputs: [], name: 'VaultFactory__InvalidVaultType', type: 'error' },
+  { inputs: [], name: 'VaultFactory__InvalidType', type: 'error' },
   {
     inputs: [
       {
@@ -30,7 +33,6 @@ export const VaultFactoryABI = [
     name: 'VaultFactory__VaultImplementationNotSet',
     type: 'error'
   },
-  { inputs: [], name: 'VaultFactory__ZeroAddress', type: 'error' },
   {
     anonymous: false,
     inputs: [
@@ -252,6 +254,17 @@ export const VaultFactoryABI = [
   },
   {
     inputs: [
+      { internalType: 'address[]', name: 'vaults', type: 'address[]' },
+      { internalType: 'uint256[]', name: 'rounds', type: 'uint256[]' },
+      { internalType: 'bool[]', name: 'withdrawNative', type: 'bool[]' }
+    ],
+    name: 'batchRedeemQueuedWithdrawals',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
+  {
+    inputs: [
       { internalType: 'contract IBaseVault', name: 'vault', type: 'address' }
     ],
     name: 'createDefaultStrategy',
@@ -389,6 +402,19 @@ export const VaultFactoryABI = [
     type: 'function'
   },
   {
+    inputs: [{ internalType: 'address', name: 'strategy', type: 'address' }],
+    name: 'getStrategyType',
+    outputs: [
+      {
+        internalType: 'enum IVaultFactory.StrategyType',
+        name: '',
+        type: 'uint8'
+      }
+    ],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
     inputs: [
       {
         internalType: 'enum IVaultFactory.VaultType',
@@ -412,6 +438,15 @@ export const VaultFactoryABI = [
     ],
     name: 'getVaultImplementation',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'vault', type: 'address' }],
+    name: 'getVaultType',
+    outputs: [
+      { internalType: 'enum IVaultFactory.VaultType', name: '', type: 'uint8' }
+    ],
     stateMutability: 'view',
     type: 'function'
   },
