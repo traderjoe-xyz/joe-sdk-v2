@@ -19,6 +19,7 @@ export const VaultABI = [
   { inputs: [], name: 'BaseVault__DepositsPaused', type: 'error' },
   { inputs: [], name: 'BaseVault__InvalidNativeAmount', type: 'error' },
   { inputs: [], name: 'BaseVault__InvalidRecipient', type: 'error' },
+  { inputs: [], name: 'BaseVault__InvalidRound', type: 'error' },
   { inputs: [], name: 'BaseVault__InvalidShares', type: 'error' },
   { inputs: [], name: 'BaseVault__InvalidStrategy', type: 'error' },
   { inputs: [], name: 'BaseVault__InvalidToken', type: 'error' },
@@ -37,23 +38,12 @@ export const VaultABI = [
   { inputs: [], name: 'BaseVault__OnlyWNative', type: 'error' },
   { inputs: [], name: 'BaseVault__SameStrategy', type: 'error' },
   { inputs: [], name: 'BaseVault__SameWhitelistState', type: 'error' },
+  { inputs: [], name: 'BaseVault__Unauthorized', type: 'error' },
   { inputs: [], name: 'BaseVault__ZeroAmount', type: 'error' },
   { inputs: [], name: 'BaseVault__ZeroShares', type: 'error' },
-  {
-    inputs: [
-      { internalType: 'uint256', name: 'prod1', type: 'uint256' },
-      { internalType: 'uint256', name: 'denominator', type: 'uint256' }
-    ],
-    name: 'Math512Bits__MulDivOverflow',
-    type: 'error'
-  },
-  {
-    inputs: [{ internalType: 'uint256', name: 'x', type: 'uint256' }],
-    name: 'SafeCast__Exceeds128Bits',
-    type: 'error'
-  },
   { inputs: [], name: 'SimpleVault__AmountsOverflow', type: 'error' },
   { inputs: [], name: 'SimpleVault__ZeroCross', type: 'error' },
+  { inputs: [], name: 'Uint256x256Math__MulDivOverflow', type: 'error' },
   {
     anonymous: false,
     inputs: [
@@ -77,14 +67,6 @@ export const VaultABI = [
       }
     ],
     name: 'Approval',
-    type: 'event'
-  },
-  {
-    anonymous: false,
-    inputs: [
-      { indexed: false, internalType: 'uint256', name: 'fee', type: 'uint256' }
-    ],
-    name: 'DepositFeeSet',
     type: 'event'
   },
   {
@@ -153,6 +135,31 @@ export const VaultABI = [
       { indexed: false, internalType: 'uint8', name: 'version', type: 'uint8' }
     ],
     name: 'Initialized',
+    type: 'event'
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'token',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'recipient',
+        type: 'address'
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256'
+      }
+    ],
+    name: 'Recovered',
     type: 'event'
   },
   {
@@ -282,14 +289,6 @@ export const VaultABI = [
   {
     anonymous: false,
     inputs: [
-      { indexed: false, internalType: 'uint256', name: 'fee', type: 'uint256' }
-    ],
-    name: 'WithdrawalFeeSet',
-    type: 'event'
-  },
-  {
-    anonymous: false,
-    inputs: [
       {
         indexed: true,
         internalType: 'address',
@@ -394,10 +393,7 @@ export const VaultABI = [
     type: 'function'
   },
   {
-    inputs: [
-      { internalType: 'uint256', name: 'shares', type: 'uint256' },
-      { internalType: 'address', name: 'recipient', type: 'address' }
-    ],
+    inputs: [{ internalType: 'uint256', name: 'shares', type: 'uint256' }],
     name: 'cancelQueuedWithdrawal',
     outputs: [{ internalType: 'uint256', name: 'round', type: 'uint256' }],
     stateMutability: 'nonpayable',
@@ -519,16 +515,6 @@ export const VaultABI = [
     name: 'getPair',
     outputs: [{ internalType: 'contract ILBPair', name: '', type: 'address' }],
     stateMutability: 'pure',
-    type: 'function'
-  },
-  {
-    inputs: [],
-    name: 'getPendingFees',
-    outputs: [
-      { internalType: 'uint256', name: 'feesX', type: 'uint256' },
-      { internalType: 'uint256', name: 'feesY', type: 'uint256' }
-    ],
-    stateMutability: 'view',
     type: 'function'
   },
   {
