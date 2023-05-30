@@ -1,4 +1,4 @@
-export const LimitOrderABI = [
+export const LimitOrderManagerABI = [
   {
     inputs: [
       { internalType: 'contract ILBFactory', name: 'factory', type: 'address' }
