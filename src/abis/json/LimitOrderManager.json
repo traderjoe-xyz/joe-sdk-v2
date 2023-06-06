@@ -5,6 +5,11 @@
         "internalType": "contract ILBFactory",
         "name": "factory",
         "type": "address"
+      },
+      {
+        "internalType": "contract IWNATIVE",
+        "name": "wNative",
+        "type": "address"
       }
     ],
     "stateMutability": "nonpayable",
@@ -13,6 +18,11 @@
   {
     "inputs": [],
     "name": "LimitOrderManager__InvalidBatchLength",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LimitOrderManager__InvalidNativeAmount",
     "type": "error"
   },
   { "inputs": [], "name": "LimitOrderManager__InvalidOrder", "type": "error" },
@@ -50,6 +60,11 @@
   {
     "inputs": [],
     "name": "LimitOrderManager__OrdersAlreadyExecuted",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LimitOrderManager__TransferFailed",
     "type": "error"
   },
   { "inputs": [], "name": "LimitOrderManager__ZeroAddress", "type": "error" },
@@ -546,7 +561,7 @@
         "type": "uint256[]"
       }
     ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -585,7 +600,7 @@
         "type": "uint256[]"
       }
     ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -878,7 +893,7 @@
         "type": "uint256"
       }
     ],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   }
 ]

@@ -1,12 +1,14 @@
 export const LimitOrderManagerABI = [
   {
     inputs: [
-      { internalType: 'contract ILBFactory', name: 'factory', type: 'address' }
+      { internalType: 'contract ILBFactory', name: 'factory', type: 'address' },
+      { internalType: 'contract IWNATIVE', name: 'wNative', type: 'address' }
     ],
     stateMutability: 'nonpayable',
     type: 'constructor'
   },
   { inputs: [], name: 'LimitOrderManager__InvalidBatchLength', type: 'error' },
+  { inputs: [], name: 'LimitOrderManager__InvalidNativeAmount', type: 'error' },
   { inputs: [], name: 'LimitOrderManager__InvalidOrder', type: 'error' },
   { inputs: [], name: 'LimitOrderManager__InvalidPair', type: 'error' },
   { inputs: [], name: 'LimitOrderManager__InvalidTokenOrder', type: 'error' },
@@ -24,6 +26,7 @@ export const LimitOrderManagerABI = [
     name: 'LimitOrderManager__OrdersAlreadyExecuted',
     type: 'error'
   },
+  { inputs: [], name: 'LimitOrderManager__TransferFailed', type: 'error' },
   { inputs: [], name: 'LimitOrderManager__ZeroAddress', type: 'error' },
   { inputs: [], name: 'LimitOrderManager__ZeroAmount', type: 'error' },
   {
@@ -399,7 +402,7 @@ export const LimitOrderManagerABI = [
     outputs: [
       { internalType: 'uint256[]', name: 'orderPositionIds', type: 'uint256[]' }
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
     type: 'function'
   },
   {
@@ -426,7 +429,7 @@ export const LimitOrderManagerABI = [
     outputs: [
       { internalType: 'uint256[]', name: 'orderPositionIds', type: 'uint256[]' }
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
     type: 'function'
   },
   {
@@ -629,7 +632,7 @@ export const LimitOrderManagerABI = [
     outputs: [
       { internalType: 'uint256', name: 'orderPositionId', type: 'uint256' }
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
     type: 'function'
   }
 ] as const
