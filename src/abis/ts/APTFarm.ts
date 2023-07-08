@@ -551,4 +551,4 @@ export const APTFarmABI = [
     stateMutability: 'nonpayable',
     type: 'function'
   }
-]
+] as const
