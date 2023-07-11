@@ -27,7 +27,7 @@
     ]
   },
   "dependencies": {
-    "@traderjoe-xyz/sdk": "^4.0.5",
+    "@traderjoe-xyz/sdk": "^4.0.7",
     "jsbi": "^3.1.1",
     "lodash.flatmap": "^4.5.0",
     "tiny-invariant": "^1.1.0",
@@ -35,7 +35,7 @@
     "toformat": "^2.0.0"
   },
   "peerDependencies": {
-    "viem": "^0.3.x"
+    "viem": ">=0.3.35"
   },
   "devDependencies": {
     "@types/big.js": "^4.0.5",
@@ -46,7 +46,7 @@
     "lint-staged": "^13.0.0",
     "node-fetch": "^3.3.1",
     "tsdx": "^0.14.1",
-    "viem": "^0.3.31",
+    "viem": "^0.3.35",
     "vitest": "^0.31.0"
   },
   "resolutions": {
